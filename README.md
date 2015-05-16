@@ -1,4 +1,6 @@
 # django-webpack-loader
+
+[![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Get references to your webpack bundles and chunks for use in development. (support for production coming soon.)
 
 
