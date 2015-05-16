@@ -3,8 +3,8 @@ import time
 
 from django.conf import settings
 
-static_path = getattr(settings, 'WEBPACK_BUNDLE_PATH', 'webpack_bundles/')
-stats_file = getattr(settings, 'WEBPACK_STATS_FILE', 'webpack-stats.json')
+bundle_url = getattr(settings, 'WEBPACK_BUNDLE_URL', 'webpack_bundles/')
+stats_file = getattr(settings, 'WEBPACK_STATS_FILE_PATH', 'webpack-stats.json')
 
 
 __all__ = ('get_bundle',)
@@ -32,8 +32,7 @@ def get_bundle(bundle_name):
     if assets.get('status') == 'done':
         bundle = assets['chunks'][bundle_name]
         for F in bundle:
-            F['url'] = '{}{}'.format(static_path, F['name'])
-        print bundle
+            F['url'] = '{}{}'.format(bundle_url, F['name'])
         return bundle
 
     elif assets.get('status') == 'error':
