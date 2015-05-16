@@ -1,13 +1,23 @@
+import re
 import json
 import time
 
 from django.conf import settings
 
-bundle_url = getattr(settings, 'WEBPACK_BUNDLE_URL', 'webpack_bundles/')
-stats_file = getattr(settings, 'WEBPACK_STATS_FILE_PATH', 'webpack-stats.json')
-
 
 __all__ = ('get_bundle',)
+
+
+config = {
+    'BASE_URL': 'webpack_bundles/',
+    'STATS_FILE': 'webpack-stats.json',
+    # FIXME: Explore usage of fsnotify
+    'POLL_INTERVAL': 0.1,
+    'IGNORE': ['.+\.hot-update.js', '.+\.map']
+}
+
+config.update(getattr(settings, 'WEBPACK_LOADER', {}))
+ignores = [re.compile(I) for I in config['IGNORE']]
 
 
 class WebpackException(BaseException):
@@ -16,24 +26,34 @@ class WebpackException(BaseException):
 
 def get_assets():
     try:
-        return json.loads(
-            open(stats_file).read())
-    except ValueError:
-        return {'status': 'compiling'}
+        return json.loads(open(config['STATS_FILE']).read())
+    except IOError:
+        raise IOError('Error reading {}. Are you sure webpack has generated '
+                      'the file and the path is correct?'.format(config['STATS_FILE']))
+
+
+def filter_files(files):
+    for F in files:
+        filename = F['name']
+        ignore = any(regex.match(filename) for regex in ignores)
+        if not ignore:
+            F['url'] = '{}{}'.format(config['BASE_URL'], filename)
+            yield F
 
 
 def get_bundle(bundle_name):
     assets = get_assets()
 
-    while assets['status'] == 'compiling':
-        time.sleep(0.5)
-        assets = get_assets()
+    if settings.DEBUG:
+        # poll when debugging and block request until bundle is compiled
+        # TODO: support timeouts
+        while assets['status'] == 'compiling':
+            time.sleep(config['POLL_INTERVAL'])
+            assets = get_assets()
 
     if assets.get('status') == 'done':
-        bundle = assets['chunks'][bundle_name]
-        for F in bundle:
-            F['url'] = '{}{}'.format(bundle_url, F['name'])
-        return bundle
+        files = assets['chunks'][bundle_name]
+        return filter_files(files)
 
     elif assets.get('status') == 'error':
         error = """
