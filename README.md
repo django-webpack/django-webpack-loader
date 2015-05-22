@@ -135,7 +135,7 @@ and your webpack config is located at `/home/src/assets/webpack.config.js`, then
 ```HTML+Django
 {% load render_bundle from webpack_loader %}
 
-{{ render_bundle 'main' }}
+{% render_bundle 'main' %}
 ```
 
 `render_bundle` will render the proper `<script>` and `<link>` tags needed in your template.

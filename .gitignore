@@ -58,3 +58,6 @@ target/
 
 # Editors and IDEs
 .ropeproject/
+
+example/ve/
+example/node_modules/
