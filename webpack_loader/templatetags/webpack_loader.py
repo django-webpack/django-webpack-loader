@@ -12,7 +12,6 @@ def render_bundle(bundle_name):
     bundle = get_bundle(bundle_name)
     tags = []
     for chunk in bundle:
-
         if chunk['name'].endswith('.js'):
             url = chunk.get('publicPath') or chunk['url']
             tags.append('<script type="text/javascript" src="{}"></script>'.format(url))
