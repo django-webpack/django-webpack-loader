@@ -78,28 +78,6 @@ WEBPACK_LOADER = {
 }
 ```
 
-### Extra Jinja2 Configuration
-If you need to output your assets in a jinja template we provide a Jinja2 extension that's compatible with the [Django Jinja](https://github.com/niwinz/django-jinja) module.
-
-To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
-
-```python
-TEMPLATES = [
-    {
-        "BACKEND": "django_jinja.backend.Jinja2",
-        "APP_DIRS": True,
-        "DIRS": [os.path.join(BASE_DIR, 'jinja_templates')],
-        "OPTIONS": {
-            "extensions": [
-                "other.extensions",
-                "webpack_loader.contrib.jinja2ext.WebpackExtension",
-            ],
-            "autoescape": True,
-            "auto_reload": DEBUG,
-        }
-    }
-]
-```
 <br>
 
 #### WEBPACK_BUNDLE_URL
@@ -161,14 +139,6 @@ and your webpack config is located at `/home/src/assets/webpack.config.js`, then
 {% render_bundle 'main' %}
 ```
 
-#### Jinja Templates
-
-```HTML+Jinja2
-{{ render_bundle('main') }}
-```
-
-`render_bundle` will render the proper `<script>` and `<link>` tags needed in your template.
-
 <br>
 
 ## How to use in Production
@@ -205,6 +175,36 @@ if not DEBUG:
 
 
 You can also simply generate the bundles on the server before running collectstatic if that works for you. 
+
+## Extra
+
+### Jinja2 Configuration
+
+If you need to output your assets in a jinja template we provide a Jinja2 extension that's compatible with the [Django Jinja](https://github.com/niwinz/django-jinja) module and Django 1.8.
+
+To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
+
+```python
+TEMPLATES = [
+    {
+        "BACKEND": "django_jinja.backend.Jinja2",
+        "OPTIONS": {
+            "extensions": [
+                "django_jinja.builtins.extensions.DjangoFiltersExtension",
+                "webpack_loader.contrib.jinja2ext.WebpackExtension",
+            ],
+        }
+    }
+]
+```
+
+Then in your base jinja template:
+
+```HTML+Jinja2
+{{ render_bundle('main') }}
+```
+
+`render_bundle` will render the proper `<script>` and `<link>` tags needed in your template.
 
 
 --------------------
