@@ -56,6 +56,8 @@ def get_bundle(bundle_name):
         return filter_files(files)
 
     elif assets.get('status') == 'error':
+        if 'file' not in assets:
+            assets['file'] = ''
         error = """
         {error} in {file}
         {message}
