@@ -59,7 +59,7 @@ target/
 # Editors and IDEs
 .ropeproject/
 
-example/ve/
-example/node_modules/
-example/assets/bundles/
-example/assets/webpack-stats.json
+examples/**/ve/
+examples/**/node_modules/
+examples/**/assets/bundles/
+examples/**/assets/webpack-stats.json

@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# build standalone version in dist
-./node_modules/.bin/webpack
