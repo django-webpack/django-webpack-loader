@@ -3,6 +3,7 @@
 [![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <br>
+Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step by step guide on setting up webpack with django using this library.
 
 **NOTE:** *This is very very new. Do not use in proudction yet.*
 
