@@ -61,3 +61,5 @@ target/
 
 example/ve/
 example/node_modules/
+example/assets/bundles/
+example/assets/webpack-stats.json
