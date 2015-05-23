@@ -6,4 +6,4 @@ class WebpackLoaderConfig(AppConfig):
     verbose_name = "Webpack Loader"
 
     def ready(self):
-        from .signals import *
+        from . import signals
