@@ -139,6 +139,8 @@ and your webpack config is located at `/home/src/assets/webpack.config.js`, then
 {% render_bundle 'main' %}
 ```
 
+`render_bundle` will render the proper `<script>` and `<link>` tags needed in your template.
+
 <br>
 
 ## How to use in Production
@@ -203,9 +205,6 @@ Then in your base jinja template:
 ```HTML+Jinja2
 {{ render_bundle('main') }}
 ```
-
-`render_bundle` will render the proper `<script>` and `<link>` tags needed in your template.
-
 
 --------------------
 <br>
