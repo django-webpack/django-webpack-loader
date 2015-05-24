@@ -4,7 +4,6 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - "nightly"
 # command to install dependencies
 before_install: "cd tests"
 install: "./install.sh"
