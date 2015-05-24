@@ -42,10 +42,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 <br>
 Assuming `assets/` is in `settings.STATICFILES_DIRS` like
 
-STATIC_ASSETS = os.path.join(BASE_DIR, 'assets')
 ```python
 STATICFILES_DIRS = (
- STATIC_ASSETS,
+    os.path.join(BASE_DIR, 'assets'),
 )
 ```
 
