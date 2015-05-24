@@ -12,3 +12,9 @@ install: "./install.sh"
 script: "coverage run --source=tests manage.py test"
 after_success:
   coveralls
+env:
+  - DJANGO_VERSION=1.4
+  - DJANGO_VERSION=1.5
+  - DJANGO_VERSION=1.6
+  - DJANGO_VERSION=1.7
+  - DJANGO_VERSION=1.8
