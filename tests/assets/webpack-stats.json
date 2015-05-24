@@ -1,1 +1,1 @@
-{"status":"compiling"}
+{"status":"done","chunks":{"main":[{"name":"main.js","path":"/home/owais/Projects/django-webpack-loader/tests/assets/bundles/main.js"},{"name":"styles.css","path":"/home/owais/Projects/django-webpack-loader/tests/assets/bundles/styles.css"}]}}

@@ -23,6 +23,7 @@ class LoaderTestCase(TestCase):
     def clean_dir(self, directory):
         if os.path.exists(BUNDLE_PATH):
             [os.remove(os.path.join(BUNDLE_PATH, F)) for F in os.listdir(BUNDLE_PATH)]
+        os.remove(settings.WEBPACK_LOADER['STATS_FILE'])
 
     def compile_bundles(self, config, wait=None):
         if wait:
@@ -72,6 +73,7 @@ class LoaderTestCase(TestCase):
 
         main = chunks['main']
         self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
+        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
 
     def test_multiple_files(self):
         self.compile_bundles('webpack.config.split.js')
