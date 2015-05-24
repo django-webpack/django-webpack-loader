@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/owais/django-webpack-loader.svg?branch=master)](https://travis-ci.org/owais/django-webpack-loader)
-[![Coverage Status](https://coveralls.io/repos/owais/django-webpack-loader/badge.svg)](https://coveralls.io/r/owais/django-webpack-loader)
+<a href='https://coveralls.io/r/owais/django-webpack-loader?branch=master'><img src='https://coveralls.io/repos/owais/django-webpack-loader/badge.svg?branch=master' alt='Coverage Status' /></a> 
 
 <br>
 Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step by step guide on setting up webpack with django using this library.
