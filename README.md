@@ -142,6 +142,23 @@ and your webpack config is located at `/home/src/assets/webpack.config.js`, then
 
 `render_bundle` will render the proper `<script>` and `<link>` tags needed in your template.
 
+`render_bundle` also takes a second argument which can be a file extension to match. This is useful when you want to render different types for files in separately. For example, to render CSS in head and JS at bottom we can do something like this,
+
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+
+<html>
+  <head>
+    {% render_bundle 'main' 'css' %}
+  </head>
+  <body>
+    ....
+    {% render_bundle 'main' 'js' %}
+  </body>
+</head>
+```
+
+
 <br>
 
 ## How to use in Production
