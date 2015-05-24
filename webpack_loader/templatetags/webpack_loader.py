@@ -16,6 +16,6 @@ def render_bundle(bundle_name):
         if chunk['name'].endswith('.js'):
             url = chunk.get('publicPath') or chunk['url']
             tags.append('<script type="text/javascript" src="{}"></script>'.format(url))
-        elif chunk['name'].endwith('.css'):
+        elif chunk['name'].endswith('.css'):
             tags.append('<link type="text/css" href="{}" rel="stylesheet">'.format(url))
     return '\n'.join(tags)
