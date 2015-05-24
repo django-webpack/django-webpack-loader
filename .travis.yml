@@ -9,4 +9,6 @@ python:
 before_install: "cd tests"
 install: "./install.sh"
 # command to run tests
-script: "./manage.py test"
+script: "coverage run --source=tests manage.py test"
+after_success:
+  coveralls
