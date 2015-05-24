@@ -3,13 +3,14 @@ import json
 import time
 
 from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 __all__ = ('get_bundle',)
 
 
 config = {
-    'BASE_URL': 'webpack_bundles/',
+    'BUNDLE_DIR_NAME': 'webpack_bundles/',
     'STATS_FILE': 'webpack-stats.json',
     # FIXME: Explore usage of fsnotify
     'POLL_INTERVAL': 0.1,
@@ -37,7 +38,8 @@ def filter_files(files):
         filename = F['name']
         ignore = any(regex.match(filename) for regex in ignores)
         if not ignore:
-            F['url'] = '{}{}'.format(config['BASE_URL'], filename)
+            relpath = '{}{}'.format(config['BUNDLE_DIR_NAME'], filename)
+            F['url'] = staticfiles_storage.url(relpath)
             yield F
 
 
