@@ -8,7 +8,7 @@ python:
 before_install: "cd tests"
 install: "./install.sh"
 # command to run tests
-script: "coverage run --source=tests manage.py test"
+script: "coverage run --source=webpack_loader manage.py test"
 after_success:
   coveralls
 env:
