@@ -1,7 +1,6 @@
 var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
-var SplitByPathPlugin = require('webpack-split-by-path');
 
 
 module.exports = {
@@ -9,18 +8,11 @@ module.exports = {
   entry: './js/index',
   output: {
       path: path.resolve('./assets/bundles/'),
-      filename: "[name]-[hash].js",
-      chunkFilename: "[name]-[hash].js"
+      filename: "[name].js",
   },
 
   plugins: [
     new BundleTracker({filename: './assets/webpack-stats.json'}),
-    new SplitByPathPlugin([
-      {
-        name: 'vendor',
-        path: path.join(__dirname, '../node_modules/')
-      }
-    ])
   ],
 
   module: {

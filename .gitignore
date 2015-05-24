@@ -63,3 +63,6 @@ examples/**/ve/
 examples/**/node_modules/
 examples/**/assets/bundles/
 examples/**/assets/webpack-stats.json
+
+tests/ve/
+tests/node_modules/
