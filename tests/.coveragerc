@@ -1,5 +1,9 @@
 [report]
 omit =
+    */assets/*
     */python?.?/*
     */migrations/*
     */site-packages/*
+    */ve/*
+    */node_modules/*
+    */app/*
