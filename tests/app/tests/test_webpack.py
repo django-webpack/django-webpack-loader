@@ -99,7 +99,7 @@ class LoaderTestCase(TestCase):
         try:
             get_bundle('main')
         except WebpackException as e:
-            self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", e.message)
+            self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
 
     def test_missing_stats_file(self):
         os.remove(settings.WEBPACK_LOADER['STATS_FILE'])
