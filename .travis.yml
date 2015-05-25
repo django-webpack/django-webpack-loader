@@ -9,7 +9,9 @@ before_install: "cd tests"
 install: "./install.sh"
 # command to run tests
 script: "coverage run --source=webpack_loader manage.py test"
-after_success: "codecov --token=78880239-ce1b-4fbe-b2df-950e2609238b"
+after_success: 
+  - coverage xml
+  - codecov
 env:
   - DJANGO_VERSION=1.6
   - DJANGO_VERSION=1.7
