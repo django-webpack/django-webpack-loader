@@ -10,7 +10,7 @@ install: "./install.sh"
 # command to run tests
 script: "coverage run --source=webpack_loader manage.py test"
 after_success: 
-  - pip uninstall -Y codecov
+  - pip uninstall -y codecov
   - pip install git+git://github.com/codecov/codecov-python.git@master
   - codecov
 env:
