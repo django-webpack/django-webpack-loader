@@ -11,6 +11,7 @@ install: "./install.sh"
 script: "coverage run --source=webpack_loader manage.py test"
 after_success: 
   - coverage xml
+  - cat coverage.xml
   - codecov
 env:
   - DJANGO_VERSION=1.6
