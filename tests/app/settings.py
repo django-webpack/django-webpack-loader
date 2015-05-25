@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'app',
     'webpack_loader',
+    'django_jinja',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -111,3 +112,10 @@ WEBPACK_LOADER = {
     'BUNDLE_DIR_NAME': 'bundles/',
     'STATS_FILE': os.path.join(BASE_DIR, 'assets/webpack-stats.json'),
 }
+
+from django_jinja.builtins import DEFAULT_EXTENSIONS
+
+JINJA2_EXTENSIONS = DEFAULT_EXTENSIONS + [
+    "webpack_loader.contrib.jinja2ext.WebpackExtension",
+]
+DEFAULT_JINJA2_TEMPLATE_EXTENSION = '.jinja'

@@ -1,2 +1,3 @@
-coveralls
 coverage
+codecov
+django-jinja

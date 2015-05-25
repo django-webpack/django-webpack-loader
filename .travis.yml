@@ -1,7 +1,6 @@
 language: python
 python:
   - "2.7"
-  - "3.2"
   - "3.3"
   - "3.4"
 # command to install dependencies
@@ -10,7 +9,9 @@ install: "./install.sh"
 # command to run tests
 script: "coverage run --source=webpack_loader manage.py test"
 after_success:
-  coveralls
+  - coverage xml
+  - cp coverage.xml ../
+  - codecov --token=78880239-ce1b-4fbe-b2df-950e2609238b
 env:
   - DJANGO_VERSION=1.6
   - DJANGO_VERSION=1.7
