@@ -1,2 +1,2 @@
-coveralls
 coverage
+codecov
