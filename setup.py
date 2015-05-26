@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-version = '0.1.2'
+version = '0.1.2.1'
 
 setup(
   name = 'django-webpack-loader',
@@ -15,6 +15,8 @@ setup(
   data_files = [("", ["LICENSE"])],
   classifiers = [
     'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
     'Framework :: Django',
     'Environment :: Web Environment',
     'License :: OSI Approved :: MIT License',
