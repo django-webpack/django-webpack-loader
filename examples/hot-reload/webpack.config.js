@@ -8,7 +8,7 @@ module.exports = {
   entry: [
       'webpack-dev-server/client?http://localhost:3000',
       'webpack/hot/only-dev-server',
-      './js/index'
+      './assets/js/index'
   ],
   output: {
       path: path.resolve('./assets/bundles/'),
@@ -19,7 +19,7 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(), // don't reload if there is an error
-    new BundleTracker({filename: './assets/webpack-stats.json'}),
+    new BundleTracker({filename: './webpack-stats.json'}),
   ],
 
   module: {

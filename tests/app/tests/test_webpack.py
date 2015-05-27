@@ -28,7 +28,7 @@ class LoaderTestCase(TestCase):
     def compile_bundles(self, config, wait=None):
         if wait:
             time.sleep(wait)
-        call(['./node_modules/.bin/webpack', '--config', os.path.join('assets/', config)])
+        call(['./node_modules/.bin/webpack', '--config', config])
 
     def test_simple_and_css_extract(self):
         self.compile_bundles('webpack.config.simple.js')

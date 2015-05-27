@@ -1,24 +1,27 @@
 var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 
 module.exports = {
   context: __dirname,
-  entry: './js/index',
+  entry: './assets/js/bad_index',
   output: {
       path: path.resolve('./assets/bundles/'),
-      filename: "[name]-[hash].js",
+      filename: "[name].js",
   },
 
   plugins: [
-    new BundleTracker({filename: './assets/webpack-stats.json'}),
+    new ExtractTextPlugin("styles.css"),
+    new BundleTracker({filename: './webpack-stats.json'}),
   ],
 
   module: {
     loaders: [
       // we pass the output from babel loader to react-hot loader
       { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel'], },
+      { test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
     ],
   },
 

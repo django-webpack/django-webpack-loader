@@ -2,23 +2,25 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 var SplitByPathPlugin = require('webpack-split-by-path');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 
 module.exports = {
   context: __dirname,
-  entry: './js/index',
+  entry: './assets/js/index',
   output: {
       path: path.resolve('./assets/bundles/'),
-      filename: "[name]-[hash].js",
-      chunkFilename: "[name]-[hash].js"
+      filename: "[name].js",
+      chunkFilename: "[name].js"
   },
 
   plugins: [
-    new BundleTracker({filename: './assets/webpack-stats.json'}),
+    new ExtractTextPlugin("styles.css"),
+    new BundleTracker({filename: './webpack-stats.json'}),
     new SplitByPathPlugin([
       {
         name: 'vendor',
-        path: path.join(__dirname, '../node_modules/')
+        path: path.join(__dirname, '/node_modules/')
       }
     ])
   ],
@@ -27,6 +29,7 @@ module.exports = {
     loaders: [
       // we pass the output from babel loader to react-hot loader
       { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel'], },
+      { test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
     ],
   },
 
