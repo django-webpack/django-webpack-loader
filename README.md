@@ -136,6 +136,17 @@ and your webpack config is located at `/home/src/assets/webpack.config.js`, then
 ## Usage
 <br>
 
+#### Settings
+
+Add `webpack_loader` to `INSTALLED_APPS`
+
+```
+INSTALLED_APPS = (
+    ...
+    'webpack_loader',
+)
+```
+
 #### Templates
 
 ```HTML+Django
