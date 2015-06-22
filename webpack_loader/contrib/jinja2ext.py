@@ -1,4 +1,4 @@
-import jinja2
+import jinja2.ext
 
 from ..templatetags.webpack_loader import render_bundle
 

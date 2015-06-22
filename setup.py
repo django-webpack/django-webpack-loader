@@ -4,7 +4,7 @@ version = '0.1.2.1'
 
 setup(
   name = 'django-webpack-loader',
-  packages = ['webpack_loader', 'webpack_loader/templatetags'], # this must be the same as the name above
+  packages = ['webpack_loader', 'webpack_loader/templatetags', 'webpack_loader/contrib'],
   version = version,
   description = 'Load your webpack bundles and chunks in django',
   author = 'Owais Lone',
