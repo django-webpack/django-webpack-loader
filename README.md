@@ -136,6 +136,10 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 ## Usage
 <br>
 
+#### Manually run webpack to build assets.
+
+One of the core principles of django-webpack-loader is to not manage webpack itself in order to give you the flexibility to run webpack the way you want. If you are new to webpack, check one of the [examples](https://github.com/owais/django-webpack-loader/tree/master/examples), read [my detailed blog post](http://owaislone.org/blog/webpack-plus-reactjs-and-django/) or check [webpack docs](http://webpack.github.io/).
+
 #### Settings
 
 Add `webpack_loader` to `INSTALLED_APPS`
