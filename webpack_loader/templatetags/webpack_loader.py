@@ -1,5 +1,6 @@
 import datetime
 from django import template
+from django.conf import settings
 
 from ..utils import get_bundle
 
@@ -17,8 +18,10 @@ def render_as_tags(bundle):
     tags = []
     for chunk in bundle:
         url = chunk.get('publicPath') or chunk['url']
+        WEBPACK_LOADER = getattr(settings, 'WEBPACK_LOADER', {})
+        defer = 'defer ' if WEBPACK_LOADER.get('DEFER', False) else ''
         if chunk['name'].endswith('.js'):
-            tags.append('<script type="text/javascript" src="{}"></script>'.format(url))
+            tags.append('<script type="text/javascript" {}src="{}"></script>'.format(defer, url))
         elif chunk['name'].endswith('.css'):
             tags.append('<link type="text/css" href="{}" rel="stylesheet">'.format(url))
     return '\n'.join(tags)

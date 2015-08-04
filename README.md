@@ -79,7 +79,8 @@ WEBPACK_LOADER = {
     'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
     'STATS_FILE': 'webpack-stats.json',
     'POLL_DELAY': 0.2,
-    'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    'IGNORE': ['.+\.hot-update.js', '.+\.map'],
+    'DEFER': False, # should script tags come with a defer attribute?
 }
 ```
 
