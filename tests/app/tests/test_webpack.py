@@ -60,6 +60,18 @@ class LoaderTestCase(TestCase):
         vendor = chunks['vendor']
         self.assertEqual(vendor[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/vendor.js'))
 
+    def test_django_custom_static_url(self):
+        self.compile_bundles('webpack.config.simple.js')
+        view = TemplateView.as_view(template_name='home.html')
+
+        different_domain_static_url = '//:derp.com/_/static/'
+
+        with self.settings(STATIC_URL=different_domain_static_url):
+            request = self.factory.get('/')
+            result = view(request)
+            self.assertIn('<link type="text/css" href="%sbundles/styles.css" rel="stylesheet">' % different_domain_static_url, result.rendered_content)
+            self.assertIn('<script type="text/javascript" src="%sbundles/main.js"></script>' % different_domain_static_url, result.rendered_content)
+
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
         view = TemplateView.as_view(template_name='home.jinja')
