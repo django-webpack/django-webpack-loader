@@ -66,6 +66,8 @@ examples/**/assets/webpack-stats.json
 
 tests/ve/
 tests/ve3/
+tests/venv/
+tests/venv3/
 tests/node_modules/
 tests/assets/bundles/
 tests/assets/webpack-stats.json
