@@ -1,7 +1,7 @@
-import datetime
 from django import template
+from django.conf import settings
 
-from ..utils import get_bundle
+from ..utils import get_assets, get_bundle
 
 
 register = template.Library()
@@ -30,3 +30,11 @@ def render_bundle(bundle_name, extension=None):
     if extension:
         bundle = filter_by_extension(bundle, extension)
     return render_as_tags(bundle)
+
+
+@register.simple_tag
+def webpack_static(asset_name):
+    return "{}{}".format(
+        get_assets().get('publicPath', getattr(settings, 'STATIC_URL')),
+        asset_name
+    )

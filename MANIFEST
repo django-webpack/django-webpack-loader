@@ -6,5 +6,7 @@ webpack_loader/__init__.py
 webpack_loader/apps.py
 webpack_loader/signals.py
 webpack_loader/utils.py
+webpack_loader/contrib/__init__.py
+webpack_loader/contrib/jinja2ext.py
 webpack_loader/templatetags/__init__.py
 webpack_loader/templatetags/webpack_loader.py
