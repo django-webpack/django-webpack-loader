@@ -55,20 +55,22 @@ STATICFILES_DIRS = (
 <br>
 Assuming your webpack config lives at `./webpack.config.js` and looks like this
 ```javascript
+var path = require("path");
+var webpack = require('webpack');
+var BundleTracker = require('webpack-bundle-tracker');
+
 module.exports = {
   context: __dirname,
-  entry: {
-    app: './assets/js/index'
-    output: {
-      path: require('path').resolve('./assets/bundles/'),
-      filename: '[name]-[hash].js',
+  entry: './assets/js/index',
+  output: {
+      path: path.resolve('./assets/bundles/'),
+      filename: "[name]-[hash].js"
   },
 
   plugins: [
     new BundleTracker({filename: './webpack-stats.json'})
   ]
 }
-
 ```
 
 
