@@ -44,6 +44,12 @@ class LoaderTestCase(TestCase):
         self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
         self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
 
+    def test_static_url(self):
+        self.compile_bundles('webpack.config.publicPath.js')
+        assets = get_assets()
+        self.assertEqual(assets['status'], 'done')
+        self.assertEqual(assets['publicPath'], 'http://custom-static-host.com/')
+
     def test_code_spliting(self):
         self.compile_bundles('webpack.config.split.js')
         assets = get_assets()
@@ -59,6 +65,21 @@ class LoaderTestCase(TestCase):
 
         vendor = chunks['vendor']
         self.assertEqual(vendor[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/vendor.js'))
+
+    def test_templatetags(self):
+        self.compile_bundles('webpack.config.simple.js')
+        view = TemplateView.as_view(template_name='home.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet">', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js"></script>', result.rendered_content)
+
+
+        self.compile_bundles('webpack.config.publicPath.js')
+        view = TemplateView.as_view(template_name='home.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertIn('<img src="http://custom-static-host.com/my-image.png"/>', result.rendered_content)
 
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
