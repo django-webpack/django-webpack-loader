@@ -1,7 +1,7 @@
 from django import template
 from django.conf import settings
 
-from ..utils import get_assets, get_bundle
+from ..utils import get_config, get_assets, get_bundle
 
 
 register = template.Library()
@@ -25,16 +25,16 @@ def render_as_tags(bundle):
 
 
 @register.simple_tag
-def render_bundle(bundle_name, extension=None):
-    bundle = get_bundle(bundle_name)
+def render_bundle(bundle_name, extension=None, config="DEFAULT"):
+    bundle = get_bundle(bundle_name, config)
     if extension:
         bundle = filter_by_extension(bundle, extension)
     return render_as_tags(bundle)
 
 
 @register.simple_tag
-def webpack_static(asset_name):
+def webpack_static(asset_name, config="DEFAULT"):
     return "{}{}".format(
-        get_assets().get('publicPath', getattr(settings, 'STATIC_URL')),
+        get_assets(get_config(config)).get('publicPath', getattr(settings, 'STATIC_URL')),
         asset_name
     )

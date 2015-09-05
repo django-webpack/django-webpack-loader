@@ -3,6 +3,7 @@ import time
 import json
 from subprocess import call
 from threading import Thread
+from unittest import skipIf
 
 import django
 from django.conf import settings
@@ -10,11 +11,11 @@ from django.test import TestCase, RequestFactory
 from django_jinja.builtins import DEFAULT_EXTENSIONS
 from django.views.generic.base import TemplateView
 
-from webpack_loader.utils import get_assets, get_bundle, WebpackException
+from webpack_loader.utils import get_config, get_assets, get_bundle, WebpackException
 
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
-
+DEFAULT_CONFIG = 'DEFAULT'
 
 class LoaderTestCase(TestCase):
     def setUp(self):
@@ -23,16 +24,42 @@ class LoaderTestCase(TestCase):
     def clean_dir(self, directory):
         if os.path.exists(BUNDLE_PATH):
             [os.remove(os.path.join(BUNDLE_PATH, F)) for F in os.listdir(BUNDLE_PATH)]
-        os.remove(settings.WEBPACK_LOADER['STATS_FILE'])
+        os.remove(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
 
     def compile_bundles(self, config, wait=None):
         if wait:
             time.sleep(wait)
         call(['./node_modules/.bin/webpack', '--config', config])
 
+    @skipIf(django.VERSION < (1, 7),
+            'not supported in this django version')
+    def test_config_check(self):
+        from django.core.checks import Error
+        from webpack_loader.apps import webpack_cfg_check
+
+        with self.settings(WEBPACK_LOADER={
+                                'BUNDLE_DIR_NAME': 'bundles/',
+                                'STATS_FILE': 'webpack-stats.json',
+                           }):
+            errors = webpack_cfg_check(None)
+            expected_errors = [Error(
+                'Error while parsing WEBPACK_LOADER configuration',
+                hint='Is WEBPACK_LOADER config compliant with the new format?',
+                obj='django.conf.settings.WEBPACK_LOADER',
+                id='django-webpack-loader.E001',
+            )]
+            self.assertEqual(errors, expected_errors)
+
+        with self.settings(WEBPACK_LOADER={
+                                'DEFAULT': {}
+                           }):
+            errors = webpack_cfg_check(None)
+            expected_errors = []
+            self.assertEqual(errors, expected_errors)
+
     def test_simple_and_css_extract(self):
         self.compile_bundles('webpack.config.simple.js')
-        assets = get_assets()
+        assets = get_assets(get_config(DEFAULT_CONFIG))
         self.assertEqual(assets['status'], 'done')
         self.assertIn('chunks', assets)
 
@@ -46,13 +73,13 @@ class LoaderTestCase(TestCase):
 
     def test_static_url(self):
         self.compile_bundles('webpack.config.publicPath.js')
-        assets = get_assets()
+        assets = get_assets(get_config(DEFAULT_CONFIG))
         self.assertEqual(assets['status'], 'done')
         self.assertEqual(assets['publicPath'], 'http://custom-static-host.com/')
 
     def test_code_spliting(self):
         self.compile_bundles('webpack.config.split.js')
-        assets = get_assets()
+        assets = get_assets(get_config(DEFAULT_CONFIG))
         self.assertEqual(assets['status'], 'done')
         self.assertIn('chunks', assets)
 
@@ -68,11 +95,16 @@ class LoaderTestCase(TestCase):
 
     def test_templatetags(self):
         self.compile_bundles('webpack.config.simple.js')
+        self.compile_bundles('webpack.config.app2.js')
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
         self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet">', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/main.js"></script>', result.rendered_content)
+
+        self.assertIn('<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet">', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js"></script>', result.rendered_content)
+        self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
 
         self.compile_bundles('webpack.config.publicPath.js')
@@ -83,6 +115,7 @@ class LoaderTestCase(TestCase):
 
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
+        self.compile_bundles('webpack.config.app2.js')
         view = TemplateView.as_view(template_name='home.jinja')
 
         if django.VERSION >= (1, 8):
@@ -118,16 +151,16 @@ class LoaderTestCase(TestCase):
         #TODO:
         self.compile_bundles('webpack.config.error.js')
         try:
-            get_bundle('main')
+            get_bundle('main', DEFAULT_CONFIG)
         except WebpackException as e:
             self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
 
     def test_missing_stats_file(self):
-        os.remove(settings.WEBPACK_LOADER['STATS_FILE'])
+        os.remove(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
         try:
-            get_assets()
+            get_assets(get_config(DEFAULT_CONFIG))
         except IOError as e:
-            expected = 'Error reading {}. Are you sure webpack has generated the file and the path is correct?'.format(settings.WEBPACK_LOADER['STATS_FILE'])
+            expected = 'Error reading {}. Are you sure webpack has generated the file and the path is correct?'.format(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
             self.assertIn(expected, str(e))
 
     def test_request_blocking(self):
@@ -138,19 +171,23 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.html')
 
         with self.settings(DEBUG=True):
-            open(settings.WEBPACK_LOADER['STATS_FILE'], 'w').write(json.dumps({'status': 'compiling'}))
+            open(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w').write(json.dumps({'status': 'compiling'}))
             then = time.time()
             request = self.factory.get('/')
             result = view(request)
             t = Thread(target=self.compile_bundles, args=('webpack.config.simple.js', wait_for))
+            t2 = Thread(target=self.compile_bundles, args=('webpack.config.app2.js', wait_for))
             t.start()
+            t2.start()
             result.rendered_content
             elapsed = time.time() - then
             t.join()
+            t2.join()
             self.assertTrue(elapsed > wait_for)
 
         with self.settings(DEBUG=False):
             self.compile_bundles('webpack.config.simple.js')
+            self.compile_bundles('webpack.config.app2.js')
             then = time.time()
             request = self.factory.get('/')
             result = view(request)

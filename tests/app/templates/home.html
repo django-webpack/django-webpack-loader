@@ -5,11 +5,14 @@
     <meta charset="UTF-8">
     <title>Example</title>
     {% render_bundle 'main' 'css' %}
+    {% render_bundle 'app2' 'css' config='APP2' %}
   </head>
-  
+
   <body>
     <img src="{% webpack_static 'my-image.png' %}"/>
+    <img src="{% webpack_static 'my-image.png' 'APP2'%}"/>
     <div id="react-app"></div>
     {% render_bundle 'main' 'js' %}
+    {% render_bundle 'app2' 'js' config='APP2' %}
   </body>
 </html>

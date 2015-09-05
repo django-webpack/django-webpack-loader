@@ -78,10 +78,12 @@ module.exports = {
 ### Default Configuration
 ```python
 WEBPACK_LOADER = {
-    'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
-    'STATS_FILE': 'webpack-stats.json',
-    'POLL_DELAY': 0.2,
-    'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
+        'STATS_FILE': 'webpack-stats.json',
+        'POLL_DELAY': 0.1,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
 }
 ```
 
@@ -90,7 +92,9 @@ WEBPACK_LOADER = {
 #### BUNDLE_DIR_NAME
 ```python
 WEBPACK_LOADER = {
-	'BUNDLE_DIR_NAME': 'bundles/' # end with slash
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/' # end with slash
+    }
 }
 ```
 
@@ -107,7 +111,9 @@ If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your ST
 #### STATS_FILE
 ```python
 WEBPACK_LOADER = {
-	'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
+    'DEFAULT': {
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
+    }
 }
 ```
 
@@ -141,6 +147,23 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 #### Manually run webpack to build assets.
 
 One of the core principles of django-webpack-loader is to not manage webpack itself in order to give you the flexibility to run webpack the way you want. If you are new to webpack, check one of the [examples](https://github.com/owais/django-webpack-loader/tree/master/examples), read [my detailed blog post](http://owaislone.org/blog/webpack-plus-reactjs-and-django/) or check [webpack docs](http://webpack.github.io/).
+
+#### Multiple webpack projects
+
+It is possible to manage multiple webpack projects by adding extra entries in `WEBPACK_LOADER` as follows:
+
+```python
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    },
+    'APP2': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
+    }
+}
+```
 
 #### Settings
 
@@ -179,6 +202,32 @@ INSTALLED_APPS = (
 </head>
 ```
 
+`render_bundle` third argument (defaults to `'DEFAULT'`) tells which `WEBPACK_LOADER` project contains the bundle. For example, to render bundles from several projects just define your `WEPACK_LOADER` like this,
+
+```python
+WEBPACK_LOADER = {
+    'APP1': {
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app1.json'),
+    },
+    'APP2': {
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
+    }
+}
+```
+
+then use `render_bundle` as follows
+
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+
+<html>
+  <body>
+    ....
+    {% render_bundle 'main' 'js' 'APP1'%}
+    {% render_bundle 'main' 'js' 'APP2'%}
+  </body>
+</head>
+```
 
 <br>
 
