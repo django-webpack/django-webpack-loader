@@ -226,6 +226,22 @@ WEBPACK_LOADER = {
 </head>
 ```
 
+#### Exposing an asset URL
+
+If you need the URL to an asset without the HTML tags the `get_chunks`
+template tag can be used. A common use case is specifying the URL to a
+custom css file for a Javascript plugin.
+
+The first parameter is the name of the bundle and is required.
+Optional second and third parameters are the extension (css/js)
+and the configuration.
+
+```HTML+Django
+{% get_chunks 'editor' 'css' as editor_css_chunks %}
+CKEDITOR.config.contentsCss = '{{ editor_css_chunks.0.publicPath }}';
+```
+
+
 <br>
 
 ## How to use in Production

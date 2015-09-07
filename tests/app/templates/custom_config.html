@@ -1,0 +1,11 @@
+{% load get_chunks from webpack_loader %}
+<script>
+
+  {% get_chunks 'main' 'css' as main_css_chunks %}
+  {% get_chunks 'main' 'js' as main_js_chunks %}
+
+  var contentCss = '{{ main_css_chunks.0.url }}';
+
+  var contentJS = '{{ main_js_chunks.0.url }}';
+
+</script>

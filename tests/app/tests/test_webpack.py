@@ -102,6 +102,10 @@ class LoaderTestCase(TestCase):
         self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js"></script>', result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
+        view = TemplateView.as_view(template_name='custom_config.html')
+        result = view(request)
+        self.assertIn("var contentCss = '/static/bundles/styles.css'", result.rendered_content)
+        self.assertIn("var contentJS = '/static/bundles/main.js'", result.rendered_content)
 
         self.compile_bundles('webpack.config.publicPath.js')
         view = TemplateView.as_view(template_name='home.html')
