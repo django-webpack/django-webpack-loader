@@ -1,0 +1,11 @@
+{% load get_files from webpack_loader %}
+<script>
+
+  {% get_files 'main' 'css' as main_css_files %}
+  {% get_files 'main' 'js' as main_js_files %}
+
+  var contentCss = '{{ main_css_files.0.url }}';
+
+  var contentJS = '{{ main_js_files.0.url }}';
+
+</script>

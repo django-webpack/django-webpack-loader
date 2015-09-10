@@ -39,23 +39,25 @@ def render_bundle(bundle_name, extension=None, config='DEFAULT'):
 @register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):
     return "{}{}".format(
-        get_assets(get_config(config)).get('publicPath', getattr(settings, 'STATIC_URL')),
+        get_assets(get_config(config)).get(
+            'publicPath', getattr(settings, 'STATIC_URL')
+        ),
         asset_name
     )
 
 
 @register.assignment_tag
-def get_chunks(bundle_name, extension=None, config='DEFAULT'):
+def get_files(bundle_name, extension=None, config='DEFAULT'):
     """
     Returns all chunks in the given bundle.
     Example usage::
 
-        {% get_chunks 'editor' 'css' as editor_css_chunks %}
+        {% get_files 'editor' 'css' as editor_css_chunks %}
         CKEDITOR.config.contentsCss = '{{ editor_css_chunks.0.publicPath }}';
 
     :param bundle_name: The name of the bundle
     :param extension: (optional) filter by extension
     :param config: (optional) the name of the configuration
-    :return: the whole bundle
+    :return: a list of matching chunks
     """
     return list(_get_bundle(bundle_name, extension, config))

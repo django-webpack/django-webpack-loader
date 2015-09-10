@@ -226,19 +226,25 @@ WEBPACK_LOADER = {
 </head>
 ```
 
-#### Exposing an asset URL
+#### File URLs instead of html tags
 
-If you need the URL to an asset without the HTML tags the `get_chunks`
+If you need the URL to an asset without the HTML tags, the `get_files`
 template tag can be used. A common use case is specifying the URL to a
 custom css file for a Javascript plugin.
 
-The first parameter is the name of the bundle and is required.
-Optional second and third parameters are the extension (css/js)
-and the configuration.
+`get_files` works exactly like `render_bundle` except it returns a list of
+matching files and lets you assign the list to a custom template variable. For example,
 
 ```HTML+Django
-{% get_chunks 'editor' 'css' as editor_css_chunks %}
-CKEDITOR.config.contentsCss = '{{ editor_css_chunks.0.publicPath }}';
+{% get_files 'editor' 'css' as editor_css_files %}
+CKEDITOR.config.contentsCss = '{{ editor_css_files.0.publicPath }}';
+
+<!-- or list down name, path and download url for every file -->
+<ul>
+{% for css_file in editor_css_files %}
+    <li>{{ css_file.name }} : {{ css_file.path }} : {{ css_file.publicPath }}</li>
+{% endfor %}
+</ul>
 ```
 
 
