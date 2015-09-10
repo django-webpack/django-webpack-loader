@@ -11,7 +11,8 @@ from django.test import TestCase, RequestFactory
 from django_jinja.builtins import DEFAULT_EXTENSIONS
 from django.views.generic.base import TemplateView
 
-from webpack_loader.utils import get_config, get_assets, get_bundle, WebpackException
+from webpack_loader.utils import get_assets, get_config, get_bundle, WebpackException
+from webpack_loader.errors import BAD_CONFIG_ERROR
 
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
@@ -42,12 +43,7 @@ class LoaderTestCase(TestCase):
                                 'STATS_FILE': 'webpack-stats.json',
                            }):
             errors = webpack_cfg_check(None)
-            expected_errors = [Error(
-                'Error while parsing WEBPACK_LOADER configuration',
-                hint='Is WEBPACK_LOADER config compliant with the new format?',
-                obj='django.conf.settings.WEBPACK_LOADER',
-                id='django-webpack-loader.E001',
-            )]
+            expected_errors = [BAD_CONFIG_ERROR]
             self.assertEqual(errors, expected_errors)
 
         with self.settings(WEBPACK_LOADER={
@@ -102,7 +98,7 @@ class LoaderTestCase(TestCase):
         self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet"/>', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/main.js"></script>', result.rendered_content)
 
-        self.assertIn('<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet">', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet"/>', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js"></script>', result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
@@ -151,7 +147,7 @@ class LoaderTestCase(TestCase):
         #TODO:
         self.compile_bundles('webpack.config.error.js')
         try:
-            get_bundle('main', DEFAULT_CONFIG)
+            get_bundle('main', get_config(DEFAULT_CONFIG))
         except WebpackException as e:
             self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
 

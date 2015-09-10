@@ -25,15 +25,15 @@ def render_as_tags(bundle):
 
 
 @register.simple_tag
-def render_bundle(bundle_name, extension=None, config="DEFAULT"):
-    bundle = get_bundle(bundle_name, config)
+def render_bundle(bundle_name, extension=None, config='DEFAULT'):
+    bundle = get_bundle(bundle_name, get_config(config))
     if extension:
         bundle = filter_by_extension(bundle, extension)
     return render_as_tags(bundle)
 
 
 @register.simple_tag
-def webpack_static(asset_name, config="DEFAULT"):
+def webpack_static(asset_name, config='DEFAULT'):
     return "{}{}".format(
         get_assets(get_config(config)).get('publicPath', getattr(settings, 'STATIC_URL')),
         asset_name

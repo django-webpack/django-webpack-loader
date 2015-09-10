@@ -148,22 +148,6 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 
 One of the core principles of django-webpack-loader is to not manage webpack itself in order to give you the flexibility to run webpack the way you want. If you are new to webpack, check one of the [examples](https://github.com/owais/django-webpack-loader/tree/master/examples), read [my detailed blog post](http://owaislone.org/blog/webpack-plus-reactjs-and-django/) or check [webpack docs](http://webpack.github.io/).
 
-#### Multiple webpack projects
-
-It is possible to manage multiple webpack projects by adding extra entries in `WEBPACK_LOADER` as follows:
-
-```python
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-    },
-    'APP2': {
-        'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
-    }
-}
-```
 
 #### Settings
 
@@ -202,20 +186,25 @@ INSTALLED_APPS = (
 </head>
 ```
 
-`render_bundle` third argument (defaults to `'DEFAULT'`) tells which `WEBPACK_LOADER` project contains the bundle. For example, to render bundles from several projects just define your `WEPACK_LOADER` like this,
+<br>
+
+
+#### Multiple webpack projects
+
+Version 2.0 and up of webpack loader also supports multiple webpack configurations. The following configuration defines 2 webpack stats files in settings and uses the `config` argument in the template tags to influence which stats file to load the bundles from.
 
 ```python
 WEBPACK_LOADER = {
-    'APP1': {
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app1.json'),
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     },
-    'APP2': {
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
+    'DASHBOARD': {
+        'BUNDLE_DIR_NAME': 'dashboard_bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-dashboard.json'),
     }
 }
 ```
-
-then use `render_bundle` as follows
 
 ```HTML+Django
 {% load render_bundle from webpack_loader %}
@@ -223,8 +212,16 @@ then use `render_bundle` as follows
 <html>
   <body>
     ....
-    {% render_bundle 'main' 'js' 'APP1'%}
-    {% render_bundle 'main' 'js' 'APP2'%}
+    {% render_bundle 'main' 'js' 'DEFAULT' %}
+    {% render_bundle 'main' 'js' 'DASHBOARD' %}
+
+    <!-- or render all files from a bundle -->
+    {% render_bundle 'main' config='DASHBOARD' %}
+
+    <!-- the following tags do the same thing -->
+    {% render_bundle 'main' 'css' 'DASHBOARD' %}
+    {% render_bundle 'main' extension='css' config='DASHBOARD' %}
+    {% render_bundle 'main' config='DASHBOARD' extension='css' %}
   </body>
 </head>
 ```

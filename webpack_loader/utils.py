@@ -6,24 +6,25 @@ from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 
-__all__ = ('get_bundle',)
+__all__ = ('get_assets', 'get_config', 'get_bundle',)
+
 
 DEFAULT_CONFIG = {
-    'BUNDLE_DIR_NAME': 'webpack_bundles/',
-    'STATS_FILE': 'webpack-stats.json',
-    # FIXME: Explore usage of fsnotify
-    'POLL_INTERVAL': 0.1,
-    'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'webpack_bundles/',
+        'STATS_FILE': 'webpack-stats.json',
+        # FIXME: Explore usage of fsnotify
+        'POLL_INTERVAL': 0.1,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
 }
 
-config = {
-    'DEFAULT': DEFAULT_CONFIG
-}
 
-user_config = getattr(settings, 'WEBPACK_LOADER', config)
+user_config = getattr(settings, 'WEBPACK_LOADER', DEFAULT_CONFIG)
+
 user_config = {
-    project: dict(DEFAULT_CONFIG, **cfg)
-    for project, cfg in user_config.items()
+    name: dict(DEFAULT_CONFIG['DEFAULT'], **cfg)
+    for name, cfg in user_config.items()
 }
 
 for entry in user_config.values():
@@ -42,23 +43,22 @@ def get_assets(config):
     try:
         return json.loads(open(config['STATS_FILE']).read())
     except IOError:
-        raise IOError('Error reading {}. Are you sure webpack has generated '
-                      'the file and the path is correct?'.format(config['STATS_FILE']))
+        raise IOError(
+            'Error reading {}. Are you sure webpack has generated the file '
+            'and the path is correct?'.format(config['STATS_FILE']))
 
 
 def filter_files(files, config):
-    ignores = config['ignores']
     for F in files:
         filename = F['name']
-        ignore = any(regex.match(filename) for regex in ignores)
+        ignore = any(regex.match(filename) for regex in config['ignores'])
         if not ignore:
             relpath = '{}{}'.format(config['BUNDLE_DIR_NAME'], filename)
             F['url'] = staticfiles_storage.url(relpath)
             yield F
 
 
-def get_bundle(bundle_name, config_name):
-    config = get_config(config_name)
+def get_bundle(bundle_name, config):
     assets = get_assets(config)
 
     if settings.DEBUG:

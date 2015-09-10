@@ -1,9 +1,10 @@
 from django.apps import AppConfig
 
+from .errors import BAD_CONFIG_ERROR
+
 
 def webpack_cfg_check(app_configs, **kwargs):
     from django.conf import settings
-    from django.core.checks import Error
 
     check_failed = False
     user_config = getattr(settings, 'WEBPACK_LOADER', {})
@@ -14,14 +15,7 @@ def webpack_cfg_check(app_configs, **kwargs):
 
     errors = []
     if check_failed:
-        errors.append(
-            Error(
-                'Error while parsing WEBPACK_LOADER configuration',
-                hint='Is WEBPACK_LOADER config compliant with the new format?',
-                obj='django.conf.settings.WEBPACK_LOADER',
-                id='django-webpack-loader.E001',
-            )
-        )
+        errors.append(BAD_CONFIG_ERROR)
     return errors
 
 
@@ -30,6 +24,5 @@ class WebpackLoaderConfig(AppConfig):
     verbose_name = "Webpack Loader"
 
     def ready(self):
-        from . import signals
         from django.core.checks import register, Tags
         register(Tags.compatibility)(webpack_cfg_check)

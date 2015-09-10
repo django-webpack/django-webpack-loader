@@ -60,6 +60,7 @@ target/
 .ropeproject/
 
 examples/**/ve/
+examples/**/venv/
 examples/**/node_modules/
 examples/**/assets/bundles/
 examples/**/assets/webpack-stats.json
@@ -71,3 +72,4 @@ tests/venv3/
 tests/node_modules/
 tests/assets/bundles/
 tests/webpack-stats.json
+tests/webpack-stats-app2.json
