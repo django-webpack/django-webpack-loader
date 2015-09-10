@@ -12,7 +12,6 @@ from django_jinja.builtins import DEFAULT_EXTENSIONS
 from django.views.generic.base import TemplateView
 
 from webpack_loader.utils import get_assets, get_config, get_bundle, WebpackException
-from webpack_loader.errors import BAD_CONFIG_ERROR
 
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
@@ -37,6 +36,7 @@ class LoaderTestCase(TestCase):
     def test_config_check(self):
         from django.core.checks import Error
         from webpack_loader.apps import webpack_cfg_check
+        from webpack_loader.errors import BAD_CONFIG_ERROR
 
         with self.settings(WEBPACK_LOADER={
                                 'BUNDLE_DIR_NAME': 'bundles/',
