@@ -1,12 +1,12 @@
 from distutils.core import setup
 
-version = '0.1.4'
+version = '0.2.0'
 
 setup(
   name = 'django-webpack-loader',
   packages = ['webpack_loader', 'webpack_loader/templatetags', 'webpack_loader/contrib'],
   version = version,
-  description = 'Load your webpack bundles and chunks in django',
+  description = 'Transparently use webpack with django',
   author = 'Owais Lone',
   author_email = 'hello@owaislone.org',
   download_url = 'https://github.com/owais/django-webpack-loader/tarball/{}'.format(version),
