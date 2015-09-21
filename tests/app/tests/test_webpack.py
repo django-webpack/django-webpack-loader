@@ -11,7 +11,7 @@ from django.test import TestCase, RequestFactory
 from django_jinja.builtins import DEFAULT_EXTENSIONS
 from django.views.generic.base import TemplateView
 
-from webpack_loader.utils import get_assets, get_config, get_bundle, WebpackException
+from webpack_loader.utils import get_assets, get_config, get_bundle, WebpackError
 
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
@@ -152,7 +152,7 @@ class LoaderTestCase(TestCase):
         self.compile_bundles('webpack.config.error.js')
         try:
             get_bundle('main', get_config(DEFAULT_CONFIG))
-        except WebpackException as e:
+        except WebpackError as e:
             self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
 
     def test_missing_stats_file(self):
