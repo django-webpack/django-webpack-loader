@@ -31,7 +31,11 @@ for entry in user_config.values():
     entry['ignores'] = [re.compile(I) for I in entry['IGNORE']]
 
 
-class WebpackException(BaseException):
+class WebpackError(BaseException):
+    pass
+
+
+class WebpackLoaderBadStatsError(BaseException):
     pass
 
 
@@ -79,4 +83,9 @@ def get_bundle(bundle_name, config):
         {error} in {file}
         {message}
         """.format(**assets)
-        raise WebpackException(error)
+        raise WebpackError(error)
+
+    raise WebpackLoaderBadStatsError(
+        "The stats file does not contain valid data. Make sure "
+        "webpack-bundle-tracker plugin is enabled and try to run "
+        "webpack again.")

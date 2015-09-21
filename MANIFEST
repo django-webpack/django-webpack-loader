@@ -4,6 +4,7 @@ setup.cfg
 setup.py
 webpack_loader/__init__.py
 webpack_loader/apps.py
+webpack_loader/errors.py
 webpack_loader/signals.py
 webpack_loader/utils.py
 webpack_loader/contrib/__init__.py
