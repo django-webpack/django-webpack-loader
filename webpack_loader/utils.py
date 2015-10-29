@@ -45,7 +45,8 @@ def get_config(config_name):
 
 def get_assets(config):
     try:
-        return json.loads(open(config['STATS_FILE']).read())
+        with open(config['STATS_FILE']) as f:
+            return json.load(f)
     except IOError:
         raise IOError(
             'Error reading {}. Are you sure webpack has generated the file '
