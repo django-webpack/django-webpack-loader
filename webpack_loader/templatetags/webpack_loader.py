@@ -1,5 +1,6 @@
 from django import template
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 from ..utils import get_config, get_assets, get_bundle
 
@@ -21,7 +22,7 @@ def render_as_tags(bundle):
             tags.append('<script type="text/javascript" src="{}"></script>'.format(url))
         elif chunk['name'].endswith('.css'):
             tags.append('<link type="text/css" href="{}" rel="stylesheet"/>'.format(url))
-    return '\n'.join(tags)
+    return mark_safe('\n'.join(tags))
 
 
 def _get_bundle(bundle_name, extension, config):
