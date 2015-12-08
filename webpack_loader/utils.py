@@ -15,7 +15,8 @@ DEFAULT_CONFIG = {
         'STATS_FILE': 'webpack-stats.json',
         # FIXME: Explore usage of fsnotify
         'POLL_INTERVAL': 0.1,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'IGNORE': ['.+\.hot-update.js', '.+\.map'],
+        'LOCAL': True,
     }
 }
 
@@ -44,8 +45,12 @@ def get_config(config_name):
 
 
 def get_assets(config):
+    if not config["LOCAL"]:
+        open_file_func = staticfiles_storage.open
+    else:
+        open_file_func = open
     try:
-        with open(config['STATS_FILE']) as f:
+        with open_file_func(config['STATS_FILE']) as f:
             return json.load(f)
     except IOError:
         raise IOError(
