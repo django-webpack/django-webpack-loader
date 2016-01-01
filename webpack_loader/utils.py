@@ -85,7 +85,7 @@ def get_bundle(bundle_name, config):
     elif assets.get('status') == 'error':
         if 'file' not in assets:
             assets['file'] = ''
-        error = """
+        error = u"""
         {error} in {file}
         {message}
         """.format(**assets)
