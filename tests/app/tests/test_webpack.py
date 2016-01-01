@@ -1,18 +1,17 @@
+import json
 import os
 import time
-import json
 from subprocess import call
 from threading import Thread
 from unittest import skipIf
 
 import django
 from django.conf import settings
-from django.test import TestCase, RequestFactory
-from django_jinja.builtins import DEFAULT_EXTENSIONS
+from django.test import RequestFactory, TestCase
 from django.views.generic.base import TemplateView
-
-from webpack_loader.utils import get_assets, get_config, get_bundle, WebpackError
-
+from django_jinja.builtins import DEFAULT_EXTENSIONS
+from webpack_loader.utils import (WebpackError, WebpackLoaderBadStatsError,
+                                  get_assets, get_bundle, get_config)
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
@@ -34,7 +33,6 @@ class LoaderTestCase(TestCase):
     @skipIf(django.VERSION < (1, 7),
             'not supported in this django version')
     def test_config_check(self):
-        from django.core.checks import Error
         from webpack_loader.apps import webpack_cfg_check
         from webpack_loader.errors import BAD_CONFIG_ERROR
 
@@ -163,6 +161,21 @@ class LoaderTestCase(TestCase):
             expected = 'Error reading {}. Are you sure webpack has generated the file and the path is correct?'.format(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
             self.assertIn(expected, str(e))
 
+    def test_bad_status_in_production(self):
+        stats_file = open(
+            settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
+        )
+        stats_file.write(json.dumps({'status': 'unexpected-status'}))
+        stats_file.close()
+        try:
+            get_bundle('main', get_config(DEFAULT_CONFIG))
+        except WebpackLoaderBadStatsError as e:
+            self.assertIn((
+                "The stats file does not contain valid data. Make sure "
+                "webpack-bundle-tracker plugin is enabled and try to run"
+                " webpack again."
+            ), str(e))
+
     def test_request_blocking(self):
         # FIXME: This will work 99% time but there is no garauntee with the
         # 4 second thing. Need a better way to detect if request was blocked on
@@ -194,3 +207,4 @@ class LoaderTestCase(TestCase):
             result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
+

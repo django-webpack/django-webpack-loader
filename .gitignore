@@ -59,6 +59,8 @@ target/
 # Editors and IDEs
 .ropeproject/
 
+.python-version
+
 examples/**/ve/
 examples/**/venv/
 examples/**/node_modules/
