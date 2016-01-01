@@ -58,7 +58,7 @@ def filter_files(files, config):
         filename = F['name']
         ignore = any(regex.match(filename) for regex in config['ignores'])
         if not ignore:
-            relpath = '{}{}'.format(config['BUNDLE_DIR_NAME'], filename)
+            relpath = '{0}{1}'.format(config['BUNDLE_DIR_NAME'], filename)
             F['url'] = staticfiles_storage.url(relpath)
             yield F
 
