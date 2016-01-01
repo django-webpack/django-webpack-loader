@@ -9,7 +9,7 @@ setup(
   description = 'Transparently use webpack with django',
   author = 'Owais Lone',
   author_email = 'hello@owaislone.org',
-  download_url = 'https://github.com/owais/django-webpack-loader/tarball/{}'.format(version),
+  download_url = 'https://github.com/owais/django-webpack-loader/tarball/{0}'.format(version),
   url = 'https://github.com/owais/django-webpack-loader', # use the URL to the github repo
   keywords = ['django', 'webpack', 'assets'], # arbitrary keywords
   data_files = [("", ["LICENSE"])],
