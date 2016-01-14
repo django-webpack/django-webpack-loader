@@ -8,9 +8,9 @@ from ..utils import get_config, get_assets, get_bundle
 register = template.Library()
 
 
-def filter_by_extension(bundle, extension):
+def filter_by_extension_lang(bundle, extension, lang_code):
     for chunk in bundle:
-        if chunk['name'].endswith('.{}'.format(extension)):
+        if chunk['name'].endswith('_{}.{}'.format(lang_code, extension)):
             yield chunk
 
 
@@ -25,16 +25,16 @@ def render_as_tags(bundle):
     return mark_safe('\n'.join(tags))
 
 
-def _get_bundle(bundle_name, extension, config):
+def _get_bundle(bundle_name, extension, lang_code, config):
     bundle = get_bundle(bundle_name, get_config(config))
     if extension:
-        bundle = filter_by_extension(bundle, extension)
+        bundle = filter_by_extension_lang(bundle, extension, lang_code)
     return bundle
 
 
 @register.simple_tag
-def render_bundle(bundle_name, extension=None, config='DEFAULT'):
-    return render_as_tags(_get_bundle(bundle_name, extension, config))
+def render_bundle(bundle_name, extension=None, lang_code='en', config='DEFAULT'):
+    return render_as_tags(_get_bundle(bundle_name, extension, lang_code, config))
 
 
 @register.simple_tag
