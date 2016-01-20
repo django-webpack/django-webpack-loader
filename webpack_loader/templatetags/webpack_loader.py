@@ -34,7 +34,11 @@ def _get_bundle(bundle_name, extension, lang_code, config):
 
 @register.simple_tag
 def render_bundle(bundle_name, extension=None, lang_code='en', config='DEFAULT'):
-    return render_as_tags(_get_bundle(bundle_name, extension, lang_code, config))
+    LANG_ZH_CN = 'zh-cn'
+    bundle = _get_bundle(bundle_name, extension, lang_code, config)
+    if not bundle:
+        bundle = _get_bundle(bundle_name, extension, LANG_ZH_CN, config)
+    return render_as_tags(bundle)
 
 
 @register.simple_tag
