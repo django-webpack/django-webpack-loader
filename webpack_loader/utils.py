@@ -63,6 +63,18 @@ def filter_files(files, config):
             yield F
 
 
+control_sequence_re = re.compile(       # See ECMA 48, 5.4 Control sequences
+    r'(\x1b\x5b|\x9b)'                  # Control Sequence Introducer
+    r'[\x30-\x3f]*'                     # Parameter Bytes
+    r'[\x20-\x2f]*'                     # Intermediate Bytes
+    r'[\x40-\x7e]'                      # Final Byte
+)
+
+
+def strip_control_sequences(message):
+    return control_sequence_re.sub('', message)
+
+
 def get_bundle(bundle_name, config):
     assets = get_assets(config)
 
@@ -80,6 +92,7 @@ def get_bundle(bundle_name, config):
     elif assets.get('status') == 'error':
         if 'file' not in assets:
             assets['file'] = ''
+        assets['message'] = strip_control_sequences(assets['message'])
         error = u"""
         {error} in {file}
         {message}
