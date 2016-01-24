@@ -31,11 +31,11 @@ for entry in user_config.values():
     entry['ignores'] = [re.compile(I) for I in entry['IGNORE']]
 
 
-class WebpackError(BaseException):
+class WebpackError(Exception):
     pass
 
 
-class WebpackLoaderBadStatsError(BaseException):
+class WebpackLoaderBadStatsError(Exception):
     pass
 
 
