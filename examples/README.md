@@ -19,5 +19,5 @@ Run django server
 
 Run webpack compiler
 ```bash
-./node_modules/.bin/webpack --config assets/webpack.config.js --watch
+./node_modules/.bin/webpack --config webpack.config.js --watch
 ```
