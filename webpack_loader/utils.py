@@ -4,6 +4,7 @@ import time
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.utils.module_loading import import_string
 
 
 __all__ = ('get_assets', 'get_config', 'get_bundle',)
@@ -15,7 +16,8 @@ DEFAULT_CONFIG = {
         'STATS_FILE': 'webpack-stats.json',
         # FIXME: Explore usage of fsnotify
         'POLL_INTERVAL': 0.1,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'IGNORE': ['.+\.hot-update.js', '.+\.map'],
+        'GET_CHUNK_URL': 'webpack_loader.utils.default_chunk_url',
     }
 }
 
@@ -40,7 +42,10 @@ class WebpackLoaderBadStatsError(Exception):
 
 
 def get_config(config_name):
-    return user_config[config_name]
+    config = user_config[config_name]
+    if 'get_chunk_url' not in config:
+        config['get_chunk_url'] = config['GET_CHUNK_URL'] if callable(config['GET_CHUNK_URL']) else import_string(config['GET_CHUNK_URL'])
+    return config
 
 
 def get_assets(config):
@@ -90,3 +95,8 @@ def get_bundle(bundle_name, config):
         "The stats file does not contain valid data. Make sure "
         "webpack-bundle-tracker plugin is enabled and try to run "
         "webpack again.")
+
+
+def default_chunk_url(chunk, config):
+    url = chunk.get('publicPath') or chunk['url']
+    return url
