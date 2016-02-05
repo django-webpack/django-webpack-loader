@@ -22,10 +22,10 @@ DEFAULT_CONFIG = {
 
 user_config = getattr(settings, 'WEBPACK_LOADER', DEFAULT_CONFIG)
 
-user_config = {
-    name: dict(DEFAULT_CONFIG['DEFAULT'], **cfg)
+user_config = dict(
+    (name, dict(DEFAULT_CONFIG['DEFAULT'], **cfg))
     for name, cfg in user_config.items()
-}
+)
 
 for entry in user_config.values():
     entry['ignores'] = [re.compile(I) for I in entry['IGNORE']]
@@ -49,7 +49,7 @@ def get_assets(config):
             return json.load(f)
     except IOError:
         raise IOError(
-            'Error reading {}. Are you sure webpack has generated the file '
+            'Error reading {0}. Are you sure webpack has generated the file '
             'and the path is correct?'.format(config['STATS_FILE']))
 
 
@@ -58,7 +58,7 @@ def filter_files(files, config):
         filename = F['name']
         ignore = any(regex.match(filename) for regex in config['ignores'])
         if not ignore:
-            relpath = '{}{}'.format(config['BUNDLE_DIR_NAME'], filename)
+            relpath = '{0}{1}'.format(config['BUNDLE_DIR_NAME'], filename)
             F['url'] = staticfiles_storage.url(relpath)
             yield F
 
