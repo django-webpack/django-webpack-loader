@@ -3,7 +3,8 @@ from django.apps import AppConfig
 from .errors import BAD_CONFIG_ERROR
 
 
-def webpack_cfg_check(app_configs, **kwargs):
+def webpack_cfg_check(*args, **kwargs):
+    '''Test if config is compatible or not'''
     from django.conf import settings
 
     check_failed = False

@@ -1,15 +1,31 @@
+import os
+import re
+
 from setuptools import setup
 
-version = '0.2.4'
+
+def rel(*parts):
+    '''returns the relative path to a file wrt to the current directory'''
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), *parts))
+
+with open(rel('README.md')) as handler:
+    README = handler.read()
+
+with open(rel('webpack_loader', '__init__.py')) as handler:
+    INIT_PY = handler.read()
+
+
+VERSION = re.findall("__version__ = '([^']+)'", INIT_PY)[0]
 
 setup(
   name = 'django-webpack-loader',
   packages = ['webpack_loader', 'webpack_loader/templatetags', 'webpack_loader/contrib'],
-  version = version,
+  version = VERSION,
   description = 'Transparently use webpack with django',
+  long_description=README,
   author = 'Owais Lone',
   author_email = 'hello@owaislone.org',
-  download_url = 'https://github.com/owais/django-webpack-loader/tarball/{0}'.format(version),
+  download_url = 'https://github.com/owais/django-webpack-loader/tarball/{0}'.format(VERSION),
   url = 'https://github.com/owais/django-webpack-loader', # use the URL to the github repo
   keywords = ['django', 'webpack', 'assets'], # arbitrary keywords
   data_files = [("", ["LICENSE"])],

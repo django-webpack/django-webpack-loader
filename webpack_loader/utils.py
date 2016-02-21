@@ -1,92 +1,10 @@
-import re
-import json
-import time
-
-from django.conf import settings
-from django.contrib.staticfiles.storage import staticfiles_storage
+from .loader import WebpackLoader
 
 
-__all__ = ('get_assets', 'get_config', 'get_bundle',)
+_loaders = {}
 
 
-DEFAULT_CONFIG = {
-    'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'webpack_bundles/',
-        'STATS_FILE': 'webpack-stats.json',
-        # FIXME: Explore usage of fsnotify
-        'POLL_INTERVAL': 0.1,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
-    }
-}
-
-
-user_config = getattr(settings, 'WEBPACK_LOADER', DEFAULT_CONFIG)
-
-user_config = dict(
-    (name, dict(DEFAULT_CONFIG['DEFAULT'], **cfg))
-    for name, cfg in user_config.items()
-)
-
-for entry in user_config.values():
-    entry['ignores'] = [re.compile(I) for I in entry['IGNORE']]
-
-
-class WebpackError(Exception):
-    pass
-
-
-class WebpackLoaderBadStatsError(Exception):
-    pass
-
-
-def get_config(config_name):
-    return user_config[config_name]
-
-
-def get_assets(config):
-    try:
-        with open(config['STATS_FILE']) as f:
-            return json.load(f)
-    except IOError:
-        raise IOError(
-            'Error reading {0}. Are you sure webpack has generated the file '
-            'and the path is correct?'.format(config['STATS_FILE']))
-
-
-def filter_files(files, config):
-    for F in files:
-        filename = F['name']
-        ignore = any(regex.match(filename) for regex in config['ignores'])
-        if not ignore:
-            relpath = '{0}{1}'.format(config['BUNDLE_DIR_NAME'], filename)
-            F['url'] = staticfiles_storage.url(relpath)
-            yield F
-
-
-def get_bundle(bundle_name, config):
-    assets = get_assets(config)
-
-    if settings.DEBUG:
-        # poll when debugging and block request until bundle is compiled
-        # TODO: support timeouts
-        while assets['status'] == 'compiling':
-            time.sleep(config['POLL_INTERVAL'])
-            assets = get_assets(config)
-
-    if assets.get('status') == 'done':
-        files = assets['chunks'][bundle_name]
-        return filter_files(files, config)
-
-    elif assets.get('status') == 'error':
-        if 'file' not in assets:
-            assets['file'] = ''
-        error = u"""
-        {error} in {file}
-        {message}
-        """.format(**assets)
-        raise WebpackError(error)
-
-    raise WebpackLoaderBadStatsError(
-        "The stats file does not contain valid data. Make sure "
-        "webpack-bundle-tracker plugin is enabled and try to run "
-        "webpack again.")
+def get_loader(config_name):
+    if config_name not in _loaders:
+        _loaders[config_name] = WebpackLoader(config_name)
+    return _loaders[config_name]

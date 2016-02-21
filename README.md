@@ -79,6 +79,7 @@ module.exports = {
 ```python
 WEBPACK_LOADER = {
     'DEFAULT': {
+        'CACHE': not DEBUG,
         'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
         'STATS_FILE': 'webpack-stats.json',
         'POLL_INTERVAL': 0.1,
@@ -86,6 +87,18 @@ WEBPACK_LOADER = {
     }
 }
 ```
+
+<br>
+
+#### CACHE
+```python
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG
+    }
+}
+```
+When `CACHE` is set to True, webpack-loader will read the stats file only once and cache the result. This means web workers need to be restarted in order to pick up any changes made to the stats files.
 
 <br>
 

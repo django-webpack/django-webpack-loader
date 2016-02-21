@@ -10,20 +10,20 @@ from django.test import RequestFactory, TestCase
 from django.views.generic.base import TemplateView
 from django_jinja.builtins import DEFAULT_EXTENSIONS
 from unittest2 import skipIf
-from webpack_loader.utils import (WebpackError, WebpackLoaderBadStatsError,
-                                  get_assets, get_bundle, get_config)
+from webpack_loader.exceptions import (
+    WebpackError,
+    WebpackLoaderBadStatsError
+)
+from webpack_loader.utils import get_loader
+
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 
+
 class LoaderTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-
-    def clean_dir(self, directory):
-        if os.path.exists(BUNDLE_PATH):
-            [os.remove(os.path.join(BUNDLE_PATH, F)) for F in os.listdir(BUNDLE_PATH)]
-        os.remove(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
 
     def compile_bundles(self, config, wait=None):
         if wait:
@@ -53,7 +53,7 @@ class LoaderTestCase(TestCase):
 
     def test_simple_and_css_extract(self):
         self.compile_bundles('webpack.config.simple.js')
-        assets = get_assets(get_config(DEFAULT_CONFIG))
+        assets = get_loader(DEFAULT_CONFIG).get_assets()
         self.assertEqual(assets['status'], 'done')
         self.assertIn('chunks', assets)
 
@@ -67,13 +67,13 @@ class LoaderTestCase(TestCase):
 
     def test_static_url(self):
         self.compile_bundles('webpack.config.publicPath.js')
-        assets = get_assets(get_config(DEFAULT_CONFIG))
+        assets = get_loader(DEFAULT_CONFIG).get_assets()
         self.assertEqual(assets['status'], 'done')
         self.assertEqual(assets['publicPath'], 'http://custom-static-host.com/')
 
     def test_code_spliting(self):
         self.compile_bundles('webpack.config.split.js')
-        assets = get_assets(get_config(DEFAULT_CONFIG))
+        assets = get_loader(DEFAULT_CONFIG).get_assets()
         self.assertEqual(assets['status'], 'done')
         self.assertIn('chunks', assets)
 
@@ -149,26 +149,31 @@ class LoaderTestCase(TestCase):
         #TODO:
         self.compile_bundles('webpack.config.error.js')
         try:
-            get_bundle('main', get_config(DEFAULT_CONFIG))
+            get_loader(DEFAULT_CONFIG).get_bundle('main')
         except WebpackError as e:
             self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
 
     def test_missing_stats_file(self):
-        os.remove(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
+        stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
+        if os.path.exists(stats_file):
+            os.remove(stats_file)
         try:
-            get_assets(get_config(DEFAULT_CONFIG))
+            get_loader(DEFAULT_CONFIG).get_assets()
         except IOError as e:
-            expected = 'Error reading {0}. Are you sure webpack has generated the file and the path is correct?'.format(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
+            expected = (
+                'Error reading {0}. Are you sure webpack has generated the '
+                'file and the path is correct?'
+            ).format(stats_file)
             self.assertIn(expected, str(e))
 
     def test_bad_status_in_production(self):
-        stats_file = open(
+        with open(
             settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
-        )
-        stats_file.write(json.dumps({'status': 'unexpected-status'}))
-        stats_file.close()
+        ) as stats_file:
+            stats_file.write(json.dumps({'status': 'unexpected-status'}))
+
         try:
-            get_bundle('main', get_config(DEFAULT_CONFIG))
+            get_loader(DEFAULT_CONFIG).get_bundle('main')
         except WebpackLoaderBadStatsError as e:
             self.assertIn((
                 "The stats file does not contain valid data. Make sure "
@@ -207,4 +212,3 @@ class LoaderTestCase(TestCase):
             result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
-
