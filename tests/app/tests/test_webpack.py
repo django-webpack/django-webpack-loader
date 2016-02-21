@@ -3,13 +3,13 @@ import os
 import time
 from subprocess import call
 from threading import Thread
-from unittest import skipIf
 
 import django
 from django.conf import settings
 from django.test import RequestFactory, TestCase
 from django.views.generic.base import TemplateView
 from django_jinja.builtins import DEFAULT_EXTENSIONS
+from unittest2 import skipIf
 from webpack_loader.utils import (WebpackError, WebpackLoaderBadStatsError,
                                   get_assets, get_bundle, get_config)
 
@@ -158,7 +158,7 @@ class LoaderTestCase(TestCase):
         try:
             get_assets(get_config(DEFAULT_CONFIG))
         except IOError as e:
-            expected = 'Error reading {}. Are you sure webpack has generated the file and the path is correct?'.format(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
+            expected = 'Error reading {0}. Are you sure webpack has generated the file and the path is correct?'.format(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'])
             self.assertIn(expected, str(e))
 
     def test_bad_status_in_production(self):

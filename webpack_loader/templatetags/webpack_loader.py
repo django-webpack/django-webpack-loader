@@ -10,7 +10,7 @@ register = template.Library()
 
 def filter_by_extension(bundle, extension):
     for chunk in bundle:
-        if chunk['name'].endswith('.{}'.format(extension)):
+        if chunk['name'].endswith('.{0}'.format(extension)):
             yield chunk
 
 
@@ -19,9 +19,9 @@ def render_as_tags(bundle):
     for chunk in bundle:
         url = chunk.get('publicPath') or chunk['url']
         if chunk['name'].endswith('.js'):
-            tags.append('<script type="text/javascript" src="{}"></script>'.format(url))
+            tags.append('<script type="text/javascript" src="{0}"></script>'.format(url))
         elif chunk['name'].endswith('.css'):
-            tags.append('<link type="text/css" href="{}" rel="stylesheet"/>'.format(url))
+            tags.append('<link type="text/css" href="{0}" rel="stylesheet"/>'.format(url))
     return mark_safe('\n'.join(tags))
 
 
@@ -39,7 +39,7 @@ def render_bundle(bundle_name, extension=None, config='DEFAULT'):
 
 @register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):
-    return "{}{}".format(
+    return "{0}{1}".format(
         get_assets(get_config(config)).get(
             'publicPath', getattr(settings, 'STATIC_URL')
         ),
