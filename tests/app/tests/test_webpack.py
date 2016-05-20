@@ -15,6 +15,7 @@ from webpack_loader.exceptions import (
     WebpackLoaderBadStatsError
 )
 from webpack_loader.utils import get_loader
+from webpack_loader.templatetags.webpack_loader import render_bundle
 
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
@@ -165,6 +166,20 @@ class LoaderTestCase(TestCase):
                 'file and the path is correct?'
             ).format(stats_file)
             self.assertIn(expected, str(e))
+
+    def test_missin_stats_file_template_tag_render_bundle(self):
+        stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
+        if os.path.exists(stats_file):
+            os.remove(stats_file)
+        expected = '<script>console.error("{} - {}");</script>'.format(
+            'main',
+            'Error reading {0}. Are you sure webpack has generated the '
+            'file and the path is correct?'.format(stats_file)
+        )
+        self.assertEquals(
+            render_bundle('main'),
+            expected
+        )
 
     def test_bad_status_in_production(self):
         with open(

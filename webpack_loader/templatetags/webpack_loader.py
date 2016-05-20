@@ -37,7 +37,13 @@ def _get_bundle(bundle_name, extension, config):
 
 @register.simple_tag
 def render_bundle(bundle_name, extension=None, config='DEFAULT'):
-    return render_as_tags(_get_bundle(bundle_name, extension, config))
+    try:
+        return render_as_tags(_get_bundle(bundle_name, extension, config))
+    except IOError as e:
+        return '<script>console.error("{} - {}");</script>'.format(
+            bundle_name,
+            e
+        )
 
 
 @register.simple_tag
