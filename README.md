@@ -83,6 +83,7 @@ WEBPACK_LOADER = {
         'BUNDLE_DIR_NAME': 'bundles/', # must end with slash
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
         'IGNORE': ['.+\.hot-update.js', '.+\.map']
     }
 }
@@ -147,9 +148,15 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 
 #### POLL_INTERVAL
 
-`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 200 miliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
+`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 100 miliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
 
 **NOTE:** Stats file is not polled when in production (DEBUG=False).
+
+<br>
+
+#### TIMEOUT
+
+`TIMEOUT` is the number of seconds webpack_loader should wait for webpack to finish compiling before raising an exception. `0`, `None` or leaving the value out of settings disables timeouts. 
 
 <br>
 
