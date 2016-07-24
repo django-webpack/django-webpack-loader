@@ -14,17 +14,17 @@ def filter_by_extension(bundle, extension):
             yield chunk
 
 
-def render_as_tags(bundle):
+def render_as_tags(bundle, attrs):
     tags = []
     for chunk in bundle:
         if chunk['name'].endswith('.js'):
             tags.append((
-                '<script type="text/javascript" src="{0}"></script>'
-            ).format(chunk['url']))
+                '<script type="text/javascript" src="{0}" {1}></script>'
+            ).format(chunk['url'], attrs))
         elif chunk['name'].endswith('.css'):
             tags.append((
-                '<link type="text/css" href="{0}" rel="stylesheet"/>'
-            ).format(chunk['url']))
+                '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
+            ).format(chunk['url'], attrs))
     return mark_safe('\n'.join(tags))
 
 
@@ -36,8 +36,8 @@ def _get_bundle(bundle_name, extension, config):
 
 
 @register.simple_tag
-def render_bundle(bundle_name, extension=None, config='DEFAULT'):
-    return render_as_tags(_get_bundle(bundle_name, extension, config))
+def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
+    return render_as_tags(_get_bundle(bundle_name, extension, config), attrs)
 
 
 @register.simple_tag

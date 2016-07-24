@@ -12,7 +12,7 @@
     <img src="{% webpack_static 'my-image.png' %}"/>
     <img src="{% webpack_static 'my-image.png' 'APP2'%}"/>
     <div id="react-app"></div>
-    {% render_bundle 'main' 'js' %}
+    {% render_bundle 'main' 'js' attrs='async charset="UTF-8"'%}
     {% render_bundle 'app2' 'js' config='APP2' %}
   </body>
 </html>
