@@ -4,7 +4,11 @@ import time
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
 
-from .exceptions import WebpackError, WebpackLoaderBadStatsError
+from .exceptions import (
+    WebpackError,
+    WebpackLoaderBadStatsError,
+    WebpackLoaderTimeoutError
+)
 from .config import load_config
 
 
@@ -53,12 +57,23 @@ class WebpackLoader(object):
     def get_bundle(self, bundle_name):
         assets = self.get_assets()
 
+        # poll when debugging and block request until bundle is compiled
+        # or the build times out
         if settings.DEBUG:
-            # poll when debugging and block request until bundle is compiled
-            # TODO: support timeouts
-            while assets['status'] == 'compiling':
+            timeout = self.config['TIMEOUT'] or 0
+            timed_out = False
+            start = time.time()
+            while assets['status'] == 'compiling' and not timed_out:
                 time.sleep(self.config['POLL_INTERVAL'])
+                if timeout and (time.time() - timeout > start):
+                    timed_out = True
                 assets = self.get_assets()
+
+            if timed_out:
+                raise WebpackLoaderTimeoutError(
+                    "Timed Out. Bundle `{0}` took more than {1} seconds "
+                    "to compile.".format(bundle_name, timeout)
+                )
 
         if assets.get('status') == 'done':
             chunks = assets['chunks'][bundle_name]

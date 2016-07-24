@@ -7,3 +7,7 @@ class WebpackError(Exception):
 
 class WebpackLoaderBadStatsError(Exception):
     pass
+
+
+class WebpackLoaderTimeoutError(Exception):
+    pass

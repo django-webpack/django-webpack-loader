@@ -12,7 +12,8 @@ from django_jinja.builtins import DEFAULT_EXTENSIONS
 from unittest2 import skipIf
 from webpack_loader.exceptions import (
     WebpackError,
-    WebpackLoaderBadStatsError
+    WebpackLoaderBadStatsError,
+    WebpackLoaderTimeoutError
 )
 from webpack_loader.utils import get_loader
 
@@ -146,7 +147,6 @@ class LoaderTestCase(TestCase):
             self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
     def test_reporting_errors(self):
-        #TODO:
         self.compile_bundles('webpack.config.error.js')
         try:
             get_loader(DEFAULT_CONFIG).get_bundle('main')
@@ -165,6 +165,17 @@ class LoaderTestCase(TestCase):
                 'file and the path is correct?'
             ).format(stats_file)
             self.assertIn(expected, str(e))
+
+    def test_timeouts(self):
+        with self.settings(DEBUG=True):
+            with open(
+                settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
+            ) as stats_file:
+                stats_file.write(json.dumps({'status': 'compiling'}))
+            loader = get_loader(DEFAULT_CONFIG)
+            loader.config['TIMEOUT'] = 0.1
+            with self.assertRaises(WebpackLoaderTimeoutError):
+                loader.get_bundle('main')
 
     def test_bad_status_in_production(self):
         with open(
