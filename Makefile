@@ -8,22 +8,22 @@ ENV ?= venv
 
 requirements = -r requirements-dev.txt
 
-# List directories
-dist_dir = dist
-clean_dirs = $(PROJECT) $(ENV) $(tests_dir) $(shell [ -d $(tox_dir) ] && echo $(tox_dir) || :)
-
 all: install build
 
 clean:
-	find webpack_loader/ -name '*.pyc' -delete
-	rm -rf ./build ./*egg* ./.coverage
+	@echo "Cleaning..."
+	@find webpack_loader/ -name '*.pyc' -delete
+	@rm -rf ./build ./*egg* ./.coverage ./dist
 
 build: clean
-	python setup.py sdist bdist_wheel --universal
+	@echo "Building..."
+	@python setup.py sdist bdist_wheel --universal
 
 install:
-	[ ! -d $(ENV)/ ] && virtualenv $(ENV)/ || :
-	$(ENV)/bin/pip install $(requirements)
+	@echo "Installing build dependencies"
+	@[ ! -d $(ENV)/ ] && virtualenv $(ENV)/ || :
+	@$(ENV)/bin/pip install $(requirements)
 
 publish: build
-	$(ENV)/bin/twine upload dist/*
+	@echo "Publishing to pypi..."
+	@$(ENV)/bin/twine upload dist/*
