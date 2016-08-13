@@ -80,7 +80,7 @@ class WebpackLoader(object):
             try:
                 bundle_chunks = chunks[bundle_name]
             except KeyError:
-                raise WebpackError('Cannot resolve bundle {}.'.format(bundle_name))
+                raise WebpackError('Cannot resolve bundle {0}.'.format(bundle_name))
             return self.filter_chunks(bundle_chunks)
 
         elif assets.get('status') == 'error':
