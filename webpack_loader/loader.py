@@ -7,7 +7,8 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from .exceptions import (
     WebpackError,
     WebpackLoaderBadStatsError,
-    WebpackLoaderTimeoutError
+    WebpackLoaderTimeoutError,
+    WebpackBundleLookupError
 )
 from .config import load_config
 
@@ -76,12 +77,10 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            chunks = assets['chunks']
-            try:
-                bundle_chunks = chunks[bundle_name]
-            except KeyError:
-                raise WebpackError('Cannot resolve bundle {0}.'.format(bundle_name))
-            return self.filter_chunks(bundle_chunks)
+            chunks = assets['chunks'].get(bundle_name, None)
+            if chunks is None:
+                raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
+            return self.filter_chunks(chunks)
 
         elif assets.get('status') == 'error':
             if 'file' not in assets:

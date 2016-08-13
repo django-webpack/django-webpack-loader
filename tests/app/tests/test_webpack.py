@@ -13,7 +13,8 @@ from unittest2 import skipIf
 from webpack_loader.exceptions import (
     WebpackError,
     WebpackLoaderBadStatsError,
-    WebpackLoaderTimeoutError
+    WebpackLoaderTimeoutError,
+    WebpackBundleLookupError
 )
 from webpack_loader.utils import get_loader
 
@@ -158,7 +159,7 @@ class LoaderTestCase(TestCase):
         self.compile_bundles('webpack.config.simple.js')
         try:
             get_loader(DEFAULT_CONFIG).get_bundle(missing_bundle_name)
-        except WebpackError as e:
+        except WebpackBundleLookupError as e:
             self.assertIn('Cannot resolve bundle {}'.format(missing_bundle_name), str(e))
 
     def test_missing_stats_file(self):
