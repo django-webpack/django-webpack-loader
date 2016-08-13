@@ -160,7 +160,7 @@ class LoaderTestCase(TestCase):
         try:
             get_loader(DEFAULT_CONFIG).get_bundle(missing_bundle_name)
         except WebpackBundleLookupError as e:
-            self.assertIn('Cannot resolve bundle {}'.format(missing_bundle_name), str(e))
+            self.assertIn('Cannot resolve bundle {0}'.format(missing_bundle_name), str(e))
 
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
