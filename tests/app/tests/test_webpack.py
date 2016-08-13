@@ -13,7 +13,8 @@ from unittest2 import skipIf
 from webpack_loader.exceptions import (
     WebpackError,
     WebpackLoaderBadStatsError,
-    WebpackLoaderTimeoutError
+    WebpackLoaderTimeoutError,
+    WebpackBundleLookupError
 )
 from webpack_loader.utils import get_loader
 
@@ -152,6 +153,14 @@ class LoaderTestCase(TestCase):
             get_loader(DEFAULT_CONFIG).get_bundle('main')
         except WebpackError as e:
             self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
+
+    def test_missing_bundle(self):
+        missing_bundle_name = 'missing_bundle'
+        self.compile_bundles('webpack.config.simple.js')
+        try:
+            get_loader(DEFAULT_CONFIG).get_bundle(missing_bundle_name)
+        except WebpackBundleLookupError as e:
+            self.assertIn('Cannot resolve bundle {0}'.format(missing_bundle_name), str(e))
 
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
