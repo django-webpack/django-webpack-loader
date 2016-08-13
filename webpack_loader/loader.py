@@ -76,8 +76,12 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            chunks = assets['chunks'][bundle_name]
-            return self.filter_chunks(chunks)
+            chunks = assets['chunks']
+            try:
+                bundle_chunks = chunks[bundle_name]
+            except KeyError:
+                raise WebpackError('Cannot resolve bundle {}.'.format(bundle_name))
+            return self.filter_chunks(bundle_chunks)
 
         elif assets.get('status') == 'error':
             if 'file' not in assets:

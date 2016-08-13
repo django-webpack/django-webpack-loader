@@ -153,6 +153,14 @@ class LoaderTestCase(TestCase):
         except WebpackError as e:
             self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
 
+    def test_missing_bundle(self):
+        missing_bundle_name = 'missing_bundle'
+        self.compile_bundles('webpack.config.simple.js')
+        try:
+            get_loader(DEFAULT_CONFIG).get_bundle(missing_bundle_name)
+        except WebpackError as e:
+            self.assertIn('Cannot resolve bundle {}'.format(missing_bundle_name), str(e))
+
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
         if os.path.exists(stats_file):
