@@ -63,7 +63,7 @@ module.exports = {
   context: __dirname,
   entry: './assets/js/index',
   output: {
-      path: path.resolve('./assets/bundles/'),
+      path: path.resolve('./assets/webpack_bundles/'),
       filename: "[name]-[hash].js"
   },
 
@@ -80,7 +80,7 @@ module.exports = {
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'bundles/', # must end with slash
+        'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
@@ -292,7 +292,8 @@ In the below example, `logo.png` can be any static asset shipped with any npm or
 
 `./webpack_production.config.js`
 ```javascript
-config = require('./webpack.config.js');
+var config = require('./webpack.config.js');
+var BundleTracker = require('webpack-bundle-tracker');
 
 config.output.path = require('path').resolve('./assets/dist');
 
