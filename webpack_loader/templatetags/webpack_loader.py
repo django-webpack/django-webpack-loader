@@ -17,11 +17,11 @@ def filter_by_extension(bundle, extension):
 def render_as_tags(bundle, attrs):
     tags = []
     for chunk in bundle:
-        if chunk['name'].endswith('.js'):
+        if chunk['name'].endswith(('.js', '.js.gz')):
             tags.append((
                 '<script type="text/javascript" src="{0}" {1}></script>'
             ).format(chunk['url'], attrs))
-        elif chunk['name'].endswith('.css'):
+        elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
                 '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
             ).format(chunk['url'], attrs))
