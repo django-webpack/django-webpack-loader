@@ -67,6 +67,20 @@ class LoaderTestCase(TestCase):
         self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
         self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
 
+    def test_js_gzip_extract(self):
+        self.compile_bundles('webpack.config.gzipTest.js')
+        assets = get_loader(DEFAULT_CONFIG).get_assets()
+        self.assertEqual(assets['status'], 'done')
+        self.assertIn('chunks', assets)
+
+        chunks = assets['chunks']
+        self.assertIn('main', chunks)
+        self.assertEqual(len(chunks), 1)
+
+        main = chunks['main']
+        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
+        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+
     def test_static_url(self):
         self.compile_bundles('webpack.config.publicPath.js')
         assets = get_loader(DEFAULT_CONFIG).get_assets()
