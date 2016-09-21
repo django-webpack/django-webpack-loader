@@ -8,8 +8,12 @@ def rel(*parts):
     '''returns the relative path to a file wrt to the current directory'''
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *parts))
 
-with open(rel('README.md')) as handler:
-    README = handler.read()
+try:
+    import pypandoc
+    README = pypandoc.convert('README.md', 'rst')
+except OSError, ImportError:
+    with open(rel('README.md')) as handler:
+        README = handler.read()
 
 with open(rel('webpack_loader', '__init__.py')) as handler:
     INIT_PY = handler.read()

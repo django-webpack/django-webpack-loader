@@ -1,1 +1,3 @@
 twine==1.7.4
+pypandoc==1.2.0
+
