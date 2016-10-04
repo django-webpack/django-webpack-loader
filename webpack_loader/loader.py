@@ -85,6 +85,8 @@ class WebpackLoader(object):
         elif assets.get('status') == 'error':
             if 'file' not in assets:
                 assets['file'] = ''
+            if 'error' not in assets:
+                assets['error'] = 'error'
             error = u"""
             {error} in {file}
             {message}
