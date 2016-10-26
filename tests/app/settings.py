@@ -118,6 +118,10 @@ WEBPACK_LOADER = {
         'CACHE': False,
         'BUNDLE_DIR_NAME': 'bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
+    },
+    'FETCH_URL': {
+        'CACHE': False,
+        'STATS_FILE_URL': 'http://fake-s3.test/webpack-stats.json',
     }
 }
 

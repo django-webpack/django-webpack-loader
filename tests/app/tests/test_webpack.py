@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import responses
 from subprocess import call
 from threading import Thread
 
@@ -246,3 +247,20 @@ class LoaderTestCase(TestCase):
             result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
+
+    @responses.activate
+    def test_load_stats_from_url(self):
+        self.compile_bundles('webpack.config.simple.js')
+        stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
+        stats_url = 'http://fake-s3.test/webpack-stats.json'
+
+        # Load the content of the compiled webpack-stats.json as a mock url.
+        with open(stats_file, 'r') as fp:
+            responses.add(responses.GET, stats_url, body=fp.read(), status=200,
+                  content_type='application/json')
+
+        assets = get_loader('FETCH_URL').get_assets()
+
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(assets['status'], 'done')
+        self.assertIn('chunks', assets)
