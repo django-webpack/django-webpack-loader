@@ -13,7 +13,8 @@ from unittest2 import skipIf
 from webpack_loader.exceptions import (
     WebpackError,
     WebpackLoaderBadStatsError,
-    WebpackLoaderTimeoutError
+    WebpackLoaderTimeoutError,
+    WebpackBundleLookupError
 )
 from webpack_loader.utils import get_loader
 
@@ -64,6 +65,20 @@ class LoaderTestCase(TestCase):
 
         main = chunks['main']
         self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
+        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+
+    def test_js_gzip_extract(self):
+        self.compile_bundles('webpack.config.gzipTest.js')
+        assets = get_loader(DEFAULT_CONFIG).get_assets()
+        self.assertEqual(assets['status'], 'done')
+        self.assertIn('chunks', assets)
+
+        chunks = assets['chunks']
+        self.assertIn('main', chunks)
+        self.assertEqual(len(chunks), 1)
+
+        main = chunks['main']
+        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
         self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
 
     def test_static_url(self):
@@ -152,6 +167,14 @@ class LoaderTestCase(TestCase):
             get_loader(DEFAULT_CONFIG).get_bundle('main')
         except WebpackError as e:
             self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
+
+    def test_missing_bundle(self):
+        missing_bundle_name = 'missing_bundle'
+        self.compile_bundles('webpack.config.simple.js')
+        try:
+            get_loader(DEFAULT_CONFIG).get_bundle(missing_bundle_name)
+        except WebpackBundleLookupError as e:
+            self.assertIn('Cannot resolve bundle {0}'.format(missing_bundle_name), str(e))
 
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
