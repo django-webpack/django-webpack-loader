@@ -5,6 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/owais/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/owais/django-webpack-loader?branch=master)
 
 <br>
+
 Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step by step guide on setting up webpack with django using this library.
 
 
@@ -50,6 +51,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ```
 
 <br>
+
 Assuming `assets/` is in `settings.STATICFILES_DIRS` like
 
 ```python
@@ -59,6 +61,7 @@ STATICFILES_DIRS = (
 ```
 
 <br>
+
 Assuming your webpack config lives at `./webpack.config.js` and looks like this
 ```javascript
 var path = require("path");
@@ -81,6 +84,7 @@ module.exports = {
 
 
 <br>
+
 ### Default Configuration
 ```python
 WEBPACK_LOADER = {
@@ -170,12 +174,12 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 ## Usage
 <br>
 
-#### Manually run webpack to build assets.
+### Manually run webpack to build assets.
 
 One of the core principles of django-webpack-loader is to not manage webpack itself in order to give you the flexibility to run webpack the way you want. If you are new to webpack, check one of the [examples](https://github.com/owais/django-webpack-loader/tree/master/examples), read [my detailed blog post](http://owaislone.org/blog/webpack-plus-reactjs-and-django/) or check [webpack docs](http://webpack.github.io/).
 
 
-#### Settings
+### Settings
 
 Add `webpack_loader` to `INSTALLED_APPS`
 
@@ -186,7 +190,7 @@ INSTALLED_APPS = (
 )
 ```
 
-#### Templates
+### Templates
 
 ```HTML+Django
 {% load render_bundle from webpack_loader %}
@@ -215,7 +219,7 @@ INSTALLED_APPS = (
 <br>
 
 
-#### Multiple webpack projects
+### Multiple webpack projects
 
 Version 2.0 and up of webpack loader also supports multiple webpack configurations. The following configuration defines 2 webpack stats files in settings and uses the `config` argument in the template tags to influence which stats file to load the bundles from.
 
@@ -255,7 +259,7 @@ WEBPACK_LOADER = {
 </head>
 ```
 
-#### File URLs instead of html tags
+### File URLs instead of html tags
 
 If you need the URL to an asset without the HTML tags, the `get_files`
 template tag can be used. A common use case is specifying the URL to a
@@ -276,7 +280,7 @@ CKEDITOR.config.contentsCss = '{{ editor_css_files.0.publicPath }}';
 </ul>
 ```
 
-#### Refer other static assets
+### Refer other static assets
 
 `webpack_static` template tag provides facilities to load static assets managed by webpack
 in django templates. It is like django's built in `static` tag but for webpack assets instead.
@@ -350,7 +354,7 @@ TEMPLATES = [
 
 Then in your base jinja template:
 
-```HTML+Jinja2
+```HTML
 {{ render_bundle('main') }}
 ```
 

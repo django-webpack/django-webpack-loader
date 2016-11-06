@@ -5,6 +5,7 @@ PROJECT = webpack-loader
 
 # Virtual environment settings
 ENV ?= venv
+REPOSITORY ?= test-pypi
 
 requirements = -r requirements-dev.txt
 
@@ -24,6 +25,13 @@ install:
 	@[ ! -d $(ENV)/ ] && virtualenv $(ENV)/ || :
 	@$(ENV)/bin/pip install $(requirements)
 
-publish: build
+generate-rst:
+	@pandoc --from=markdown --to=rst --output=README.rst README.md
+
+publish: generate-rst build
 	@echo "Publishing to pypi..."
-	@$(ENV)/bin/twine upload dist/*
+	@$(ENV)/bin/twine upload -r $(REPOSITORY) dist/*
+
+register:
+	@echo "Registering package on pypi..."
+	@$(ENV)/bin/twine register -r $(REPOSITORY)
