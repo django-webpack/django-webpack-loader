@@ -28,16 +28,16 @@ def render_as_tags(bundle, attrs):
     return mark_safe('\n'.join(tags))
 
 
-def _get_bundle(bundle_name, extension, config):
-    bundle = get_loader(config).get_bundle(bundle_name)
+def _get_content(bundle_name, extension, config, loader_function):
+    content = getattr(get_loader(config), loader_function)(bundle_name)
     if extension:
-        bundle = filter_by_extension(bundle, extension)
-    return bundle
+        content = filter_by_extension(content, extension)
+    return content
 
 
 @register.simple_tag
 def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
-    return render_as_tags(_get_bundle(bundle_name, extension, config), attrs)
+    return render_as_tags(_get_content(bundle_name, extension, config, 'get_bundle'), attrs)
 
 
 @register.simple_tag
@@ -49,6 +49,9 @@ def webpack_static(asset_name, config='DEFAULT'):
         asset_name
     )
 
+@register.simple_tag
+def get_asset(bundle_name, config='DEFAULT'):
+    return _get_content(bundle_name, None, config, 'get_exported_asset')['publicPath']
 
 assignment_tag = register.simple_tag if VERSION >= (1, 9) else register.assignment_tag
 @assignment_tag
@@ -65,4 +68,4 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     :param config: (optional) the name of the configuration
     :return: a list of matching chunks
     """
-    return list(_get_bundle(bundle_name, extension, config))
+    return list(_get_content(bundle_name, extension, config, 'get_bundle'))
