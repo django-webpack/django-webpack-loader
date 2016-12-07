@@ -30,5 +30,4 @@ for entry in user_config.values():
 
 
 def load_config(name):
-    uc = user_config
     return user_config[name]
