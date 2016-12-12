@@ -70,14 +70,16 @@ var BundleTracker = require('webpack-bundle-tracker');
 
 module.exports = {
   context: __dirname,
-  entry: './assets/js/index',
+  entry: {
+    './assets/js/index',
+    './assets/exported_assets.js'
   output: {
       path: path.resolve('./assets/webpack_bundles/'),
       filename: "[name]-[hash].js"
   },
 
   plugins: [
-    new BundleTracker({filename: './webpack-stats.json'})
+    new BundleTracker({filename: './webpack-stats.json', assetsIdentifier: "exported_assets"})
   ]
 }
 ```
@@ -92,6 +94,7 @@ WEBPACK_LOADER = {
         'CACHE': not DEBUG,
         'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'ASSETS_IDENTIFIER': 'exported_assets',
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
         'IGNORE': ['.+\.hot-update.js', '.+\.map']
@@ -136,7 +139,8 @@ If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your ST
 ```python
 WEBPACK_LOADER = {
     'DEFAULT': {
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'ASSETS_IDENTIFIER': 'exported_assets',
     }
 }
 ```
@@ -148,6 +152,25 @@ new BundleTracker({filename: './webpack-stats.json'})
 ```
 
 and your webpack config is located at `/home/src/webpack.config.js`, then the value of `STATS_FILE` should be `/home/src/webpack-stats.json`
+
+<br>
+
+#### ASSETS_IDENTIFIER
+```python
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'ASSETS_IDENTIFIER': 'exported_assets',
+    }
+}
+```
+
+`ASSETS_IDENTIFIER` is the key at which the assets will be generated in the `webpack-stats.json`. This is configurable on both ends, javascript being in charge of generating the right key while in python one should know where to read from. If you initialize `webpack-bundle-tracker` plugin like this
+
+```javacsript
+new BundleTracker({filename: "webpack-stats.json", assetsIdentifier: "exported_assets"});
+```
+
+you will get all your assets included through the exported_assets file on the key exported_assets in `webpack-stats.json`.
 
 <br>
 
@@ -228,10 +251,12 @@ WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'ASSETS_IDENTIFIER': 'exported_assets' # you can have the same name, hence different files
     },
     'DASHBOARD': {
         'BUNDLE_DIR_NAME': 'dashboard_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-dashboard.json'),
+        'ASSETS_IDENTIFIER': 'exported_assets' # you can have the same name, hence different files
     }
 }
 ```
@@ -292,6 +317,25 @@ In the below example, `logo.png` can be any static asset shipped with any npm or
 <!-- render full public path of logo.png -->
 <img src="{% webpack_static 'logo.png' %}"/>
 ```
+
+### File paths from webpack's bundler
+
+Basically, if you need to access the public path of a file that has been bundled with webpack, you can easily do that with `webpack_asset_path`. To do so, you have to properly load them within the `exported_assets.js` file, that should be specified in the `webpack.config.js`. If that's done properly and `exported_assets.js` has
+
+```javascript
+require('./assets/image.png');
+```
+
+then you should easily refer the bundled assets as follows:
+
+```HTML+Django
+{% load webpack_asset_path from webpack_loader %}
+<html>
+    <head>
+    </head>
+    <body>
+        <img src={% webpack_asset_path './assets/image.png' %}
+    </body>
 
 <br>
 

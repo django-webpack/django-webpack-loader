@@ -50,7 +50,7 @@ def webpack_static(asset_name, config='DEFAULT'):
     )
 
 @register.simple_tag
-def get_asset(bundle_name, config='DEFAULT'):
+def webpack_asset_path(bundle_name, config='DEFAULT'):
     return _get_content(bundle_name, None, config, 'get_exported_asset')['publicPath']
 
 assignment_tag = register.simple_tag if VERSION >= (1, 9) else register.assignment_tag
