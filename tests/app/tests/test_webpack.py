@@ -103,6 +103,22 @@ class LoaderTestCase(TestCase):
         vendor = chunks['vendor']
         self.assertEqual(vendor[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/vendor.js'))
 
+    def test_assets_extract(self):
+        self.compile_bundles('webpack.config.assets.js')
+
+        assets = get_loader(DEFAULT_CONFIG).get_assets()
+        self.assertEqual(assets['status'], 'done')
+        self.assertIn('exported_assets', assets)
+
+        assets = get_loader(DEFAULT_CONFIG).get_exported_asset('./test.png')
+        images_diff = call([
+            'diff',
+            '/Users/devil/Contributions/django-webpack-loader/tests/assets/test.png',
+            assets['path']
+            ])
+        self.assertEqual(images_diff, 0)
+        self.assertEqual(assets['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/' + assets['name']))
+
     def test_templatetags(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
@@ -217,7 +233,7 @@ class LoaderTestCase(TestCase):
 
     def test_request_blocking(self):
         # FIXME: This will work 99% time but there is no garauntee with the
-        # 4 second thing. Need a better way to detect if request was blocked on
+        # 4 second thing. Need a better way to detect if request was blocked or
         # not.
         wait_for = 3
         view = TemplateView.as_view(template_name='home.html')
