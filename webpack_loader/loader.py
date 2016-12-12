@@ -55,7 +55,7 @@ class WebpackLoader(object):
             chunks = assets[bucket].get(bundle_name, None)
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
-            if bucket == 'exported_assets':
+            if bucket == self.config['ASSETS_IDENTIFIER']:
                 return chunks
             else:
                 return self.filter_chunks(chunks)
@@ -105,4 +105,4 @@ class WebpackLoader(object):
         return self._get_bundle('chunks', bundle_name)
 
     def get_exported_asset(self, bundle_name):
-        return self._get_bundle('exported_assets', bundle_name)
+        return self._get_bundle(self.config['ASSETS_IDENTIFIER'], bundle_name)
