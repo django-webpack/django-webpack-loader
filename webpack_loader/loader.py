@@ -31,6 +31,17 @@ class WebpackLoader(object):
                     self.config['STATS_FILE']))
 
     def _get_bundle(self, bucket, bundle_name):
+        """Collects the bundle withing each bucket based on its bundle name.
+
+        Arguments:
+            bucket:
+                The key on which you are extracting data from ('chunks', 'exported_assets')
+            bundle_name:
+                The name of the specific asset in the given bucket
+
+        Returns:
+            A data dictionary containing all the data for the given chunk/ asset.
+        """
         assets = self.get_assets()
 
         # poll when debugging and block request until bundle is compiled
@@ -52,7 +63,7 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            chunks = assets[bucket].get(bundle_name, None)
+            chunks = assets[bucket].get(bundle_name)
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
             if bucket == self.config['ASSETS_IDENTIFIER']:
