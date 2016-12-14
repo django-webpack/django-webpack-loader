@@ -64,7 +64,7 @@ STATICFILES_DIRS = (
 
 Assuming your webpack config lives at `./webpack.config.js` and looks like this
 ```javascript
-var path = require("path");
+var path = require('path');
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 
