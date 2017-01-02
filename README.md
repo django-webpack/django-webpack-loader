@@ -295,6 +295,20 @@ In the below example, `logo.png` can be any static asset shipped with any npm or
 
 <br>
 
+### From Python code
+
+If you want to access the webpack asset path information from your application code then you can use
+the function in the `webpack_loader.utils` module.
+
+```python
+>>> utils.get_files('main')
+[{'url': '/static/bundles/main.js', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/main.js', u'name': u'main.js'},
+ {'url': '/static/bundles/styles.css', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/styles.css', u'name': u'styles.css'}]
+>>> utils.get_as_tags('main')
+['<script type="text/javascript" src="/static/bundles/main.js" ></script>',
+ '<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />']
+
+
 ## How to use in Production
 
 **It is up to you**. There are a few ways to handle this. I like to have slightly separate configs for production and local. I tell git to ignore my local stats + bundle file but track the ones for production. Before pushing out newer version to production, I generate a new bundle using production config and commit the new stats file and bundle. I store the stats file and bundles in a directory that is added to the `STATICFILES_DIR`. This gives me integration with collectstatic for free. The generated bundles are automatically collected to the target directory and synched to S3.
