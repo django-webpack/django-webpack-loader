@@ -87,6 +87,8 @@ class WebpackLoader(object):
                 assets['file'] = ''
             if 'error' not in assets:
                 assets['error'] = 'Unknown Error'
+            if 'message' not in assets:
+                assets['message'] = ''
             error = u"""
             {error} in {file}
             {message}
