@@ -37,9 +37,11 @@ pip install django-webpack-loader
 ```
 
 <br>
+
 ## Configuration
 
 <br>
+
 ### Assumptions
 
 Assuming `BASE_DIR` in settings refers to the root of your django app.
