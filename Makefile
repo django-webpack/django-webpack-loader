@@ -5,7 +5,7 @@ PROJECT = webpack-loader
 
 # Virtual environment settings
 ENV ?= venv
-REPOSITORY ?= test-pypi
+REPOSITORY ?= pypi
 
 requirements = -r requirements-dev.txt
 
