@@ -1,4 +1,5 @@
 import json
+import requests
 import time
 
 from django.conf import settings
@@ -21,6 +22,18 @@ class WebpackLoader(object):
         self.config = load_config(self.name)
 
     def _load_assets(self):
+        if self.config.get('STATS_FILE_URL'):
+            try:
+                return requests.get(self.config['STATS_FILE_URL']).json()
+            except requests.exceptions.RequestException as e:
+                raise IOError(
+                    'Error while fetching {0}. Encountered: {1}'.format(
+                        self.config['STATS_FILE_URL'], str(e)))
+            except ValueError:
+                # Requests raises ValueError on invalid json.
+                raise IOError(
+                    'Invalid webpack JSON retrieved from {0}'.format(
+                        self.config['STATS_FILE_URL']))
         try:
             with open(self.config['STATS_FILE']) as f:
                 return json.load(f)
