@@ -22,7 +22,7 @@ class WebpackLoader(object):
 
     def _load_assets(self):
         try:
-            with open(self.config['STATS_FILE']) as f:
+            with open(self.config['STATS_FILE'], encoding="utf-8") as f:
                 return json.load(f)
         except IOError:
             raise IOError(
