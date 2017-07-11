@@ -1,5 +1,6 @@
 import json
 import time
+from io import open
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
