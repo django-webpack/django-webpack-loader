@@ -6,17 +6,31 @@ __all__ = (
 )
 
 
-class WebpackError(Exception):
-    pass
+class BaseWebpackLoaderException(Exception):
+    """
+    Base exception for django-webpack-loader.
+    """
 
 
-class WebpackLoaderBadStatsError(Exception):
-    pass
+class WebpackError(BaseWebpackLoaderException):
+    """
+    General webpack loader error.
+    """
 
 
-class WebpackLoaderTimeoutError(Exception):
-    pass
+class WebpackLoaderBadStatsError(BaseWebpackLoaderException):
+    """
+    The stats file does not contain valid data.
+    """
 
 
-class WebpackBundleLookupError(Exception):
-    pass
+class WebpackLoaderTimeoutError(BaseWebpackLoaderException):
+    """
+    The bundle took too long to compile.
+    """
+
+
+class WebpackBundleLookupError(BaseWebpackLoaderException):
+    """
+    The bundle name was invalid.
+    """
