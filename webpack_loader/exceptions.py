@@ -7,16 +7,24 @@ __all__ = (
 
 
 class WebpackError(Exception):
-    pass
+    """
+    General webpack loader error
+    """
 
 
-class WebpackLoaderBadStatsError(Exception):
-    pass
+class WebpackLoaderBadStatsError(WebpackError):
+    """
+    The stats file does not contain valid data.
+    """
 
 
-class WebpackLoaderTimeoutError(Exception):
-    pass
+class WebpackLoaderTimeoutError(WebpackError):
+    """
+    The bundle took too long to compile
+    """
 
 
-class WebpackBundleLookupError(Exception):
-    pass
+class WebpackBundleLookupError(WebpackError):
+    """
+    The bundle name was invalid
+    """
