@@ -1,7 +1,7 @@
 # django-webpack-loader
 
 [![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/owais/django-webpack-loader.svg?branch=master)](https://travis-ci.org/owais/django-webpack-loader)
+[![Build Status](https://travis-ci.org/ezhome/django-webpack-loader.svg?branch=master)](https://travis-ci.org/ezhome/django-webpack-loader)
 [![Coverage Status](https://coveralls.io/repos/owais/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/owais/django-webpack-loader?branch=master)
 
 <br>
