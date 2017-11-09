@@ -47,6 +47,7 @@ class WebpackLoader(object):
                 yield chunk
 
     def get_chunk_url(self, chunk):
+        # print('config', self.config)
         public_path = chunk.get('publicPath')
         if public_path:
             return public_path
@@ -54,6 +55,13 @@ class WebpackLoader(object):
         relpath = '{0}{1}'.format(
             self.config['BUNDLE_DIR_NAME'], chunk['name']
         )
+
+        if self.config['APPEND_URL']['ENABLE']:
+            if relpath.endswith('.css'):
+                relpath += self.config['APPEND_URL']['CSS']
+            if relpath.endswith('.js'):
+                relpath += self.config['APPEND_URL']['JS']
+
         return staticfiles_storage.url(relpath)
 
     def get_bundle(self, bundle_name):
@@ -80,7 +88,8 @@ class WebpackLoader(object):
         if assets.get('status') == 'done':
             chunks = assets['chunks'].get(bundle_name, None)
             if chunks is None:
-                raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
+                raise WebpackBundleLookupError(
+                    'Cannot resolve bundle {0}.'.format(bundle_name))
             return self.filter_chunks(chunks)
 
         elif assets.get('status') == 'error':
