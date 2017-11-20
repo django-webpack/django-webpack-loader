@@ -12,10 +12,17 @@ def get_loader(config_name):
     return _loaders[config_name]
 
 
+def _strip_qs(name):
+    if '?' in name:
+        return name.split('?', 1)[0]
+    return name
+
+
 def _filter_by_extension(bundle, extension):
     '''Return only files with the given extension'''
     for chunk in bundle:
-        if chunk['name'].endswith('.{0}'.format(extension)):
+        chunk_name = _strip_qs(chunk['name'])
+        if chunk_name.endswith('.{0}'.format(extension)):
             yield chunk
 
 
@@ -41,15 +48,15 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
     :param config: (optional) the name of the configuration
     :return: a list of formatted tags as strings
     '''
-
     bundle = _get_bundle(bundle_name, extension, config)
     tags = []
     for chunk in bundle:
-        if chunk['name'].endswith(('.js', '.js.gz')):
+        chunk_name = _strip_qs(chunk['name'])
+        if chunk_name.endswith(('.js', '.js.gz')):
             tags.append((
                 '<script type="text/javascript" src="{0}" {1}></script>'
             ).format(chunk['url'], attrs))
-        elif chunk['name'].endswith(('.css', '.css.gz')):
+        elif chunk_name.endswith(('.css', '.css.gz')):
             tags.append((
                 '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
             ).format(chunk['url'], attrs))
