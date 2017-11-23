@@ -95,7 +95,9 @@ class LoaderTestCase(TestCase):
 
         main = list(loader.get_bundle('main'))
         self.assertEqual(len(main), 2)
-        self.assertEqual(main[0]['publicPath'], 'http://custom-static-host.com/name.js?c08677af2765786cf3b7')
+        name, hash = main[0]['publicPath'].split('?', 1)
+        self.assertEqual(name, 'http://custom-static-host.com/name.js')
+        self.assertEqual(len(hash), 20)
 
     def test_code_spliting(self):
         self.compile_bundles('webpack.config.split.js')
