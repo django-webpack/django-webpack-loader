@@ -50,17 +50,9 @@ class WebpackLoader(object):
         public_path = chunk.get('publicPath')
         if public_path:
             return public_path
-
         relpath = '{0}{1}'.format(
             self.config['BUNDLE_DIR_NAME'], chunk['name']
         )
-
-        if self.config['APPEND_URL']['ENABLE']:
-            if relpath.endswith('.css'):
-                relpath += self.config['APPEND_URL']['CSS']
-            if relpath.endswith('.js'):
-                relpath += self.config['APPEND_URL']['JS']
-
         return staticfiles_storage.url(relpath)
 
     def get_bundle(self, bundle_name):
