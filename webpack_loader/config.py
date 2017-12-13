@@ -30,9 +30,10 @@ user_config = dict(
     for name, cfg in user_config.items()
 )
 
-user_config['DEFAULT']['ASSETS_LOADER']['args'] = {
-    'stats_file': user_config['DEFAULT']['STATS_FILE']
-}
+if user_config['DEFAULT']['ASSETS_LOADER']['func'] == DEFAULT_CONFIG['DEFAULT']['ASSETS_LOADER']['func']:
+    user_config['DEFAULT']['ASSETS_LOADER']['args'] = {
+        'stats_file': user_config['DEFAULT']['STATS_FILE']
+    }
 
 for entry in user_config.values():
     entry['ignores'] = [re.compile(I) for I in entry['IGNORE']]

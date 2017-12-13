@@ -25,7 +25,7 @@ class WebpackLoader(object):
         fn = import_string(self.config['ASSETS_LOADER']['func'])
         return fn(**self.config['ASSETS_LOADER']['args'])
 
-    def _is_cache_expired(now):
+    def _is_cache_expired(self, now):
         cache_ttl = self.config['CACHE_TTL']
         if cache_ttl < 0:
             return False
@@ -37,6 +37,7 @@ class WebpackLoader(object):
         if self.config['CACHE']:
             now = int(time.time())
             if self._is_cache_expired(now) or self.name not in self._assets:
+		print('--- fetching webpack-stats: {}'.format(time.ctime()))
                 self._assets[self.name] = self._load_assets()
                 self._cache_timestamp = now
             return self._assets[self.name]
