@@ -14,7 +14,11 @@ DEFAULT_CONFIG = {
         # FIXME: Explore usage of fsnotify
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'IGNORE': ['.+\.hot-update.js', '.+\.map'],
+        'ASSETS_LOADER': {
+            'func': 'webpack_loader.utils.load_assets_from_filesystem',
+            'args': {}
+        }
     }
 }
 
@@ -24,6 +28,10 @@ user_config = dict(
     (name, dict(DEFAULT_CONFIG['DEFAULT'], **cfg))
     for name, cfg in user_config.items()
 )
+
+user_config['DEFAULT']['ASSETS_LOADER']['args'] = {
+    'stats_file': user_config['DEFAULT']['STATS_FILE']
+}
 
 for entry in user_config.values():
     entry['ignores'] = [re.compile(I) for I in entry['IGNORE']]

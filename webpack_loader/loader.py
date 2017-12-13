@@ -1,9 +1,8 @@
-import json
 import time
-from io import open
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.utils.module_loading import import_string
 
 from .exceptions import (
     WebpackError,
@@ -22,14 +21,8 @@ class WebpackLoader(object):
         self.config = load_config(self.name)
 
     def _load_assets(self):
-        try:
-            with open(self.config['STATS_FILE'], encoding="utf-8") as f:
-                return json.load(f)
-        except IOError:
-            raise IOError(
-                'Error reading {0}. Are you sure webpack has generated '
-                'the file and the path is correct?'.format(
-                    self.config['STATS_FILE']))
+        fn = import_string(self.config['ASSETS_LOADER']['func'])
+        return fn(**self.config['ASSETS_LOADER']['args'])
 
     def get_assets(self):
         if self.config['CACHE']:
