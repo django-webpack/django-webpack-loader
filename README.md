@@ -100,12 +100,7 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map'],
-        'APPEND_URL': {
-            'ENABLE': not DEBUG,
-            'CSS': '.gz',
-            'JS': '.gz'
-        }
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
     }
 }
 ```
@@ -266,6 +261,7 @@ WEBPACK_LOADER = {
 
     <!-- add some extra attributes to the tag -->
     {% render_bundle 'main' 'js' 'DEFAULT' attrs='async chatset="UTF-8"'%}
+    {% render_bundle 'main' 'js' 'DEFAULT' attrs='async chatset="UTF-8"' suffix=".gz" %}
   </body>
 </head>
 ```
