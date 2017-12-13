@@ -15,6 +15,7 @@ from .config import load_config
 
 class WebpackLoader(object):
     _assets = {}
+    _cache_timestamp = 0
 
     def __init__(self, name='DEFAULT'):
         self.name = name
@@ -24,10 +25,20 @@ class WebpackLoader(object):
         fn = import_string(self.config['ASSETS_LOADER']['func'])
         return fn(**self.config['ASSETS_LOADER']['args'])
 
+    def _is_cache_expired(now):
+        cache_ttl = self.config['CACHE_TTL']
+        if cache_ttl < 0:
+            return False
+        if now - self._cache_timestamp > cache_ttl:
+            return True
+        return False
+
     def get_assets(self):
         if self.config['CACHE']:
-            if self.name not in self._assets:
+            now = int(time.time())
+            if self._is_cache_expired(now) or self.name not in self._assets:
                 self._assets[self.name] = self._load_assets()
+                self._cache_timestamp = now
             return self._assets[self.name]
         return self._load_assets()
 
