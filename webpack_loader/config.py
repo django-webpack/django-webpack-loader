@@ -16,24 +16,16 @@ DEFAULT_CONFIG = {
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
         'IGNORE': ['.+\.hot-update.js', '.+\.map'],
-        'ASSETS_LOADER': {
-            'func': 'webpack_loader.utils.load_assets_from_filesystem',
-            'args': {}
-        }
-    }
+        'ASSETS_LOADER_FUNCTION': 'webpack_loader.utils.load_assets_from_filesystem',
+    },
 }
 
-user_config = getattr(settings, 'WEBPACK_LOADER', DEFAULT_CONFIG)
+user_specified_entries = getattr(settings, 'WEBPACK_LOADER', {'DEFAULT': {}})
 
 user_config = dict(
     (name, dict(DEFAULT_CONFIG['DEFAULT'], **cfg))
-    for name, cfg in user_config.items()
+    for name, cfg in user_specified_entries.items()
 )
-
-if user_config['DEFAULT']['ASSETS_LOADER']['func'] == DEFAULT_CONFIG['DEFAULT']['ASSETS_LOADER']['func']:
-    user_config['DEFAULT']['ASSETS_LOADER']['args'] = {
-        'stats_file': user_config['DEFAULT']['STATS_FILE']
-    }
 
 for entry in user_config.values():
     entry['ignores'] = [re.compile(I) for I in entry['IGNORE']]

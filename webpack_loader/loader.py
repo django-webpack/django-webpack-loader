@@ -22,8 +22,14 @@ class WebpackLoader(object):
         self.config = load_config(self.name)
 
     def _load_assets(self):
-        fn = import_string(self.config['ASSETS_LOADER']['func'])
-        return fn(**self.config['ASSETS_LOADER']['args'])
+        func_name = self.config['ASSETS_LOADER_FUNCTION']
+        try:
+            func = import_string(func_name)
+        except ImportError as ie:
+            raise WebpackError(
+                "The ASSETS_LOADER_FUNCTION '{0}' specified in the {1} config "
+                "could not be imported.".format(func_name, self.name))
+        return func(self)
 
     def _is_cache_expired(self, now):
         cache_ttl = self.config['CACHE_TTL']
@@ -37,7 +43,7 @@ class WebpackLoader(object):
         if self.config['CACHE']:
             now = int(time.time())
             if self._is_cache_expired(now) or self.name not in self._assets:
-		print('--- fetching webpack-stats: {}'.format(time.ctime()))
+                print('--- fetching webpack-stats: {}'.format(time.ctime()))
                 self._assets[self.name] = self._load_assets()
                 self._cache_timestamp = now
             return self._assets[self.name]

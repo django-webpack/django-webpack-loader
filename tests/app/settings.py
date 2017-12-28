@@ -118,7 +118,13 @@ WEBPACK_LOADER = {
         'CACHE': False,
         'BUNDLE_DIR_NAME': 'bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
-    }
+    },
+    'APP_WITH_CUSTOM_ASSETS_LOADER': {
+        'ASSETS_LOADER_FUNCTION': 'app.tests.test_webpack.custom_asset_loader_for_testing',
+    },
+    'APP_WITH_INVALID_ASSETS_LOADER': {
+        'ASSETS_LOADER_FUNCTION': 'nonexistent.function',
+    },
 }
 
 from django_jinja.builtins import DEFAULT_EXTENSIONS

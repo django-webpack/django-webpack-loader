@@ -14,7 +14,8 @@ def get_loader(config_name):
     return _loaders[config_name]
 
 
-def load_assets_from_filesystem(stats_file):
+def load_assets_from_filesystem(loader):
+    stats_file = loader.config['STATS_FILE']
     try:
         with open(stats_file, encoding="utf-8") as f:
             return json.load(f)

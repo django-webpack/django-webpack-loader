@@ -23,6 +23,10 @@ BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 
 
+def custom_asset_loader_for_testing(loader):
+    return {'called_with': loader}
+
+
 class LoaderTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -52,6 +56,15 @@ class LoaderTestCase(TestCase):
             errors = webpack_cfg_check(None)
             expected_errors = []
             self.assertEqual(errors, expected_errors)
+
+    def test_default_asset_loader_function_config(self):
+        config = get_loader(DEFAULT_CONFIG).config
+        self.assertEqual(config['ASSETS_LOADER_FUNCTION'], 'webpack_loader.utils.load_assets_from_filesystem')
+
+    def test_custom_asset_loader_function_is_called(self):
+        loader = get_loader('APP_WITH_CUSTOM_ASSETS_LOADER')
+        assets = loader.get_assets()
+        self.assertDictEqual(assets, {'called_with': loader})
 
     def test_simple_and_css_extract(self):
         self.compile_bundles('webpack.config.simple.js')
@@ -188,6 +201,18 @@ class LoaderTestCase(TestCase):
                 'file and the path is correct?'
             ).format(stats_file)
             self.assertIn(expected, str(e))
+
+    def test_invalid_assets_loader_function(self):
+        config_name = 'APP_WITH_INVALID_ASSETS_LOADER'
+        function_name = settings.WEBPACK_LOADER[config_name]['ASSETS_LOADER_FUNCTION']
+        with self.assertRaisesMessage(
+            expected_exception=WebpackError,
+            expected_message=(
+                "The ASSETS_LOADER_FUNCTION '{0}' specified in the {1} config "
+                "could not be imported."
+            ).format(function_name, config_name),
+        ):
+            get_loader(config_name).get_assets()
 
     def test_timeouts(self):
         with self.settings(DEBUG=True):
