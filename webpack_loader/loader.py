@@ -1,9 +1,8 @@
-import json
 import time
-from io import open
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.utils.module_loading import import_string
 
 from .exceptions import (
     WebpackError,
@@ -16,25 +15,37 @@ from .config import load_config
 
 class WebpackLoader(object):
     _assets = {}
+    _cache_timestamp = 0
 
     def __init__(self, name='DEFAULT'):
         self.name = name
         self.config = load_config(self.name)
 
     def _load_assets(self):
+        func_name = self.config['ASSETS_LOADER_FUNCTION']
         try:
-            with open(self.config['STATS_FILE'], encoding="utf-8") as f:
-                return json.load(f)
-        except IOError:
-            raise IOError(
-                'Error reading {0}. Are you sure webpack has generated '
-                'the file and the path is correct?'.format(
-                    self.config['STATS_FILE']))
+            func = import_string(func_name)
+        except ImportError as ie:
+            raise WebpackError(
+                "The ASSETS_LOADER_FUNCTION '{0}' specified in the {1} config "
+                "could not be imported.".format(func_name, self.name))
+        return func(self)
+
+    def _is_cache_expired(self, now):
+        cache_ttl = self.config['CACHE_TTL']
+        if cache_ttl < 0:
+            return False
+        if now - self._cache_timestamp > cache_ttl:
+            return True
+        return False
 
     def get_assets(self):
         if self.config['CACHE']:
-            if self.name not in self._assets:
+            now = int(time.time())
+            if self._is_cache_expired(now) or self.name not in self._assets:
+                print('--- fetching webpack-stats: {}'.format(time.ctime()))
                 self._assets[self.name] = self._load_assets()
+                self._cache_timestamp = now
             return self._assets[self.name]
         return self._load_assets()
 
