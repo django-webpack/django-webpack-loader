@@ -33,10 +33,13 @@ class WebpackLoader(object):
 
     def get_assets(self):
         if self.config['CACHE']:
+            # Load from file if it's the first time, otherwise cache
             if self.name not in self._assets:
                 self._assets[self.name] = self._load_assets()
             return self._assets[self.name]
-        return self._load_assets()
+        else:
+            # Always load from file
+            return self._load_assets()
 
     def filter_chunks(self, chunks):
         for chunk in chunks:
