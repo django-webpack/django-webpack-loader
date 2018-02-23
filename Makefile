@@ -22,7 +22,7 @@ build: clean
 
 install:
 	@echo "Installing build dependencies"
-	@[ ! -d $(ENV)/ ] && virtualenv $(ENV)/ || :
+	@[ ! -d $(ENV)/ ] && python3 -m venv $(ENV)/ || :
 	@$(ENV)/bin/pip install $(requirements)
 
 generate-rst:
