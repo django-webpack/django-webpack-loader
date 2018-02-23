@@ -27,7 +27,7 @@ If pandoc or pypandoc fails, the README.md file will be uploaded as it was befor
 
 ## Compatibility
 
-Test cases cover Django>=1.6 on Python 2.7 and Python>=3.3. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
+Test cases cover Django>=1.6 on Python 2.7 and Python>=3.4. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
 
 
 ## Install
