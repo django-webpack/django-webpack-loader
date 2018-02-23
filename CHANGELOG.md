@@ -5,6 +5,13 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [0.6.0] -- 2018-02-22
+
+- Added support for 'Access-Control-Allow-Origin' header
+- Read stats file with unicode support
+- Cleaned up exceptions
+- Updated and corrected docs
+
 ## [0.5.0] -- 2017-05-20
 
 - Added ability to access the webpack asset path information from application
