@@ -3,6 +3,9 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from .. import utils
+from ..exceptions import (
+    WebpackBundleLookupError
+)
 
 register = template.Library()
 
@@ -12,6 +15,18 @@ def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
     tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
     return mark_safe('\n'.join(tags))
 
+@register.simple_tag
+def render_bundle_pass_exceptions(bundle_name, extension=None, config='DEFAULT', attrs=''):
+    try:
+        tags = utils.get_as_tags(
+            bundle_name,
+            extension=extension,
+            config=config,
+            attrs=attrs,
+        )
+        return mark_safe('\n'.join(tags))
+    except WebpackBundleLookupError:
+        return mark_safe("<!-- %s bundle name does not exist -->" % bundle_name)
 
 @register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):

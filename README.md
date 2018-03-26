@@ -346,6 +346,25 @@ if not DEBUG:
     })
 ```
 
+## Different production and development chunks
+
+If webpack produces a vendor, manifest etc. file which are required in
+the production config but are not produced in the dev environment, use
+templatetags as below:
+
+`django template.html`
+```HTML+Django
+{% load render_bundle render_bundle_pass_exceptions from webpack_loader %}
+<html>
+    <body>
+        <div id="app"></div>
+        {% render_bundle_pass_exceptions 'manifest' %}
+        {% render_bundle_pass_exceptions 'vendor' %}
+        {% render_bundle 'app' %}
+    </body>
+</html>
+```
+
 <br><br>
 
 
