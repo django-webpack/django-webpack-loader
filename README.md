@@ -126,7 +126,7 @@ WEBPACK_LOADER = {
 }
 ```
 
-`BUNDLE_DIR_NAME` refers to the dir in which webpack outputs the bundles. It should not be the full path. If `./assets` is one of you static dirs and webpack generates the bundles in `./assets/output/bundles/`, then `BUNDLE_DIR_NAME` should be `output/bundles/`.
+`BUNDLE_DIR_NAME` refers to the dir in which webpack outputs the bundles. It should not be the full path. If `./assets` is one of your static dirs and webpack generates the bundles in `./assets/output/bundles/`, then `BUNDLE_DIR_NAME` should be `output/bundles/`.
 
 If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your STATIC_URL is `/static/`, then the `<script>` tag will look like this
 
