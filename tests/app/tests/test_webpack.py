@@ -3,7 +3,6 @@ import os
 import time
 from subprocess import call
 from threading import Thread
-from unittest import mock
 
 import django
 from django.conf import settings
@@ -19,6 +18,10 @@ from webpack_loader.exceptions import (
 )
 from webpack_loader.utils import get_loader
 
+try:
+    import unittest.mock as mock
+except ImportError:
+    import mock
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
