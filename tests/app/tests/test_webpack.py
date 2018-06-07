@@ -3,6 +3,7 @@ import os
 import time
 from subprocess import call
 from threading import Thread
+from unittest import mock
 
 import django
 from django.conf import settings
@@ -246,3 +247,37 @@ class LoaderTestCase(TestCase):
             result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
+
+    def test_caching_disabled(self):
+        self.compile_bundles('webpack.config.simple.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        assets = loader.get_assets()
+
+        self.assertIn('chunks', assets)
+
+        # Caching is disabled so another call to get_assets should trigger
+        # a reload of the bundle, mock open to change the contents
+        with mock.patch(
+                'webpack_loader.loader.open', mock.mock_open(read_data='{}')):
+            assets = loader.get_assets()
+            self.assertEqual(assets, {})
+
+    def test_caching_enabled(self):
+        self.compile_bundles('webpack.config.simple.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        loader.config['CACHE'] = True
+        try:
+            assets = loader.get_assets()
+
+            self.assertIn('chunks', assets)
+
+            # Caching is enabled so another call to get_assets should not trigger
+            # a reload of the bundle
+            with mock.patch(
+                    'webpack_loader.loader.open', mock.mock_open(read_data='{}')):
+                assets = loader.get_assets()
+                self.assertIn('chunks', assets)
+        finally:
+            loader.config['CACHE'] = False
