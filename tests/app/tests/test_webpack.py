@@ -277,7 +277,8 @@ class LoaderTestCase(TestCase):
     def test_caching_disabled(self):
         self.compile_bundles('webpack.config.simple.js')
 
-        loader = get_loader(DEFAULT_CONFIG)
+        # Don't use get_loader to prevent sharing state with other tests
+        loader = WebpackLoader()
         assets = loader.get_assets()
 
         self.assertIn('chunks', assets)
@@ -292,7 +293,8 @@ class LoaderTestCase(TestCase):
     def test_caching_enabled(self):
         self.compile_bundles('webpack.config.simple.js')
 
-        loader = get_loader(DEFAULT_CONFIG)
+        # Don't use get_loader to prevent sharing state with other tests
+        loader = WebpackLoader()
         loader.config['CACHE'] = True
         try:
             assets = loader.get_assets()
