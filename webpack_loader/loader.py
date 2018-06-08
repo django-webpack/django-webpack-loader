@@ -15,9 +15,9 @@ from .config import load_config
 
 
 class WebpackLoader(object):
-    _assets = {}
 
     def __init__(self, name='DEFAULT'):
+        self._assets = {}
         self.name = name
         self.config = load_config(self.name)
 

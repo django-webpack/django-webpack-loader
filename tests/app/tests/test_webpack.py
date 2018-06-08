@@ -16,6 +16,7 @@ from webpack_loader.exceptions import (
     WebpackLoaderTimeoutError,
     WebpackBundleLookupError
 )
+from webpack_loader.loader import WebpackLoader
 from webpack_loader.utils import get_loader
 
 try:
@@ -250,6 +251,28 @@ class LoaderTestCase(TestCase):
             result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
+
+    def test_no_shared_state_between_loader_instances(self):
+        self.compile_bundles('webpack.config.simple.js')
+
+        loader = WebpackLoader()
+        loader.config['CACHE'] = True
+
+        try:
+            assets = loader.get_assets()
+
+            self.assertIn('chunks', assets)
+
+            # A new instance of the WebpackLoader should now start with an empty
+            # cache
+            with mock.patch(
+                    'webpack_loader.loader.open', mock.mock_open(read_data='{}')):
+                loader = WebpackLoader()
+                loader.config['CACHE'] = True
+                assets = loader.get_assets()
+                self.assertNotIn('chunks', assets)
+        finally:
+            loader.config['CACHE'] = False
 
     def test_caching_disabled(self):
         self.compile_bundles('webpack.config.simple.js')
