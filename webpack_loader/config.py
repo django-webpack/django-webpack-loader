@@ -9,6 +9,7 @@ __all__ = ('load_config',)
 DEFAULT_CONFIG = {
     'DEFAULT': {
         'CACHE': not settings.DEBUG,
+        'AUTO_RELOAD': False,
         'BUNDLE_DIR_NAME': 'webpack_bundles/',
         'STATS_FILE': 'webpack-stats.json',
         # FIXME: Explore usage of fsnotify

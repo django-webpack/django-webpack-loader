@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from io import open
 
@@ -18,6 +19,7 @@ class WebpackLoader(object):
 
     def __init__(self, name='DEFAULT'):
         self._assets = {}
+        self._mtimes = {}
         self.name = name
         self.config = load_config(self.name)
 
@@ -31,10 +33,27 @@ class WebpackLoader(object):
                 'the file and the path is correct?'.format(
                     self.config['STATS_FILE']))
 
+    def _reload_assets_on_change(self):
+        # If no entry yet in _mtimes then this is the initial load
+        # set mtime and leave cache untouched
+        if self.name not in self._mtimes:
+            self._mtimes[self.name] = os.path.getmtime(
+                self.config['STATS_FILE'])
+            return
+
+        mtime = os.path.getmtime(self.config['STATS_FILE'])
+        if self._mtimes[self.name] < mtime:
+            self._assets[self.name] = self._load_assets()
+            self._mtimes[self.name] = mtime
+
     def get_assets(self):
         if self.config['CACHE']:
             if self.name not in self._assets:
                 self._assets[self.name] = self._load_assets()
+
+            if self.config['AUTO_RELOAD']:
+                self._reload_assets_on_change()
+
             return self._assets[self.name]
         return self._load_assets()
 

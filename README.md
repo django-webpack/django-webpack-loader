@@ -94,6 +94,7 @@ module.exports = {
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
+        'AUTO_RELOAD': False,
         'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
@@ -109,11 +110,15 @@ WEBPACK_LOADER = {
 ```python
 WEBPACK_LOADER = {
     'DEFAULT': {
-        'CACHE': not DEBUG
+        'CACHE': not DEBUG,
+        'AUTO_RELOAD': True
     }
 }
 ```
-When `CACHE` is set to True, webpack-loader will read the stats file only once and cache the result. This means web workers need to be restarted in order to pick up any changes made to the stats files.
+When `CACHE` and `AUTO_RELOAD` are set to True, webpack-loader will read the stats file only once and cache the result. Wepback will watch the stats file for any changes (based on the modification time of the file). If the file is changed webpack-loader will automatically pick up any changes made to the stats files but otherwise use the cache.
+
+When `AUTO_RELOAD` is set to False, webpack-loader will read the stats file only once and cache the result. This means web workers need to be restarted in order to pick up any changes made to the stats files.
+
 
 <br>
 

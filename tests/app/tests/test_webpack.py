@@ -309,3 +309,37 @@ class LoaderTestCase(TestCase):
                 self.assertIn('chunks', assets)
         finally:
             loader.config['CACHE'] = False
+
+    def test_caching_enabled_with_auto_reload(self):
+        self.compile_bundles('webpack.config.simple.js')
+
+        # Don't use get_loader to prevent sharing state with other tests
+        loader = WebpackLoader()
+        loader.config['CACHE'] = True
+        loader.config['AUTO_RELOAD'] = True
+
+        try:
+            assets = loader.get_assets()
+
+            self.assertIn('chunks', assets)
+
+            # If file has same mtime, hit cache
+            with mock.patch(
+                    'webpack_loader.loader.open', mock.mock_open(read_data='{}')):
+                assets = loader.get_assets()
+                self.assertIn('chunks', assets)
+
+            assets = loader.get_assets()
+
+            self.assertIn('chunks', assets)
+
+            # When mtime changes, auto reload
+            os.utime(loader.config['STATS_FILE'], None)
+
+            with mock.patch(
+                    'webpack_loader.loader.open', mock.mock_open(read_data='{}')):
+                assets = loader.get_assets()
+                self.assertEqual(assets, {})
+        finally:
+            loader.config['CACHE'] = False
+            loader.config['AUTO_RELOAD'] = False
