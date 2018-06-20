@@ -8,10 +8,7 @@ def rel(*parts):
     '''returns the relative path to a file wrt to the current directory'''
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *parts))
 
-if os.path.isfile('README.rst'):
-  README = open('README.rst', 'r').read()
-else:
-  README = open('README.md', 'r').read()
+README = open('README.md', 'r').read()
 
 with open(rel('webpack_loader', '__init__.py')) as handler:
     INIT_PY = handler.read()
@@ -25,6 +22,7 @@ setup(
   version = VERSION,
   description = 'Transparently use webpack with django',
   long_description=README,
+  long_description_content_type="text/markdown",
   author = 'Owais Lone',
   author_email = 'hello@owaislone.org',
   download_url = 'https://github.com/owais/django-webpack-loader/tarball/{0}'.format(VERSION),

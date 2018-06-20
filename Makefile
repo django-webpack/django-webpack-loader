@@ -18,6 +18,7 @@ clean:
 
 build: clean
 	@echo "Building..."
+	@pip install -U setuptools
 	@python setup.py sdist bdist_wheel --universal
 
 install:
@@ -25,10 +26,7 @@ install:
 	@[ ! -d $(ENV)/ ] && python3 -m venv $(ENV)/ || :
 	@$(ENV)/bin/pip install $(requirements)
 
-generate-rst:
-	@pandoc --from=markdown --to=rst --output=README.rst README.md
-
-publish: generate-rst build
+publish: build
 	@echo "Publishing to pypi..."
 	@$(ENV)/bin/twine upload -r $(REPOSITORY) dist/*
 
