@@ -22,7 +22,6 @@ from webpack_loader.utils import get_loader
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 
-
 class LoaderTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -110,8 +109,7 @@ class LoaderTestCase(TestCase):
         request = self.factory.get('/')
         result = view(request)
         self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
-
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async nonce="veryrandom" charset="UTF-8"></script>', result.rendered_content)
         self.assertIn('<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet" />', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>', result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
