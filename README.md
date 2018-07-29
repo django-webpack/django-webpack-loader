@@ -250,7 +250,7 @@ WEBPACK_LOADER = {
     {% render_bundle 'main' config='DASHBOARD' extension='css' %}
 
     <!-- add some extra attributes to the tag -->
-    {% render_bundle 'main' 'js' 'DEFAULT' attrs='async chatset="UTF-8"'%}
+    {% render_bundle 'main' 'js' 'DEFAULT' attrs='async charset="UTF-8"'%}
   </body>
 </head>
 ```
