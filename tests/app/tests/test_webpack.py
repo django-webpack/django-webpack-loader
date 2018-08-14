@@ -158,7 +158,7 @@ class LoaderTestCase(TestCase):
         with self.settings(**settings):
             request = self.factory.get('/')
             result = view(request)
-            self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
+            self.assertIn('<link href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
             self.assertIn('<script src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
     def test_reporting_errors(self):
