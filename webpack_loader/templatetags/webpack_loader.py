@@ -12,6 +12,10 @@ def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
     tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
     return mark_safe('\n'.join(tags))
 
+@register.simple_tag
+def render_entrypoint(entrypoint_name, extension=None, config='DEFAULT', attrs=''):
+    tags = utils.get_entrypoint_files_as_tags(entrypoint_name, config=config, attrs=attrs)
+    return mark_safe('\n'.join(tags))
 
 @register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):

@@ -100,3 +100,48 @@ class WebpackLoader(object):
             "The stats file does not contain valid data. Make sure "
             "webpack-bundle-tracker plugin is enabled and try to run "
             "webpack again.")
+
+    def get_entry(self, entry_name):
+        assets = self.get_assets()
+
+        # poll when debugging and block request until bundle is compiled
+        # or the build times out
+        if settings.DEBUG:
+            timeout = self.config['TIMEOUT'] or 0
+            timed_out = False
+            start = time.time()
+            while assets['status'] == 'compiling' and not timed_out:
+                time.sleep(self.config['POLL_INTERVAL'])
+                if timeout and (time.time() - timeout > start):
+                    timed_out = True
+                assets = self.get_assets()
+
+            if timed_out:
+                raise WebpackLoaderTimeoutError(
+                    "Timed Out. Bundle `{0}` took more than {1} seconds "
+                    "to compile.".format(bundle_name, timeout)
+                )
+
+        if assets.get('status') == 'done':
+            entry_files = assets['entries'].get(entry_name, None)
+            if entry_files is None:
+                raise WebpackBundleLookupError('Cannot resolve entry {0}.'.format(entry_name))
+
+            return entry_files
+        elif assets.get('status') == 'error':
+            if 'file' not in assets:
+                assets['file'] = ''
+            if 'error' not in assets:
+                assets['error'] = 'Unknown Error'
+            if 'message' not in assets:
+                assets['message'] = ''
+            error = u"""
+            {error} in {file}
+            {message}
+            """.format(**assets)
+            raise WebpackError(error)
+
+        raise WebpackLoaderBadStatsError(
+            "The stats file does not contain valid data. Make sure "
+            "webpack-bundle-tracker plugin is enabled and try to run "
+            "webpack again.")

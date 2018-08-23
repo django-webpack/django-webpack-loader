@@ -56,6 +56,25 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
     return tags
 
 
+def _get_entrypoint_files(entrypoint_name, config):
+    return get_loader(config).get_entry(entrypoint_name)
+
+
+def get_entrypoint_files_as_tags(entrypoint_name, config='DEFAULT', attrs=''):
+    entrypoint_files = _get_entrypoint_files(entrypoint_name, config)
+    tags = []
+    for chunk in entrypoint_files:
+        if chunk.endswith(('.js', '.js.gz')):
+            tags.append((
+                '<script type="text/javascript" src="{0}" {1}></script>'
+            ).format(chunk, attrs))
+        elif chunk.endswith(('.css', '.css.gz')):
+            tags.append((
+                '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
+            ).format(chunk, attrs))
+    return tags
+
+
 def get_static(asset_name, config='DEFAULT'):
     '''
     Equivalent to Django's 'static' look up but for webpack assets.
