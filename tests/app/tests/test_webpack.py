@@ -64,8 +64,8 @@ class LoaderTestCase(TestCase):
         self.assertEqual(len(chunks), 1)
 
         main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
-        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.css'))
+        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
 
     def test_js_gzip_extract(self):
         self.compile_bundles('webpack.config.gzipTest.js')
@@ -78,8 +78,8 @@ class LoaderTestCase(TestCase):
         self.assertEqual(len(chunks), 1)
 
         main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
-        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.css'))
+        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
 
     def test_static_url(self):
         self.compile_bundles('webpack.config.publicPath.js')
@@ -87,38 +87,22 @@ class LoaderTestCase(TestCase):
         self.assertEqual(assets['status'], 'done')
         self.assertEqual(assets['publicPath'], 'http://custom-static-host.com/')
 
-    def test_code_spliting(self):
-        self.compile_bundles('webpack.config.split.js')
-        assets = get_loader(DEFAULT_CONFIG).get_assets()
-        self.assertEqual(assets['status'], 'done')
-        self.assertIn('chunks', assets)
-
-        chunks = assets['chunks']
-        self.assertIn('main', chunks)
-        self.assertEquals(len(chunks), 2)
-
-        main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
-
-        vendor = chunks['vendor']
-        self.assertEqual(vendor[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/vendor.js'))
-
     def test_templatetags(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
-        self.assertIn('<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/app2.css" rel="stylesheet" />', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>', result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
         view = TemplateView.as_view(template_name='only_files.html')
         result = view(request)
-        self.assertIn("var contentCss = '/static/bundles/styles.css'", result.rendered_content)
+        self.assertIn("var contentCss = '/static/bundles/main.css'", result.rendered_content)
         self.assertIn("var contentJS = '/static/bundles/main.js'", result.rendered_content)
 
         self.compile_bundles('webpack.config.publicPath.js')
@@ -158,7 +142,7 @@ class LoaderTestCase(TestCase):
         with self.settings(**settings):
             request = self.factory.get('/')
             result = view(request)
-            self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
+            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
             self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
     def test_reporting_errors(self):
@@ -166,7 +150,7 @@ class LoaderTestCase(TestCase):
         try:
             get_loader(DEFAULT_CONFIG).get_bundle('main')
         except WebpackError as e:
-            self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
+            self.assertIn("Can't resolve 'the-library-that-did-not-exist'", str(e))
 
     def test_missing_bundle(self):
         missing_bundle_name = 'missing_bundle'

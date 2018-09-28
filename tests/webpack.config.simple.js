@@ -14,7 +14,7 @@ module.exports = {
   },
 
   plugins: [
-    new MiniCssPlugin({    filename: '[name]-[chunkhash].css',     chunkFilename: '[id]-[chunkhash].css' }),
+    new MiniCssPlugin({filename: '[name].css',     chunkFilename: '[id].css' }),
     new BundleTracker({filename: './webpack-stats.json'}),
   ],
 
