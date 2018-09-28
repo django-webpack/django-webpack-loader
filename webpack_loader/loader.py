@@ -13,6 +13,8 @@ from .exceptions import (
 )
 from .config import load_config
 
+BUNDLE_CHUNKS_KEY = '__django_webpack_loader_bundle_chunks'
+
 
 class WebpackLoader(object):
     _assets = {}
@@ -24,12 +26,22 @@ class WebpackLoader(object):
     def _load_assets(self):
         try:
             with open(self.config['STATS_FILE'], encoding="utf-8") as f:
-                return json.load(f)
+                return self._group_chunks_by_bundle(json.load(f))
         except IOError:
             raise IOError(
                 'Error reading {0}. Are you sure webpack has generated '
                 'the file and the path is correct?'.format(
                     self.config['STATS_FILE']))
+
+    def _group_chunks_by_bundle(self, assets):
+        bundles = {}
+        for key, chunks in assets['chunks'].items():
+            for bundle_name in key.split('~'):
+                bundles.setdefault(bundle_name, [])
+                bundles[bundle_name].extend(chunks)
+
+        assets[BUNDLE_CHUNKS_KEY] = bundles
+        return assets
 
     def get_assets(self):
         if self.config['CACHE']:
@@ -78,7 +90,7 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            chunks = assets['chunks'].get(bundle_name, None)
+            chunks = assets[BUNDLE_CHUNKS_KEY].get(bundle_name, None)
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
             return self.filter_chunks(chunks)
