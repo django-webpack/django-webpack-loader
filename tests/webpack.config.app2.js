@@ -7,7 +7,7 @@ config.entry = {
 };
 
 config.plugins = [
-    new MiniCssPlugin("styles-app2.css"),
+    new MiniCssPlugin(),
     new BundleTracker({filename: './webpack-stats-app2.json'})
 ];
 
