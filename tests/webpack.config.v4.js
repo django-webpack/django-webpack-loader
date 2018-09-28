@@ -1,5 +1,4 @@
 var path = require("path");
-var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 var MiniCssPlugin = require("mini-css-extract-plugin");
 
@@ -10,11 +9,18 @@ module.exports = {
   entry: './assets/js/index',
   output: {
       path: path.resolve('./assets/bundles/'),
-      filename: "[name].js.gz"
+      filename: "[name].js",
+      chunkFilename: "[name].js"
+  },
+
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
   },
 
   plugins: [
-    new MiniCssPlugin({    filename: '[name]-[chunkhash].css',     chunkFilename: '[id]-[chunkhash].css' }),
+    new MiniCssPlugin({filename: '[name]-[chunkhash].css',     chunkFilename: '[id]-[chunkhash].css' }),
     new BundleTracker({filename: './webpack-stats.json'}),
   ],
 
