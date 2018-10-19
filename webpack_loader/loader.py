@@ -80,8 +80,9 @@ class WebpackLoader(object):
         if assets.get('status') == 'done':
             if self.config['SPLIT_CHUNKS']:
                 chunks = list()
+                bundle_names = set(bundle_name.split(','))
                 for chunk_name, chunk in assets['chunks'].items():
-                    if bundle_name in chunk_name.split('~'):
+                    if bundle_names & set(chunk_name.split('~')):
                         chunks.extend(chunk)
             else:
                 chunks = assets['chunks'].get(bundle_name, None)
