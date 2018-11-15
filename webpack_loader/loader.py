@@ -123,11 +123,11 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            entry_files = assets['entries'].get(entry_name, None)
+            entry_files = assets['entryPoints'].get(entry_name, None)
             if entry_files is None:
                 raise WebpackBundleLookupError('Cannot resolve entry {0}.'.format(entry_name))
 
-            return entry_files
+            return self.filter_chunks(entry_files)
         elif assets.get('status') == 'error':
             if 'file' not in assets:
                 assets['file'] = ''

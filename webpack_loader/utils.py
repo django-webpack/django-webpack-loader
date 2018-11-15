@@ -64,14 +64,14 @@ def get_entrypoint_files_as_tags(entrypoint_name, config='DEFAULT', attrs=''):
     entrypoint_files = _get_entrypoint_files(entrypoint_name, config)
     tags = []
     for chunk in entrypoint_files:
-        if chunk.endswith(('.js', '.js.gz')):
+        if chunk['name'].endswith(('.js', '.js.gz')):
             tags.append((
                 '<script type="text/javascript" src="{0}" {1}></script>'
-            ).format(chunk, attrs))
-        elif chunk.endswith(('.css', '.css.gz')):
+            ).format(chunk['url'], attrs))
+        elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
                 '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
-            ).format(chunk, attrs))
+            ).format(chunk['url'], attrs))
     return tags
 
 
