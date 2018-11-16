@@ -119,15 +119,16 @@ class WebpackLoader(object):
             if timed_out:
                 raise WebpackLoaderTimeoutError(
                     "Timed Out. Bundle `{0}` took more than {1} seconds "
-                    "to compile.".format(bundle_name, timeout)
+                    "to compile.".format(entry_name, timeout)
                 )
 
         if assets.get('status') == 'done':
             entry_files = assets['entryPoints'].get(entry_name, None)
-            if entry_files is None:
+            entry_files_flat = [entry_point for sublist in entry_files for entry_point in sublist]
+            if entry_files_flat is None:
                 raise WebpackBundleLookupError('Cannot resolve entry {0}.'.format(entry_name))
 
-            return self.filter_chunks(entry_files)
+            return self.filter_chunks(entry_files_flat)
         elif assets.get('status') == 'error':
             if 'file' not in assets:
                 assets['file'] = ''
