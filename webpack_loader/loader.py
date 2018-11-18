@@ -118,7 +118,7 @@ class WebpackLoader(object):
 
             if timed_out:
                 raise WebpackLoaderTimeoutError(
-                    "Timed Out. Bundle `{0}` took more than {1} seconds "
+                    "Timed Out. Entrypoint `{0}` took more than {1} seconds "
                     "to compile.".format(entry_name, timeout)
                 )
 

@@ -61,6 +61,15 @@ def _get_entrypoint_files(entrypoint_name, config):
 
 
 def get_entrypoint_files_as_tags(entrypoint_name, config='DEFAULT', attrs=''):
+    '''
+    Get a list of formatted <script> & <link> tags for the assets required by a
+    particular endpoint.
+
+    :param entrypoint_name: The name of the entrypoint
+    :param extension: (optional) filter by extension, eg. 'js' or 'css'
+    :param config: (optional) the name of the configuration
+    :return: a list of formatted tags as strings
+    '''
     entrypoint_files = _get_entrypoint_files(entrypoint_name, config)
     tags = []
     for chunk in entrypoint_files:
