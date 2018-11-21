@@ -123,10 +123,15 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            entry_files = assets['entryPoints'].get(entry_name, None)
-            entry_files_flat = [entry_point for sublist in entry_files for entry_point in sublist]
-            if entry_files_flat is None:
-                raise WebpackBundleLookupError('Cannot resolve entry {0}.'.format(entry_name))
+            if hasattr(assets, 'entryPoints'):
+                entry_files = assets['entryPoints'].get(entry_name, None)
+                entry_files_flat = [entry_point for sublist in entry_files for entry_point in sublist]
+                if entry_files_flat is None:
+                    raise WebpackBundleLookupError('Cannot resolve entry {0}.'.format(entry_name))
+            else:
+                raise WebpackBundleLookupError('No entrypoints were found in the stats file. Make sure you '
+                                               'are using a supported version of webpack and double check '
+                                               'your webpack configuration.'.format(entry_name))
 
             return self.filter_chunks(entry_files_flat)
         elif assets.get('status') == 'error':
