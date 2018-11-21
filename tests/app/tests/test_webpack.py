@@ -39,16 +39,16 @@ class LoaderTestCase(TestCase):
         from webpack_loader.errors import BAD_CONFIG_ERROR
 
         with self.settings(WEBPACK_LOADER={
-                                'BUNDLE_DIR_NAME': 'bundles/',
-                                'STATS_FILE': 'webpack-stats.json',
-                           }):
+            'BUNDLE_DIR_NAME': 'bundles/',
+            'STATS_FILE': 'webpack-stats.json',
+        }):
             errors = webpack_cfg_check(None)
             expected_errors = [BAD_CONFIG_ERROR]
             self.assertEqual(errors, expected_errors)
 
         with self.settings(WEBPACK_LOADER={
-                                'DEFAULT': {}
-                           }):
+            'DEFAULT': {}
+        }):
             errors = webpack_cfg_check(None)
             expected_errors = []
             self.assertEqual(errors, expected_errors)
@@ -111,6 +111,19 @@ class LoaderTestCase(TestCase):
         result = view(request)
         self.assertIn('<img src="http://custom-static-host.com/my-image.png"/>', result.rendered_content)
 
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        view = TemplateView.as_view(template_name='main_entrypoint.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
+
+        view = TemplateView.as_view(template_name='another_entrypoint.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertIn('<link type="text/css" href="/static/bundles/another_entrypoint.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/another_entrypoint.js" ></script>', result.rendered_content)
+
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
@@ -145,6 +158,14 @@ class LoaderTestCase(TestCase):
             self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
             self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        view = TemplateView.as_view(template_name='main_entrypoint.jinja')
+        with self.settings(**settings):
+            request = self.factory.get('/')
+            result = view(request)
+            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
+            self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+
     def test_reporting_errors(self):
         self.compile_bundles('webpack.config.error.js')
         try:
@@ -159,6 +180,14 @@ class LoaderTestCase(TestCase):
             get_loader(DEFAULT_CONFIG).get_bundle(missing_bundle_name)
         except WebpackBundleLookupError as e:
             self.assertIn('Cannot resolve bundle {0}'.format(missing_bundle_name), str(e))
+
+    def test_missing_entrypoint(self):
+        missing_bundle_name = 'missing_entrypoint'
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        try:
+            get_loader(DEFAULT_CONFIG).get_entry(missing_bundle_name)
+        except WebpackBundleLookupError as e:
+            self.assertIn('Cannot resolve entry {0}'.format(missing_bundle_name), str(e))
 
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']

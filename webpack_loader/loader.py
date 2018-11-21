@@ -123,10 +123,11 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            if hasattr(assets, 'entryPoints'):
+            if 'entryPoints' in assets:
                 entry_files = assets['entryPoints'].get(entry_name, None)
-                entry_files_flat = [entry_point for sublist in entry_files for entry_point in sublist]
-                if entry_files_flat is None:
+                if entry_files:
+                    entry_files_flat = [entry_point for sublist in entry_files for entry_point in sublist]
+                else:
                     raise WebpackBundleLookupError('Cannot resolve entry {0}.'.format(entry_name))
             else:
                 raise WebpackBundleLookupError('No entrypoints were found in the stats file. Make sure you '
