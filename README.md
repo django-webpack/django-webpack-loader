@@ -90,7 +90,9 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
+        'EXCLUDE_RUNTIME': False,
+        'BASE_ENTRYPOINT': ''
     }
 }
 ```
@@ -166,6 +168,19 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 
 <br>
 
+#### EXCLUDE_RUNTIME
+
+`EXCLUDE_RUNTIME` is meant to be used with `render_entrypoint`. When creating multi-page applications, it's common to want to
+split a single runtime file that is used by all chunks. You can do that by using `{% render_bundle 'runtime' %}` in your base HTML file and setting `EXCLUDE_RUNTIME` to `True` in order to not include it again when using `{% render_entrypoint 'example_entry_point' %}`
+
+<br>
+
+#### BASE_ENTRYPOINT
+
+`BASE_ENTRYPOINT` is meant to be used with `render_entrypoint`. When creating multi-page applications, it's common to want to
+include common js in the base HTML. If the main entrypoint's name is `main`, you can do that by including `{% render_entrypoint 'main' %}` in your base HTML file. Now in another entrypoints (that extend the base HTML file), there might be some chunks that were already included in `main`, that means they would be included twice in the final rendered HTML, to avoid that, set `BASE_ENTRYPOINT` to `'main'`, then any duplicate chunks between an entrypoint and the main entrypoint would be included only once.
+
+<br>
 
 ## Usage
 <br>

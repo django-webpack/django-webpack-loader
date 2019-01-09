@@ -127,6 +127,16 @@ class WebpackLoader(object):
                 entry_files = assets['entryPoints'].get(entry_name, None)
                 if entry_files:
                     entry_files_flat = [entry_point for sublist in entry_files for entry_point in sublist]
+                    if 'runtime' in entry_files_flat[0]['name'] and self.config['EXCLUDE_RUNTIME']:
+                        entry_files_flat.pop(0)
+                    if self.config['BASE_ENTRYPOINT'] and entry_name != self.config['BASE_ENTRYPOINT']:
+                        base_entrypoint = self.config['BASE_ENTRYPOINT']
+                        base_entry_files = assets['entryPoints'].get(base_entrypoint, None)
+                        if base_entry_files:
+                            base_entry_files_flat_names = [entry_point['name'] for sublist in base_entry_files for entry_point in sublist]
+                            for i, entry in enumerate(entry_files_flat):
+                                if entry['name'] in base_entry_files_flat_names:
+                                    entry_files_flat.pop(i)
                 else:
                     raise WebpackBundleLookupError('Cannot resolve entry {0}.'.format(entry_name))
             else:
