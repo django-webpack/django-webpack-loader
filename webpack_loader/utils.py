@@ -98,3 +98,6 @@ def get_static(asset_name, config='DEFAULT'):
         ),
         asset_name
     )
+
+def get_varname():
+    return getattr(settings, 'WEBPACK_LOADER_VARNAME', 'WEBPACK_LOADER_CONTENT_HOLDER')

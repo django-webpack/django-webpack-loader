@@ -7,15 +7,24 @@ from .. import utils
 register = template.Library()
 
 
-@register.simple_tag
-def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
-    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
-    return mark_safe('\n'.join(tags))
 
-@register.simple_tag
-def render_entrypoint(entrypoint_name, extension=None, config='DEFAULT', attrs=''):
+
+def filtered_asset_links(context, tags, config):
+    tags = set(tags)
+    varname = utils.get_varname()
+    newtags = tags - context[varname][config]
+    context[varname][config] |= tags
+    return mark_safe('\n'.join( newtags ))
+
+@register.simple_tag(takes_context=True)
+def render_bundle(context, bundle_name, extension=None, config='DEFAULT', attrs=''):
+    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
+    return filtered_asset_links(context, tags, config)
+
+@register.simple_tag(takes_context=True)
+def render_entrypoint(context, entrypoint_name, extension=None, config='DEFAULT', attrs=''):
     tags = utils.get_entrypoint_files_as_tags(entrypoint_name, config=config, attrs=attrs)
-    return mark_safe('\n'.join(tags))
+    return filtered_asset_links(context, tags, config)
 
 @register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):
