@@ -127,6 +127,70 @@ class LoaderTestCase(TestCase):
         result = view(request)
         self.assertIn('<img src="http://custom-static-host.com/my-image.png"/>', result.rendered_content)
 
+    def test_templatetags_with_sri_hashes(self):
+        with self.settings(DEBUG=True):
+            with open(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w') as stats_file:
+                stats_file.write(json.dumps({
+                    "chunks": {
+                        "main": [
+                            {
+                                "name": "styles.css",
+                                "path": "bundles/styles.css",
+                                "sriHash": "sha256-tbudgBSg+bHWHiHnlteNzN8TUvI80ygS9IULh4rklEw=",
+                            },
+                            {
+                                "name": "main.js",
+                                "path": "bundles/main.js",
+                                "sriHash": "sha256-fYZelZskZpGMmGOvypQtD7idfJrAyZuvw3SVBN7ZdzA=",
+                            },
+                        ]
+                    },
+                    "status": "done"
+                }))
+            with open(settings.WEBPACK_LOADER['APP2']['STATS_FILE'], 'w') as stats_file:
+                stats_file.write(json.dumps({
+                    "chunks": {
+                        "app2": [
+                            {
+                                "name": "styles-app2.css",
+                                "path": "bundles/styles-app2.css",
+                                "sriHash": "sha256-vwen+7gl/Aque/ShF3srMfz4o/7q9wknYeGMhZ7lKpw=",
+                            },
+                            {
+                                "name": "app2.js",
+                                "path": "bundles/app2.js",
+                                "sriHash": "sha256-Kxrw/jubMtakJfDU+bBureUM/3CqpBgk2gJVdtALv0c=",
+                            },
+                        ]
+                    },
+                    "status": "done"
+                }))
+
+            view = TemplateView.as_view(template_name='home.html')
+            request = self.factory.get('/')
+            result = view(request)
+
+            self.assertIn(
+                '<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" integrity="sha256-tbudgBSg+bHWHiHnlteNzN8TUvI80ygS9IULh4rklEw=" />',
+                result.rendered_content)
+            self.assertIn(
+                '<script type="text/javascript" src="/static/bundles/main.js" integrity="sha256-fYZelZskZpGMmGOvypQtD7idfJrAyZuvw3SVBN7ZdzA=" async charset="UTF-8"></script>',
+                result.rendered_content)
+
+            self.assertIn(
+                '<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet" integrity="sha256-vwen+7gl/Aque/ShF3srMfz4o/7q9wknYeGMhZ7lKpw=" />',
+                result.rendered_content)
+            self.assertIn(
+                '<script type="text/javascript" src="/static/bundles/app2.js" integrity="sha256-Kxrw/jubMtakJfDU+bBureUM/3CqpBgk2gJVdtALv0c=" ></script>',
+                result.rendered_content)
+
+            self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
+
+            view = TemplateView.as_view(template_name='only_files.html')
+            result = view(request)
+            self.assertIn("var contentCss = '/static/bundles/styles.css'", result.rendered_content)
+            self.assertIn("var contentJS = '/static/bundles/main.js'", result.rendered_content)
+
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')

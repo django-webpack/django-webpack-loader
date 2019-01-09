@@ -45,14 +45,17 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
     bundle = _get_bundle(bundle_name, extension, config)
     tags = []
     for chunk in bundle:
+        tag_attrs = attrs
+        if 'sriHash' in chunk:
+            tag_attrs = 'integrity="{0}" {1}'.format(chunk['sriHash'], attrs)
         if chunk['name'].endswith(('.js', '.js.gz')):
             tags.append((
                 '<script type="text/javascript" src="{0}" {1}></script>'
-            ).format(chunk['url'], attrs))
+            ).format(chunk['url'], tag_attrs))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
                 '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
-            ).format(chunk['url'], attrs))
+            ).format(chunk['url'], tag_attrs))
     return tags
 
 
