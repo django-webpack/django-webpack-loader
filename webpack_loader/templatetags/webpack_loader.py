@@ -8,6 +8,34 @@ register = template.Library()
 
 
 
+def validate_context(context):
+    """
+    Validates a given context.
+    Returns True if the context is valid.
+    Returns False if the context is invalid but the error should be silently
+    ignored.
+    Raises a TemplateSyntaxError if the context is invalid and we're in debug
+    mode.
+    """
+    try:
+        template_debug = context.template.engine.debug
+    except AttributeError:
+        try:
+            # Get the default engine debug value
+            template_debug = template.Engine.get_default().debug
+        except AttributeError:
+            # Django 1.9 and below fallback
+            template_debug = settings.TEMPLATE_DEBUG
+
+    if utils.get_varname() in context:
+        return True
+    if not template_debug:
+        return False
+    raise template.TemplateSyntaxError(
+        "You must enable the 'webpack_loader.context_processors.webpack' template "
+        "context processor or use 'webpack_loader.context.WebpackLoaderContext' to "
+        "render your templates."
+    )
 
 def filtered_asset_links(context, tags, config):
     tags = set(tags)
@@ -18,13 +46,15 @@ def filtered_asset_links(context, tags, config):
 
 @register.simple_tag(takes_context=True)
 def render_bundle(context, bundle_name, extension=None, config='DEFAULT', attrs=''):
-    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
-    return filtered_asset_links(context, tags, config)
+    if validate_context(context):
+        tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
+        return filtered_asset_links(context, tags, config)
 
 @register.simple_tag(takes_context=True)
 def render_entrypoint(context, entrypoint_name, extension=None, config='DEFAULT', attrs=''):
-    tags = utils.get_entrypoint_files_as_tags(entrypoint_name, config=config, attrs=attrs)
-    return filtered_asset_links(context, tags, config)
+    if validate_context(context):
+        tags = utils.get_entrypoint_files_as_tags(entrypoint_name, config=config, attrs=attrs)
+        return filtered_asset_links(context, tags, config)
 
 @register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):
