@@ -135,6 +135,15 @@ class LoaderTestCase(TestCase):
         self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
         self.assertNotIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
 
+    def test_get_entrypoint_extension_filtering(self):
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        view = TemplateView.as_view(template_name='main_entrypoint_js_only.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertNotIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
