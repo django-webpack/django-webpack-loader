@@ -203,7 +203,7 @@ INSTALLED_APPS = (
 
 ### Templates
 
-### render_bundle
+#### render_bundle
 
 ```HTML+Django
 {% load render_bundle from webpack_loader %}
@@ -229,7 +229,7 @@ INSTALLED_APPS = (
 </head>
 ```
 
-### render_entrypoint (Available only when using Webpack v.4 or newer)
+#### render_entrypoint (Available only when using Webpack v.4 or newer)
 
 ```HTML+Django
 {% load render_entrypoint from webpack_loader %}
@@ -250,8 +250,8 @@ module.exports = {
   ...,
   plugins: [new BundleTracker({ filename: "./webpack-stats.json" })]
 };
-```
 
+```
 
 Just as `render_bundle`, `render_entrypoint` also takes a second argument which can be a file extension to match, and can be used in a similar way,
 
