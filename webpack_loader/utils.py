@@ -36,7 +36,7 @@ def _assetstags_to_html( assets, attrs=''):
     Formatted <script> & <link> tags for the assets in the
     tag list.
 
-    :param tags: List of assets tags to process
+    :param assets: List of assets tags to process
     :param attrs: (optional) extra attributes to add to the rendered link / script tag
     :return: a list of formatted tags as strings
     '''
