@@ -19,19 +19,19 @@ def _filter_by_extension(bundle, extension):
             yield chunk
 
 
-def _get_bundle(bundle_name, extension, config):
-    bundle = get_loader(config).get_bundle(bundle_name)
+def _get_bundle(bundle_name, extension, config, mode):
+    bundle = get_loader(config).get_bundle(bundle_name, mode)
     if extension:
         bundle = _filter_by_extension(bundle, extension)
     return bundle
 
 
-def get_files(bundle_name, extension=None, config='DEFAULT'):
+def get_files(bundle_name, extension=None, config='DEFAULT', mode="explicit"):
     '''Returns list of chunks from named bundle'''
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs='', mode='explicit'):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -42,7 +42,7 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
     :return: a list of formatted tags as strings
     '''
 
-    bundle = _get_bundle(bundle_name, extension, config)
+    bundle = _get_bundle(bundle_name, extension, config, mode)
     tags = []
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):

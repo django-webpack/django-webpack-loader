@@ -14,6 +14,12 @@ def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
 
 
 @register.simple_tag
+def render_bundle_auto(bundle_name, extension=None, config='DEFAULT', attrs=''):
+    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs, mode='auto')
+    return mark_safe('\n'.join(tags))
+
+
+@register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):
     return utils.get_static(asset_name, config=config)
 

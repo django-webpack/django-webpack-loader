@@ -46,6 +46,15 @@ class WebpackLoader(object):
                 chunk['url'] = self.get_chunk_url(chunk)
                 yield chunk
 
+    def filter_chunks_auto(self, chunks):
+        for key, value in chunks.items():
+            for chunk in chunks[key]:
+                ignore = any(regex.match(chunk['name'])
+                             for regex in self.config['ignores'])
+                if not ignore:
+                    chunk['url'] = self.get_chunk_url(chunk)
+                    yield chunk
+
     def get_chunk_url(self, chunk):
         public_path = chunk.get('publicPath')
         if public_path:
@@ -56,7 +65,7 @@ class WebpackLoader(object):
         )
         return staticfiles_storage.url(relpath)
 
-    def get_bundle(self, bundle_name):
+    def get_bundle(self, bundle_name, mode):
         assets = self.get_assets()
 
         # poll when debugging and block request until bundle is compiled
@@ -78,9 +87,22 @@ class WebpackLoader(object):
                 )
 
         if assets.get('status') == 'done':
-            chunks = assets['chunks'].get(bundle_name, None)
+            if mode == 'auto':
+                chunks = {}
+                search_chunks = assets['chunks']
+                for chunk in search_chunks.keys():
+                    split_chunk = chunk.split('~')
+
+                    # the last module name might have a hash appended.  assume dash separator and strip it off
+                    last_chunk = split_chunk.pop()
+                    if bundle_name in split_chunk + [last_chunk.split("-")[0]]:
+                        chunks.update({chunk: search_chunks[chunk]})
+            else:
+                chunks = assets['chunks'].get(bundle_name, None)
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
+            if mode == 'auto':
+                return self.filter_chunks_auto(chunks)
             return self.filter_chunks(chunks)
 
         elif assets.get('status') == 'error':
