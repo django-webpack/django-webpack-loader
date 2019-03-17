@@ -18,7 +18,6 @@ from webpack_loader.exceptions import (
 )
 from webpack_loader.utils import get_loader
 
-
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 

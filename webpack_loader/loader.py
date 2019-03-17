@@ -1,6 +1,7 @@
 import json
 import time
 from io import open
+import requests
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -22,14 +23,30 @@ class WebpackLoader(object):
         self.config = load_config(self.name)
 
     def _load_assets(self):
-        try:
-            with open(self.config['STATS_FILE'], encoding="utf-8") as f:
-                return json.load(f)
-        except IOError:
-            raise IOError(
-                'Error reading {0}. Are you sure webpack has generated '
-                'the file and the path is correct?'.format(
-                    self.config['STATS_FILE']))
+        stats_file = self.config("STATS_FILE")
+        if stats_file.startswith(("http://", "https://")):
+            timeout = float(self.config("STATS_FILE_TIMEOUT"))
+            try:
+                response = requests.get(stats_file, timeout=timeout, headers={
+                    "SECRET_KEY": self.config("STATS_FILE_SECRET_KEY"),
+                })
+                status_code = response.status_code
+                if status_code != 200:
+                    raise requests.HTTPError("{} - {}: {}".format(
+                            stats_file, status_code, response.reason))
+                return response.json()
+            except requests.Timeout:
+                raise requests.Timeout(
+                    "Failed to connect in {} seconds. Are you sure that a "
+                    "server is running at {}?".format(timeout, stats_file))
+        else:
+            try:
+                with open(stats_file, encoding="utf-8") as f:
+                    return json.load(f)
+            except IOError:
+                raise IOError(
+                    'Error reading {0}. Are you sure webpack has generated '
+                    'the file and the path is correct?'.format(stats_file))
 
     def get_assets(self):
         if self.config['CACHE']:
