@@ -8,7 +8,8 @@ def rel(*parts):
     '''returns the relative path to a file wrt to the current directory'''
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *parts))
 
-README = open('README.md', 'r').read()
+with open("README.md", "r", encoding="utf-8") as f:
+    README = f.read()
 
 with open(rel('webpack_loader', '__init__.py')) as handler:
     INIT_PY = handler.read()

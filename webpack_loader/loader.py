@@ -23,12 +23,12 @@ class WebpackLoader(object):
         self.config = load_config(self.name)
 
     def _load_assets(self):
-        stats_file = self.config("STATS_FILE")
+        stats_file = self.config["STATS_FILE"]
         if stats_file.startswith(("http://", "https://")):
-            timeout = float(self.config("STATS_FILE_TIMEOUT"))
+            timeout = float(self.config["STATS_FILE_TIMEOUT"])
             try:
                 response = requests.get(stats_file, timeout=timeout, headers={
-                    "SECRET_KEY": self.config("STATS_FILE_SECRET_KEY"),
+                    "SECRET_KEY": self.config["STATS_FILE_SECRET_KEY"],
                 })
                 status_code = response.status_code
                 if status_code != 200:
