@@ -1,6 +1,5 @@
 import json
 import time
-from io import open
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -23,7 +22,7 @@ class WebpackLoader(object):
 
     def _load_assets(self):
         try:
-            with open(self.config['STATS_FILE'], encoding="utf-8") as f:
+            with staticfiles_storage.open(self.config['STATS_FILE']) as f:
                 return json.load(f)
         except IOError:
             raise IOError(
