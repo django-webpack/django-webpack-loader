@@ -108,6 +108,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),
 )
 
+STATIC_ROOT = BASE_DIR
+
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': False,
