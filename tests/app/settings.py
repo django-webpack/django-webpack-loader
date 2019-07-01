@@ -114,12 +114,12 @@ WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': False,
         'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'STATS_FILE': 'webpack-stats.json',
     },
     'APP2': {
         'CACHE': False,
         'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
+        'STATS_FILE': 'webpack-stats-app2.json',
     }
 }
 
