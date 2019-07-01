@@ -22,7 +22,7 @@ class WebpackLoader(object):
 
     def _load_assets(self):
         try:
-            with staticfiles_storage.open(self.config['STATS_FILE']) as f:
+            with staticfiles_storage.open(self.config['STATS_FILE'], 'r') as f:
                 return json.load(f)
         except IOError:
             raise IOError(
