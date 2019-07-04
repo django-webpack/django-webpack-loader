@@ -1,6 +1,7 @@
 import json
 import time
 
+import requests
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
 
@@ -21,14 +22,14 @@ class WebpackLoader(object):
         self.config = load_config(self.name)
 
     def _load_assets(self):
+        url = staticfiles_storage.url(self.config['STATS_FILE'])
         try:
-            with staticfiles_storage.open(self.config['STATS_FILE'], 'r') as f:
-                return json.load(f)
-        except IOError:
+            return json.loads(requests.get(url).content)
+        except requests.RequestException:
             raise IOError(
                 'Error reading {0}. Are you sure webpack has generated '
                 'the file and the path is correct?'.format(
-                    self.config['STATS_FILE']))
+                    url))
 
     def get_assets(self):
         if self.config['CACHE']:
