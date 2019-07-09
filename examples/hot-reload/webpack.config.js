@@ -18,7 +18,9 @@ module.exports = {
 
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(), // don't reload if there is an error
+    // don't reload if there is an error
+    // renamed to `NoEmitOnErrorsPlugin` - https://github.com/webpack/docs/issues/96
+    new webpack.NoErrorsPlugin(), 
     new BundleTracker({filename: './webpack-stats.json'}),
   ],
 
