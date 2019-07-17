@@ -8,6 +8,7 @@ __all__ = ('load_config',)
 
 DEFAULT_CONFIG = {
     'DEFAULT': {
+        'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
         'CACHE': not settings.DEBUG,
         'BUNDLE_DIR_NAME': 'webpack_bundles/',
         'STATS_FILE': 'webpack-stats.json',

@@ -11,15 +11,13 @@ from .exceptions import (
     WebpackLoaderTimeoutError,
     WebpackBundleLookupError
 )
-from .config import load_config
 
 
 class WebpackLoader(object):
     _assets = {}
 
-    def __init__(self, name='DEFAULT'):
-        self.name = name
-        self.config = load_config(self.name)
+    def __init__(self, config):
+        self.config = config
 
     def _load_assets(self):
         try:
