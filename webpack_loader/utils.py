@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.utils.module_loading import import_string
 
+from .config import load_config
 from .loader import WebpackLoader
 
 
