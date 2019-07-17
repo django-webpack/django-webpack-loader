@@ -1,3 +1,4 @@
+dist: xenial
 language: python
 sudo: false
 # command to install dependencies
@@ -14,6 +15,5 @@ after_success:
 env:
   matrix:
     - TOXENV=py27-django111
-    - TOXENV=py27-django22
     - TOXENV=py36-django111
     - TOXENV=py36-django22
