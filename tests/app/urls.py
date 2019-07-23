@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import include, url
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib import admin
 from django.views.generic import TemplateView
 
@@ -21,5 +22,9 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
-    url(r'^admin/', include(admin.site.urls)),
 ]
+
+try:
+    urlpatterns.append(url(r'^admin/', include(admin.site.urls)))
+except ImproperlyConfigured:
+    urlpatterns.append(url(r'^admin/', admin.site.urls))
