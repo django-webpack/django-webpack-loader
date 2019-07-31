@@ -16,8 +16,9 @@ from .exceptions import (
 class WebpackLoader(object):
     _assets = {}
 
-    def __init__(self, config):
+    def __init__(self, config, name='DEFAULT'):
         self.config = config
+        self.name = name
 
     def _load_assets(self):
         try:
