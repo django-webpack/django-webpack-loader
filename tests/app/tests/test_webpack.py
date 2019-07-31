@@ -21,6 +21,7 @@ from webpack_loader.utils import get_loader
 
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
+CACHED_CONFIG = 'CACHED'
 
 
 class LoaderTestCase(TestCase):
@@ -66,6 +67,13 @@ class LoaderTestCase(TestCase):
         main = chunks['main']
         self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
         self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+
+    def test_caching(self):
+        loader = get_loader(CACHED_CONFIG)
+        loader._load_assets = lambda: True
+        self.assertIs(loader.get_assets(), True)
+        loader._load_assets = lambda: False
+        self.assertIs(loader.get_assets(), True)
 
     def test_js_gzip_extract(self):
         self.compile_bundles('webpack.config.gzipTest.js')

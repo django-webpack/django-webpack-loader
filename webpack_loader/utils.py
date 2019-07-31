@@ -12,7 +12,7 @@ def get_loader(config_name):
     if config_name not in _loaders:
         config = load_config(config_name)
         loader_class = import_string(config['LOADER_CLASS'])
-        _loaders[config_name] = loader_class(config)
+        _loaders[config_name] = loader_class(config, name=config_name)
     return _loaders[config_name]
 
 
