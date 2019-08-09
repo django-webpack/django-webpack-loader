@@ -2,7 +2,6 @@ from django.conf import settings
 
 from .loader import WebpackLoader
 
-
 _loaders = {}
 
 
@@ -31,7 +30,7 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs='', is_preload=False):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -51,8 +50,8 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
             ).format(chunk['url'], attrs))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
-                '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
-            ).format(chunk['url'], attrs))
+                '<link type="text/css" href="{0}" rel={2} {1}/>'
+            ).format(chunk['url'], attrs, '"stylesheet"' if not is_preload else '"preload" as="style"'))
     return tags
 
 
