@@ -126,6 +126,8 @@ If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your ST
 <script type="text/javascript" src="/static/output/bundles/main-cf4b5fab6e00a404e0c7.js"/>
 ```
 
+**NOTE:** If your webpack config outputs the bundles at the root of your `staticfiles` dir, then `BUNDLE_DIR_NAME` should be an empty string `''`, not `'/'`. 
+
 <br>
 
 #### STATS_FILE
