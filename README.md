@@ -90,7 +90,8 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': [r'.+\.hot-update.js', r'.+\.map']
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
+        'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
     }
 }
 ```
@@ -168,6 +169,40 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 
 <br>
 
+#### LOADER_CLASS
+
+`LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader.
+This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file
+from a database, cache, external url, etc. For convenience, `webpack_loader.loader.WebpackLoader` can be extended;
+The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
+
+Here's a simple example of loading from an external url:
+
+```py
+# in app.module
+import requests
+from webpack_loader.loader import WebpackLoader
+
+class ExternalWebpackLoader(WebpackLoader):
+
+  def load_assets(self):
+    url = self.config['STATS_URL']
+    return requests.get(url).json()
+
+
+# in app.settings
+WEBPACK_LOADER = {
+  'DEFAULT': {
+      'CACHE': False,
+      'BUNDLE_DIR_NAME': 'bundles/',
+      'LOADER_CLASS': 'app.module.ExternalWebpackLoader',
+      # Custom config setting made available in WebpackLoader's self.config
+      'STATS_URL': 'https://www.test.com/path/to/stats/',
+  }
+}
+```
+
+<br>
 
 ## Usage
 <br>
