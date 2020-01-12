@@ -235,7 +235,7 @@ class LoaderTestCase(TestCase):
             elapsed = time.time() - then
             t.join()
             t2.join()
-            self.assertTrue(elapsed > wait_for)
+            self.assertTrue(elapsed >= wait_for)
 
         with self.settings(DEBUG=False):
             self.compile_bundles('webpack.config.simple.js')
