@@ -11,17 +11,16 @@ from .exceptions import (
     WebpackLoaderTimeoutError,
     WebpackBundleLookupError
 )
-from .config import load_config
 
 
 class WebpackLoader(object):
     _assets = {}
 
-    def __init__(self, name='DEFAULT'):
+    def __init__(self, name, config):
         self.name = name
-        self.config = load_config(self.name)
+        self.config = config
 
-    def _load_assets(self):
+    def load_assets(self):
         try:
             with open(self.config['STATS_FILE'], encoding="utf-8") as f:
                 return json.load(f)
@@ -34,9 +33,9 @@ class WebpackLoader(object):
     def get_assets(self):
         if self.config['CACHE']:
             if self.name not in self._assets:
-                self._assets[self.name] = self._load_assets()
+                self._assets[self.name] = self.load_assets()
             return self._assets[self.name]
-        return self._load_assets()
+        return self.load_assets()
 
     def filter_chunks(self, chunks):
         for chunk in chunks:
