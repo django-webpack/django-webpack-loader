@@ -1,9 +1,11 @@
 from importlib import import_module
 from django.conf import settings
+from django.core.files.storage import get_storage_class
 from .config import load_config
 
 
 _loaders = {}
+media_storage = get_storage_class()()
 
 
 def import_string(dotted_path):
@@ -65,11 +67,11 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
         if chunk['name'].endswith(('.js', '.js.gz')):
             tags.append((
                 '<script type="text/javascript" src="{0}" {1}></script>'
-            ).format(chunk['url'], attrs))
+            ).format(media_storage.url(chunk['url']), attrs))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
                 '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
-            ).format(chunk['url'], attrs))
+            ).format(media_storage.url(chunk['url']), attrs))
     return tags
 
 
