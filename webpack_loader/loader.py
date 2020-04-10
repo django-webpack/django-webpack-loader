@@ -38,20 +38,24 @@ class WebpackLoader(object):
         return self.load_assets()
 
     def filter_chunks(self, chunks):
-        for chunk in chunks:
-            ignore = any(regex.match(chunk['name'])
+        for chunk_name in chunks:
+            ignore = any(regex.match(chunk_name)
                          for regex in self.config['ignores'])
             if not ignore:
-                chunk['url'] = self.get_chunk_url(chunk)
+                chunk = {
+                    'name': chunk_name,
+                    'url': self.get_chunk_url(chunk_name)
+                }
                 yield chunk
 
-    def get_chunk_url(self, chunk):
+    def get_chunk_url(self, chunk_name):
+        chunk = self.get_assets().get('assets').get(chunk_name)
         public_path = chunk.get('publicPath')
         if public_path:
             return public_path
 
         relpath = '{0}{1}'.format(
-            self.config['BUNDLE_DIR_NAME'], chunk['name']
+            self.config['BUNDLE_DIR_NAME'], chunk_name
         )
         return staticfiles_storage.url(relpath)
 
