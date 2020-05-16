@@ -55,8 +55,8 @@ class WebpackLoader(object):
             public_path = chunk.get('publicPath')
             if public_path:
                 return public_path
-        except Exception as e:
-            print(e)
+        except:
+            pass
 
         relpath = '{0}{1}'.format(
             self.config['BUNDLE_DIR_NAME'], chunk_name
