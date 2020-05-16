@@ -38,7 +38,8 @@ class WebpackLoader(object):
         return self.load_assets()
 
     def filter_chunks(self, chunks):
-        for chunk_name in chunks:
+        for c in chunks:
+            chunk_name = c.get('name')
             ignore = any(regex.match(chunk_name)
                          for regex in self.config['ignores'])
             if not ignore:
@@ -49,10 +50,13 @@ class WebpackLoader(object):
                 yield chunk
 
     def get_chunk_url(self, chunk_name):
-        chunk = self.get_assets().get('assets').get(chunk_name)
-        public_path = chunk.get('publicPath')
-        if public_path:
-            return public_path
+        try:
+            chunk = self.get_assets().get('assets').get(chunk_name)
+            public_path = chunk.get('publicPath')
+            if public_path:
+                return public_path
+        except Exception as e:
+            print(e)
 
         relpath = '{0}{1}'.format(
             self.config['BUNDLE_DIR_NAME'], chunk_name
@@ -83,7 +87,8 @@ class WebpackLoader(object):
         if assets.get('status') == 'done':
             chunks = assets['chunks'].get(bundle_name, None)
             if chunks is None:
-                raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
+                raise WebpackBundleLookupError(
+                    'Cannot resolve bundle {0}.'.format(bundle_name))
             return self.filter_chunks(chunks)
 
         elif assets.get('status') == 'error':
