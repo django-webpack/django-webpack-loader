@@ -38,8 +38,7 @@ class WebpackLoader(object):
         return self.load_assets()
 
     def filter_chunks(self, chunks):
-        for c in chunks:
-            chunk_name = c.get('name')
+        for chunk_name in chunks:
             ignore = any(regex.match(chunk_name)
                          for regex in self.config['ignores'])
             if not ignore:
