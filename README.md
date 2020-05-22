@@ -86,7 +86,7 @@ module.exports = {
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
+        'BUNDLES_URL': 'webpack_bundles/', # must end with slash
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
@@ -110,16 +110,16 @@ When `CACHE` is set to True, webpack-loader will read the stats file only once a
 
 <br>
 
-#### BUNDLE_DIR_NAME
+#### BUNDLES_URL
 ```python
 WEBPACK_LOADER = {
     'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/' # end with slash
+        'BUNDLES_URL': 'bundles/' # end with slash
     }
 }
 ```
 
-`BUNDLE_DIR_NAME` refers to the dir in which webpack outputs the bundles. It should not be the full path. If `./assets` is one of your static dirs and webpack generates the bundles in `./assets/output/bundles/`, then `BUNDLE_DIR_NAME` should be `output/bundles/`.
+`BUNDLES_URL` refers to the dir in which webpack outputs the bundles and will be used as the url prefix for the static files. It should not be the full path. If `./assets` is one of your static dirs and webpack generates the bundles in `./assets/output/bundles/`, then `BUNDLES_URL` should be `output/bundles/`.
 
 If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your STATIC_URL is `/static/`, then the `<script>` tag will look like this
 
@@ -127,7 +127,7 @@ If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your ST
 <script type="text/javascript" src="/static/output/bundles/main-cf4b5fab6e00a404e0c7.js"/>
 ```
 
-**NOTE:** If your webpack config outputs the bundles at the root of your `staticfiles` dir, then `BUNDLE_DIR_NAME` should be an empty string `''`, not `'/'`. 
+**NOTE:** If your webpack config outputs the bundles at the root of your `staticfiles` dir, then `BUNDLES_URL` should be an empty string `''`, not `'/'`. 
 
 <br>
 
@@ -194,7 +194,7 @@ class ExternalWebpackLoader(WebpackLoader):
 WEBPACK_LOADER = {
   'DEFAULT': {
       'CACHE': False,
-      'BUNDLE_DIR_NAME': 'bundles/',
+      'BUNDLES_URL': 'bundles/',
       'LOADER_CLASS': 'app.module.ExternalWebpackLoader',
       # Custom config setting made available in WebpackLoader's self.config
       'STATS_URL': 'https://www.test.com/path/to/stats/',
@@ -259,11 +259,11 @@ Version 2.0 and up of webpack loader also supports multiple webpack configuratio
 ```python
 WEBPACK_LOADER = {
     'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLES_URL': 'bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     },
     'DASHBOARD': {
-        'BUNDLE_DIR_NAME': 'dashboard_bundles/',
+        'BUNDLES_URL': 'dashboard_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-dashboard.json'),
     }
 }
@@ -370,7 +370,7 @@ module.exports = config;
 ```python
 if not DEBUG:
     WEBPACK_LOADER.update({
-        'BUNDLE_DIR_NAME': 'dist/',
+        'BUNDLES_URL': 'dist/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json')
     })
 ```

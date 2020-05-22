@@ -51,7 +51,7 @@ class WebpackLoader(object):
             return public_path
 
         relpath = '{0}{1}'.format(
-            self.config['BUNDLE_DIR_NAME'], chunk['name']
+            self.config['BUNDLES_URL'], chunk['name']
         )
         return staticfiles_storage.url(relpath)
 
