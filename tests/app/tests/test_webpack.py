@@ -192,7 +192,7 @@ class LoaderTestCase(TestCase):
             with open(
                 settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
             ) as stats_file:
-                stats_file.write(json.dumps({'status': 'compiling'}))
+                stats_file.write(json.dumps({'status': 'compile'}))
             loader = get_loader(DEFAULT_CONFIG)
             loader.config['TIMEOUT'] = 0.1
             with self.assertRaises(WebpackLoaderTimeoutError):
@@ -221,7 +221,7 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.html')
 
         with self.settings(DEBUG=True):
-            open(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w').write(json.dumps({'status': 'compiling'}))
+            open(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w').write(json.dumps({'status': 'compile'}))
             then = time.time()
             request = self.factory.get('/')
             result = view(request)
