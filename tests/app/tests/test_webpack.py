@@ -216,7 +216,7 @@ class LoaderTestCase(TestCase):
             ), str(e))
 
     def test_request_blocking(self):
-        # FIXME: This will work 99% time but there is no garauntee with the
+        # FIXME: This will work 99% time but there is no guarantee with the
         # 4 second thing. Need a better way to detect if request was blocked on
         # not.
         wait_for = 3

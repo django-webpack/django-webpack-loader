@@ -1,7 +1,7 @@
 var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
 module.exports = {
@@ -13,20 +13,29 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin("styles.css"),
-    new BundleTracker({filename: './webpack-stats.json'}),
+    new MiniCssExtractPlugin(),
+    new BundleTracker({path: __dirname, filename: './webpack-stats.json'}),
   ],
 
   module: {
-    loaders: [
+    rules: [
       // we pass the output from babel loader to react-hot loader
-      { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel'], },
-      { test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react']
+          }
+        }
+      },
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'], }
     ],
   },
 
   resolve: {
-    modulesDirectories: ['node_modules', 'bower_components'],
-    extensions: ['', '.js', '.jsx']
+    modules: ['node_modules', 'bower_components'],
+    extensions: ['.js', '.jsx']
   },
 }
