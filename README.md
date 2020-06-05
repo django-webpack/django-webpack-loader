@@ -6,7 +6,7 @@
 
 <br>
 
-Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step by step guide on setting up webpack with django using this library.
+Read [this guide](https://web.archive.org/web/20190105024822/https://owais.lone.pw/blog/webpack-plus-reactjs-and-django/) for a detailed step by step guide on setting up webpack with django using this library.
 
 
 Use webpack to generate your static bundles without django's staticfiles or opaque wrappers.
