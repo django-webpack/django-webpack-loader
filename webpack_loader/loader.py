@@ -11,7 +11,9 @@ from .exceptions import (
     WebpackBundleLookupError
 )
 from .config import load_config
+import logging
 
+logger = logging.getLogger(__name__)
 
 class WebpackLoader(object):
     _assets = {}
@@ -43,7 +45,7 @@ class WebpackLoader(object):
         if self.config['CACHE']:
             now = int(time.time())
             if self._is_cache_expired(now) or self.name not in self._assets:
-                print('--- fetching webpack-stats: {}'.format(time.ctime()))
+                logger.info('--- fetching webpack-stats: {}'.format(time.ctime()))
                 self._assets[self.name] = self._load_assets()
                 self._cache_timestamp = now
             return self._assets[self.name]
