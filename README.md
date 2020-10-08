@@ -413,3 +413,10 @@ Then in your base jinja template:
 
 
 Enjoy your webpack with django :)
+
+# Alternatives to Django-Webpack-Loader
+
+_This package is no longer actively maintained. Below are known projects
+that attempt to solve the same problem:_
+
+* [Django Manifest Loader](https://github.com/shonin/django-manifest-loader)
