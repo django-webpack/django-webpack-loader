@@ -2,5 +2,7 @@ twine==1.7.4
 Django==1.10.1
 django-jinja==2.2.1
 django-jinja2==0.1
+mkdocs==1.1.2
+Sphinx==3.2.1
 unittest2==1.1.0
 wheel==0.30.0

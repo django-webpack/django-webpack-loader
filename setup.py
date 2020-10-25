@@ -25,8 +25,8 @@ setup(
   long_description_content_type="text/markdown",
   author = 'Owais Lone',
   author_email = 'hello@owaislone.org',
-  download_url = 'https://github.com/owais/django-webpack-loader/tarball/{0}'.format(VERSION),
-  url = 'https://github.com/owais/django-webpack-loader', # use the URL to the github repo
+  download_url = 'https://github.com/jazzband/django-webpack-loader/tarball/{0}'.format(VERSION),
+  url = 'https://github.com/jazzband/django-webpack-loader', # use the URL to the github repo
   keywords = ['django', 'webpack', 'assets'], # arbitrary keywords
   classifiers = [
     'Programming Language :: Python :: 2.6',

@@ -1,5 +1,7 @@
 venv/
 
+site/
+
 # auto generated
 README.rst
 

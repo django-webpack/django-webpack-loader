@@ -3,24 +3,13 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-3.4-18
-      - test-3.4-19
-      - test-3.4-110
-      - test-3.4-111
-
-      - test-3.5-18
-      - test-3.5-19
       - test-3.5-110
       - test-3.5-111
 
-      - test-3.6-18
-      - test-3.6-19
       - test-3.6-110
       - test-3.6-111
       - test-3.6-22
 
-      - test-3.7-18
-      - test-3.7-19
       - test-3.7-110
       - test-3.7-111
       - test-3.7-22
@@ -71,43 +60,6 @@ jobs:
             source venv/bin/activate
             cd tests
             coverage run --source=webpack_loader manage.py test
-  test-3.4-18:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.4-stretch-node
-    environment:
-      DJANGO_VERSION: "18"
-  test-3.4-19:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.4-stretch-node
-    environment:
-      DJANGO_VERSION: "19"
-  test-3.4-110:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.4-stretch-node
-    environment:
-      DJANGO_VERSION: "110"
-  test-3.4-111:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.4-stretch-node
-    environment:
-      DJANGO_VERSION: "111"
-
-  test-3.5-18:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "18"
-  test-3.5-19:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "19"
   test-3.5-110:
     <<: *test-template
     docker:
@@ -121,18 +73,6 @@ jobs:
     environment:
       DJANGO_VERSION: "111"
 
-  test-3.6-18:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.6-stretch-node
-    environment:
-      DJANGO_VERSION: "18"
-  test-3.6-19:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.6-stretch-node
-    environment:
-      DJANGO_VERSION: "19"
   test-3.6-110:
     <<: *test-template
     docker:
@@ -152,18 +92,6 @@ jobs:
     environment:
       DJANGO_VERSION: "22"
 
-  test-3.7-18:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.7-stretch-node
-    environment:
-      DJANGO_VERSION: "18"
-  test-3.7-19:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.7-stretch-node
-    environment:
-      DJANGO_VERSION: "19"
   test-3.7-110:
     <<: *test-template
     docker:

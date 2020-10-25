@@ -1,0 +1,4 @@
+site_name: Django Webpack Loader
+repo_url: https://github.com/jazzband/django-webpack-loader/
+docs_dir: docs
+site_dir: site
