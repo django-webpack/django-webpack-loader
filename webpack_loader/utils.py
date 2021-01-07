@@ -48,7 +48,7 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs='', jsType='text/javascript'):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -64,8 +64,8 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
             tags.append((
-                '<script type="text/javascript" src="{0}" {1}></script>'
-            ).format(chunk['url'], attrs))
+                '<script type="{0}" src="{1}" {2}></script>'
+            ).format(jsType, chunk['url'], attrs))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
                 '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
