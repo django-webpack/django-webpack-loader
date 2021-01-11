@@ -10,8 +10,8 @@ DEFAULT_CONFIG = {
     'DEFAULT': {
         'CACHE': not settings.DEBUG,
         'BUNDLE_DIR_NAME': 'webpack_bundles/',
+        'STATS_PATH': './',
         'STATS_FILE': 'webpack-stats.json',
-        # FIXME: Explore usage of fsnotify
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
         'IGNORE': ['.+\.hot-update.js', '.+\.map'],
@@ -20,6 +20,7 @@ DEFAULT_CONFIG = {
 }
 
 user_config = getattr(settings, 'WEBPACK_LOADER', DEFAULT_CONFIG)
+
 
 user_config = dict(
     (name, dict(DEFAULT_CONFIG['DEFAULT'], **cfg))

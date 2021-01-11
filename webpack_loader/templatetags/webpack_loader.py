@@ -1,7 +1,6 @@
 from django import template, VERSION
 from django.conf import settings
 from django.utils.safestring import mark_safe
-
 from .. import utils
 
 register = template.Library()
@@ -19,6 +18,8 @@ def webpack_static(asset_name, config='DEFAULT'):
 
 
 assignment_tag = register.simple_tag if VERSION >= (1, 9) else register.assignment_tag
+
+
 @assignment_tag
 def get_files(bundle_name, extension=None, config='DEFAULT'):
     """
@@ -34,3 +35,11 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     :return: a list of matching chunks
     """
     return utils.get_files(bundle_name, extension=extension, config=config)
+
+
+@register.assignment_tag    
+def get_url(bundle_name, extension=None, config='DEFAULT'): 
+    """ 
+    Returns first file url  
+    """ 
+    return utils.get_first_url(bundle_name, extension=extension, config=config)

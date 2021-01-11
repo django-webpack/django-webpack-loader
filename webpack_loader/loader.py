@@ -1,3 +1,4 @@
+import os
 import json
 import time
 from io import open
@@ -20,22 +21,32 @@ class WebpackLoader(object):
         self.name = name
         self.config = config
 
-    def load_assets(self):
+    def load_assets(self, bundle_name=None):
         try:
-            with open(self.config['STATS_FILE'], encoding="utf-8") as f:
-                return json.load(f)
+            if bundle_name:
+                filepath = os.path.join(
+                    self.config['STATS_PATH'].replace('[bundle]', bundle_name),
+                    self.config['STATS_FILE']
+                )
+                with open(filepath, encoding="utf-8") as f:
+                    return json.load(f)
+            else:
+                raise Exception("no bundle found")
         except IOError:
             raise IOError(
                 'Error reading {0}. Are you sure webpack has generated '
                 'the file and the path is correct?'.format(
                     self.config['STATS_FILE']))
+        except Exception as e:
+            raise e
 
-    def get_assets(self):
+    def get_assets(self, bundle_name=None):
         if self.config['CACHE']:
+            # name = self.name + bundle_name
             if self.name not in self._assets:
-                self._assets[self.name] = self.load_assets()
+                self._assets[self.name] = self.load_assets(bunde_name)
             return self._assets[self.name]
-        return self.load_assets()
+        return self.load_assets(bundle_name)
 
     def filter_chunks(self, chunks):
         for chunk in chunks:
@@ -56,7 +67,7 @@ class WebpackLoader(object):
         return staticfiles_storage.url(relpath)
 
     def get_bundle(self, bundle_name):
-        assets = self.get_assets()
+        assets = self.get_assets(bundle_name)
 
         # poll when debugging and block request until bundle is compiled
         # or the build times out
@@ -68,7 +79,7 @@ class WebpackLoader(object):
                 time.sleep(self.config['POLL_INTERVAL'])
                 if timeout and (time.time() - timeout > start):
                     timed_out = True
-                assets = self.get_assets()
+                assets = self.get_assets(bundle_name)
 
             if timed_out:
                 raise WebpackLoaderTimeoutError(
