@@ -44,7 +44,7 @@ class WebpackLoader(object):
         if self.config['CACHE']:
             # name = self.name + bundle_name
             if self.name not in self._assets:
-                self._assets[self.name] = self.load_assets(bunde_name)
+                self._assets[self.name] = self.load_assets(bundle_name)
             return self._assets[self.name]
         return self.load_assets(bundle_name)
 
@@ -90,7 +90,8 @@ class WebpackLoader(object):
         if assets.get('status') == 'done':
             chunks = assets['chunks'].get(bundle_name, None)
             if chunks is None:
-                raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
+                raise WebpackBundleLookupError(
+                    'Cannot resolve bundle {0}.'.format(bundle_name))
             return self.filter_chunks(chunks)
 
         elif assets.get('status') == 'error':
