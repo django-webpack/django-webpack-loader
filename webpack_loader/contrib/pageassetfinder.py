@@ -5,12 +5,15 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.staticfiles import finders, utils
 
+from ..config import load_config
+
 
 class PageAssetFinder(finders.BaseFinder):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, config="DEFAULT", **kwargs):
         super(PageAssetFinder, self).__init__(*args, **kwargs)
         self.pageassets = {}  # pagename: storage instance
-        self.load_pages(os.path.join(settings.BASE_DIR, "pages"), namespace="root")
+        config = load_config(config)
+        self.load_pages(config["ROOT_PAGE_DIR"], namespace="root")
         for app_config in apps.get_app_configs():
             self.load_pages(os.path.join(app_config.path, "pages"), namespace=app_config.name)
 
