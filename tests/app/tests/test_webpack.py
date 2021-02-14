@@ -39,16 +39,16 @@ class LoaderTestCase(TestCase):
         from webpack_loader.errors import BAD_CONFIG_ERROR
 
         with self.settings(WEBPACK_LOADER={
-                                'BUNDLE_DIR_NAME': 'bundles/',
-                                'STATS_FILE': 'webpack-stats.json',
-                           }):
+            'BUNDLE_DIR_NAME': 'bundles/',
+            'STATS_FILE': 'webpack-stats.json',
+        }):
             errors = webpack_cfg_check(None)
             expected_errors = [BAD_CONFIG_ERROR]
             self.assertEqual(errors, expected_errors)
 
         with self.settings(WEBPACK_LOADER={
-                                'DEFAULT': {}
-                           }):
+            'DEFAULT': {}
+        }):
             errors = webpack_cfg_check(None)
             expected_errors = []
             self.assertEqual(errors, expected_errors)
@@ -64,8 +64,8 @@ class LoaderTestCase(TestCase):
         self.assertEqual(len(chunks), 1)
 
         main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
-        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.css'))
+        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
 
     def test_js_gzip_extract(self):
         self.compile_bundles('webpack.config.gzipTest.js')
@@ -78,8 +78,8 @@ class LoaderTestCase(TestCase):
         self.assertEqual(len(chunks), 1)
 
         main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
-        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.css'))
+        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
 
     def test_static_url(self):
         self.compile_bundles('webpack.config.publicPath.js')
@@ -87,38 +87,22 @@ class LoaderTestCase(TestCase):
         self.assertEqual(assets['status'], 'done')
         self.assertEqual(assets['publicPath'], 'http://custom-static-host.com/')
 
-    def test_code_spliting(self):
-        self.compile_bundles('webpack.config.split.js')
-        assets = get_loader(DEFAULT_CONFIG).get_assets()
-        self.assertEqual(assets['status'], 'done')
-        self.assertIn('chunks', assets)
-
-        chunks = assets['chunks']
-        self.assertIn('main', chunks)
-        self.assertEquals(len(chunks), 2)
-
-        main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
-
-        vendor = chunks['vendor']
-        self.assertEqual(vendor[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/vendor.js'))
-
     def test_templatetags(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
-        self.assertIn('<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/app2.css" rel="stylesheet" />', result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>', result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
         view = TemplateView.as_view(template_name='only_files.html')
         result = view(request)
-        self.assertIn("var contentCss = '/static/bundles/styles.css'", result.rendered_content)
+        self.assertIn("var contentCss = '/static/bundles/main.css'", result.rendered_content)
         self.assertIn("var contentJS = '/static/bundles/main.js'", result.rendered_content)
 
         self.compile_bundles('webpack.config.publicPath.js')
@@ -126,6 +110,39 @@ class LoaderTestCase(TestCase):
         request = self.factory.get('/')
         result = view(request)
         self.assertIn('<img src="http://custom-static-host.com/my-image.png"/>', result.rendered_content)
+
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        view = TemplateView.as_view(template_name='main_entrypoint.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+
+        view = TemplateView.as_view(template_name='another_entrypoint.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertIn('<link type="text/css" href="/static/bundles/another_entrypoint.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/another_entrypoint.js" ></script>', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+
+    def test_exclude_runtime(self):
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        view = TemplateView.as_view(template_name='main_template_exclude_runtime.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
+        self.assertNotIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+
+    def test_get_entrypoint_extension_filtering(self):
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        view = TemplateView.as_view(template_name='main_entrypoint_js_only.html')
+        request = self.factory.get('/')
+        result = view(request)
+        self.assertNotIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
 
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
@@ -158,7 +175,15 @@ class LoaderTestCase(TestCase):
         with self.settings(**settings):
             request = self.factory.get('/')
             result = view(request)
-            self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
+            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
+            self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        view = TemplateView.as_view(template_name='main_entrypoint.jinja')
+        with self.settings(**settings):
+            request = self.factory.get('/')
+            result = view(request)
+            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
             self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
     def test_reporting_errors(self):
@@ -166,7 +191,7 @@ class LoaderTestCase(TestCase):
         try:
             get_loader(DEFAULT_CONFIG).get_bundle('main')
         except WebpackError as e:
-            self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
+            self.assertIn("Can't resolve 'the-library-that-did-not-exist'", str(e))
 
     def test_missing_bundle(self):
         missing_bundle_name = 'missing_bundle'
@@ -175,6 +200,14 @@ class LoaderTestCase(TestCase):
             get_loader(DEFAULT_CONFIG).get_bundle(missing_bundle_name)
         except WebpackBundleLookupError as e:
             self.assertIn('Cannot resolve bundle {0}'.format(missing_bundle_name), str(e))
+
+    def test_missing_entrypoint(self):
+        missing_bundle_name = 'missing_entrypoint'
+        self.compile_bundles('webpack.config.multipleEntrypoints.js')
+        try:
+            get_loader(DEFAULT_CONFIG).get_entry(missing_bundle_name)
+        except WebpackBundleLookupError as e:
+            self.assertIn('Cannot resolve entry {0}'.format(missing_bundle_name), str(e))
 
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']

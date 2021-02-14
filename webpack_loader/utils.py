@@ -59,9 +59,41 @@ def get_as_tags(bundle_name, extension=None, config="DEFAULT", attrs=""):
     return tags
 
 
+def _get_entrypoint_files(entrypoint_name, extension, config):
+    bundle = get_loader(config).get_entry(entrypoint_name)
+    if extension:
+        bundle = _filter_by_extension(bundle, extension)
+    return bundle
+
+
+def get_entrypoint_files_as_tags(entrypoint_name, extension=None, config='DEFAULT', attrs=''):
+    """
+    Get a list of formatted <script> & <link> tags for the assets required by a
+    particular endpoint.
+
+    :param entrypoint_name: The name of the entrypoint
+    :param extension: (optional) filter by extension, eg. 'js' or 'css'
+    :param config: (optional) the name of the configuration
+    :return: a list of formatted tags as strings
+    """
+    entrypoint_files = _get_entrypoint_files(entrypoint_name, extension, config)
+    tags = []
+    for chunk in entrypoint_files:
+        if chunk['name'].endswith(('.js', '.js.gz')):
+            tags.append((
+                '<script type="text/javascript" src="{0}" {1}></script>'
+            ).format(chunk['url'], attrs))
+        elif chunk['name'].endswith(('.css', '.css.gz')):
+            tags.append((
+                '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
+            ).format(chunk['url'], attrs))
+    return tags
+
+
+
 def get_static(asset_name, config="DEFAULT"):
     """
-    Equivalent to Django"s "static" look up but for webpack assets.
+    Equivalent to Django's "static" look up but for webpack assets.
 
     :param asset_name: the name of the asset
     :param config: (optional) the name of the configuration

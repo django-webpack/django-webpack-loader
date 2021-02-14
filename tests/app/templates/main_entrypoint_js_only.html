@@ -1,14 +1,13 @@
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
     <title>Example</title>
   </head>
-  
+
   <body>
     <div id="react-app"></div>
-    {% render_bundle 'vendor' %}
-    {% render_bundle 'main' %}
+    {% render_entrypoint 'main' 'js' %}
   </body>
 </html>

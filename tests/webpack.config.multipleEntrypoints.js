@@ -5,16 +5,34 @@ var MiniCssPlugin = require("mini-css-extract-plugin");
 
 
 module.exports = {
-  context: __dirname,
   mode: 'production',
-  entry: './assets/js/index',
+  context: __dirname,
+  entry: {
+    main: './assets/js/index',
+    another_entrypoint: "./assets/js/index2",
+  },
   output: {
       path: path.resolve('./assets/bundles/'),
-      filename: "[name].js.gz"
+      filename: "[name].js"
   },
+  optimization: {
+    splitChunks: {
+      minSize: 30000,
+      chunks: "all",
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all",
+        },
+      },
+    },
+    runtimeChunk: "single",
+  },
+  
 
   plugins: [
-    new MiniCssPlugin({filename: '[name].css', chunkFilename: '[id].css' }),
+    new MiniCssPlugin({filename: '[name].css',     chunkFilename: '[name].css' }),
     new BundleTracker({filename: './webpack-stats.json'}),
   ],
 

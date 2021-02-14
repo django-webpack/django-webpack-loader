@@ -1,4 +1,5 @@
 venv/
+.DS_Store
 
 # auto generated
 README.rst

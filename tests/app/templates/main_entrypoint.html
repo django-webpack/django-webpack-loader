@@ -1,0 +1,14 @@
+{% load render_entrypoint from webpack_loader %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {% render_entrypoint 'main' 'css' %}
+  </head>
+
+  <body>
+    <div id="react-app"></div>
+    {% render_entrypoint 'main' 'js' %}
+  </body>
+</html>
