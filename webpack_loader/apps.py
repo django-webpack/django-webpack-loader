@@ -4,11 +4,11 @@ from .errors import BAD_CONFIG_ERROR
 
 
 def webpack_cfg_check(*args, **kwargs):
-    '''Test if config is compatible or not'''
+    """Test if config is compatible or not"""
     from django.conf import settings
 
     check_failed = False
-    user_config = getattr(settings, 'WEBPACK_LOADER', {})
+    user_config = getattr(settings, "WEBPACK_LOADER", {})
     try:
         user_config = [dict({}, **cfg) for cfg in user_config.values()]
     except TypeError:
@@ -21,7 +21,7 @@ def webpack_cfg_check(*args, **kwargs):
 
 
 class WebpackLoaderConfig(AppConfig):
-    name = 'webpack_loader'
+    name = "webpack_loader"
     verbose_name = "Webpack Loader"
 
     def ready(self):

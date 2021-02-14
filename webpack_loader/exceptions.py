@@ -1,8 +1,8 @@
 __all__ = (
-    'WebpackError',
-    'WebpackLoaderBadStatsError',
-    'WebpackLoaderTimeoutError',
-    'WebpackBundleLookupError'
+    "WebpackError",
+    "WebpackLoaderBadStatsError",
+    "WebpackLoaderTimeoutError",
+    "WebpackBundleLookupError"
 )
 
 
