@@ -74,6 +74,7 @@ def get_entrypoint_files_as_tags(entrypoint_name, extension=None, config='DEFAUL
     :param entrypoint_name: The name of the entrypoint
     :param extension: (optional) filter by extension, eg. 'js' or 'css'
     :param config: (optional) the name of the configuration
+    :param attrs: (optional) further attributes on the tags
     :return: a list of formatted tags as strings
     """
     entrypoint_files = _get_entrypoint_files(entrypoint_name, extension, config)
@@ -88,7 +89,6 @@ def get_entrypoint_files_as_tags(entrypoint_name, extension=None, config='DEFAUL
                 '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
             ).format(chunk['url'], attrs))
     return tags
-
 
 
 def get_static(asset_name, config="DEFAULT"):
