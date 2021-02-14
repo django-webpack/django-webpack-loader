@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import re
 
@@ -10,23 +11,26 @@ def rel(*parts):
 
 
 README = open("README.md", "r").read()
-
 with open(rel("webpack_loader", "__init__.py")) as handler:
     INIT_PY = handler.read()
-
 VERSION = re.findall("__version__ = '([^']+)'", INIT_PY)[0]
 
 setup(
-    name="django-webpack-loader",
-    packages=["webpack_loader", "webpack_loader/templatetags", "webpack_loader/contrib"],
+    name="django-webpack5-loader",
+    packages=[
+        "webpack_loader",
+        "webpack_loader/templatetags",
+        "webpack_loader/contrib",
+        "webpack_loader/contrib/pages",
+        "webpack_loader/contrib/pages/templatetags",
+    ],
     version=VERSION,
     description="Transparently use webpack with django",
     long_description=README,
     long_description_content_type="text/markdown",
     author="Owais Lone",
     author_email="hello@owaislone.org",
-    download_url="https://github.com/owais/django-webpack-loader/tarball/{0}".format(VERSION),
-    url="https://github.com/owais/django-webpack-loader",  # use the URL to the github repo
+    url="https://github.com/MrP01/django-webpack-loader",  # use the URL to the github repo
     keywords=["django", "webpack", "assets"],  # arbitrary keywords
     classifiers=[
         "Programming Language :: Python :: 2.6",
