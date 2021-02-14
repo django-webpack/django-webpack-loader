@@ -5,7 +5,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.staticfiles import finders, utils
 
-from ..config import load_config
+from webpack_loader.config import load_config
 
 
 class PageAssetFinder(finders.BaseFinder):
@@ -15,7 +15,7 @@ class PageAssetFinder(finders.BaseFinder):
         config = load_config(config)
         self.load_pages(config["ROOT_PAGE_DIR"], namespace="root")
         for app_config in apps.get_app_configs():
-            self.load_pages(os.path.join(app_config.path, "pages"), namespace=app_config.name)
+            self.load_pages(os.path.join(app_config.path, ""), namespace=app_config.name)
 
     def load_pages(self, path, namespace=None):
         if not os.path.exists(path):
