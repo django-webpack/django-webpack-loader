@@ -11,7 +11,7 @@ Use webpack to generate your static bundles without django's staticfiles or opaq
 
 Django webpack loader consumes the output generated
 by [webpack-bundle-tracker](https://github.com/owais/webpack-bundle-tracker) and lets you use the generated bundles in
-django.
+django. **If you want to use entrypoints**, please use [webpack4-bundle-tracker](https://www.npmjs.com/package/webpack4-bundle-tracker).
 
 A [changelog](CHANGELOG.md) is also available.
 
@@ -128,15 +128,15 @@ can be used in a similar way,
 Using `webpack_loader.contrib.pages` you can register entrypoints for corresponding pages in templates.
 
 At the top of your individual page, do:
-```HTML+Jinja2
+```HTML+Jinja
 {% extends "layout.jinja" %}
-{% do register_ep("myapp/dashboard") %}
+{% do register_entrypoint("myapp/dashboard") %}
 ```
 
 In the layout's (base template's) head, place the following
-```HTML+Jinja2
+```HTML+Jinja
 <!DOCTYPE html>
-{% do register_ep("main") %}
+{% do register_entrypoint("main") %}
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
   ...
@@ -145,7 +145,7 @@ In the layout's (base template's) head, place the following
 ```
 
 Usually in the body, but also possible in the head:
-```HTML+Jinja2
+```HTML+Jinja
 <body>
   ...
   {{ render_js() }}

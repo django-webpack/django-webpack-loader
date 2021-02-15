@@ -70,7 +70,9 @@ jobs:
           command: |
             source venv/bin/activate
             cd tests
+            ln -s ../webpack_loader webpack_loader
             coverage run --source=webpack_loader manage.py test
+
   test-3.4-18:
     <<: *test-template
     docker:
@@ -189,3 +191,22 @@ jobs:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "22"
+  test-3.8-31:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "31"
+  test-3.8-32:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "31"
+
+  test-3.9-32:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "31"
