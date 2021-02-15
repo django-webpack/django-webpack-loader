@@ -3,13 +3,14 @@ import os
 import time
 from subprocess import call
 from threading import Thread
+from unittest import skipIf
 
 import django
 from django.conf import settings
 from django.test import RequestFactory, TestCase
 from django.views.generic.base import TemplateView
 from django_jinja.builtins import DEFAULT_EXTENSIONS
-from unittest2 import skipIf
+
 from webpack_loader.exceptions import (
     WebpackError,
     WebpackLoaderBadStatsError,
@@ -18,11 +19,11 @@ from webpack_loader.exceptions import (
 )
 from webpack_loader.utils import get_loader
 
-
 BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 
 
+# noinspection PyMethodMayBeStatic
 class LoaderTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -32,8 +33,7 @@ class LoaderTestCase(TestCase):
             time.sleep(wait)
         call(['./node_modules/.bin/webpack', '--config', config])
 
-    @skipIf(django.VERSION < (1, 7),
-            'not supported in this django version')
+    @skipIf(django.VERSION < (1, 7), 'not supported in this django version')
     def test_config_check(self):
         from webpack_loader.apps import webpack_cfg_check
         from webpack_loader.errors import BAD_CONFIG_ERROR
@@ -93,11 +93,15 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>',
+            result.rendered_content)
 
-        self.assertIn('<link type="text/css" href="/static/bundles/app2.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/app2.css" rel="stylesheet" />',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>',
+            result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
         view = TemplateView.as_view(template_name='only_files.html')
@@ -115,34 +119,46 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='main_entrypoint.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>',
+            result.rendered_content)
 
         view = TemplateView.as_view(template_name='another_entrypoint.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/another_entrypoint.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/another_entrypoint.js" ></script>', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/another_entrypoint.css" rel="stylesheet" />',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/another_entrypoint.js" ></script>',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>',
+            result.rendered_content)
 
     def test_exclude_runtime(self):
         self.compile_bundles('webpack.config.multipleEntrypoints.js')
         view = TemplateView.as_view(template_name='main_template_exclude_runtime.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
-        self.assertNotIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>',
+            result.rendered_content)
+        self.assertNotIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>',
+            result.rendered_content)
 
     def test_get_entrypoint_extension_filtering(self):
         self.compile_bundles('webpack.config.multipleEntrypoints.js')
         view = TemplateView.as_view(template_name='main_entrypoint_js_only.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertNotIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>', result.rendered_content)
+        self.assertNotIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" ></script>',
+            result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/bundles/runtime.js" ></script>',
+            result.rendered_content)
 
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
@@ -150,7 +166,7 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.jinja')
 
         if django.VERSION >= (1, 8):
-            settings = {
+            settings_ = {
                 'TEMPLATES': [
                     {
                         "BACKEND": "django_jinja.backend.Jinja2",
@@ -166,25 +182,31 @@ class LoaderTestCase(TestCase):
                 ]
             }
         else:
-            settings = {
+            settings_ = {
                 'TEMPLATE_LOADERS': (
                     'django_jinja.loaders.FileSystemLoader',
                     'django_jinja.loaders.AppLoader',
                 ),
             }
-        with self.settings(**settings):
+        with self.settings(**settings_):
             request = self.factory.get('/')
             result = view(request)
-            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-            self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />',
+                result.rendered_content)
+            self.assertIn(
+                '<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>',
+                result.rendered_content)
 
         self.compile_bundles('webpack.config.multipleEntrypoints.js')
         view = TemplateView.as_view(template_name='main_entrypoint.jinja')
-        with self.settings(**settings):
+        with self.settings(**settings_):
             request = self.factory.get('/')
             result = view(request)
-            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-            self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />',
+                result.rendered_content)
+            self.assertIn(
+                '<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>',
+                result.rendered_content)
 
     def test_reporting_errors(self):
         self.compile_bundles('webpack.config.error.js')
@@ -225,7 +247,7 @@ class LoaderTestCase(TestCase):
     def test_timeouts(self):
         with self.settings(DEBUG=True):
             with open(
-                settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
+                    settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
             ) as stats_file:
                 stats_file.write(json.dumps({'status': 'compiling'}))
             loader = get_loader(DEFAULT_CONFIG)
@@ -235,7 +257,7 @@ class LoaderTestCase(TestCase):
 
     def test_bad_status_in_production(self):
         with open(
-            settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
+                settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
         ) as stats_file:
             stats_file.write(json.dumps({'status': 'unexpected-status'}))
 
@@ -264,7 +286,7 @@ class LoaderTestCase(TestCase):
             t2 = Thread(target=self.compile_bundles, args=('webpack.config.app2.js', wait_for))
             t.start()
             t2.start()
-            result.rendered_content
+            assert result.rendered_content
             elapsed = time.time() - then
             t.join()
             t2.join()
@@ -276,6 +298,6 @@ class LoaderTestCase(TestCase):
             then = time.time()
             request = self.factory.get('/')
             result = view(request)
-            result.rendered_content
+            assert result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)

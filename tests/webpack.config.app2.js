@@ -1,5 +1,5 @@
 var config = require("./webpack.config.simple.js");
-var BundleTracker = require('webpack-bundle-tracker');
+var BundleTracker = require('webpack4-bundle-tracker');
 var MiniCssPlugin = require("mini-css-extract-plugin");
 
 config.entry = {
@@ -7,8 +7,8 @@ config.entry = {
 };
 
 config.plugins = [
-    new MiniCssPlugin(),
-    new BundleTracker({filename: './webpack-stats-app2.json'})
+  new MiniCssPlugin(),
+  new BundleTracker({filename: './webpack-stats-app2.json'})
 ];
 
 module.exports = config;
