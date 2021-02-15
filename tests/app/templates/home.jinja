@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Example</title>
-    {{ render_bundle('main', 'css') }}
-    {{ render_bundle('app2', 'css', 'APP2') }}
-  </head>
-
-  <body>
-    <div id="react-app"></div>
-    {{ render_bundle('main', 'js', attrs='async charset="UTF-8"') }}
-    {{ render_bundle('app2', 'js', 'APP2') }}
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example</title>
+  {{ render_bundle('main', 'css') }}
+  {{ render_bundle('app2', 'css', 'APP2') }}
+</head>
+<body>
+  <div id="react-app"></div>
+  {{ render_bundle('main', 'js', attrs='async charset="UTF-8"') }}
+  {{ render_bundle('app2', 'js', 'APP2') }}
+</body>
 </html>
