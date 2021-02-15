@@ -1,0 +1,2 @@
+django>=3.2a1
+django_jinja>=2.7
