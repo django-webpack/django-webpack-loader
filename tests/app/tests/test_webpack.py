@@ -102,7 +102,7 @@ class LoaderTestCase(TestCase):
             result.rendered_content)
         self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>',
             result.rendered_content)
-        self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
+        self.assertIn('<img src="/static/bundles/assets/my-image.png" alt="my-image"/>', result.rendered_content)
 
         view = TemplateView.as_view(template_name='only_files.html')
         result = view(request)
@@ -113,7 +113,7 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<img src="http://custom-static-host.com/my-image.png"/>', result.rendered_content)
+        self.assertIn('<img src="http://custom-static-host.com/assets/my-image.png" alt="my-image"/>', result.rendered_content)
 
         self.compile_bundles('webpack.config.multipleEntrypoints.js')
         view = TemplateView.as_view(template_name='main_entrypoint.html')
@@ -176,7 +176,6 @@ class LoaderTestCase(TestCase):
                             "extensions": DEFAULT_EXTENSIONS + [
                                 "webpack_loader.contrib.jinja2ext.WebpackExtension",
                             ]
-
                         }
                     },
                 ]

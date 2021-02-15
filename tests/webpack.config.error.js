@@ -14,14 +14,18 @@ module.exports = {
 
   plugins: [
     new MiniCssPlugin({filename: '[name].css', chunkFilename: '[id].css'}),
-    new BundleTracker({filename: './webpack-stats.json'}),
+    new BundleTracker({
+      filename: "./webpack-stats.json",
+      publicPath: "/static/bundles/",
+    }),
   ],
 
   module: {
     rules: [
       // we pass the output from babel loader to react-hot loader
       {test: /\.jsx?$/, exclude: /node_modules/, use: ['babel-loader'],},
-      {test: /\.css$/, use: [MiniCssPlugin.loader, "css-loader"]}
+      {test: /\.css$/, use: [MiniCssPlugin.loader, "css-loader"]},
+      {test: /\.png$/, type: 'asset/resource', use: 'file-loader?name=assets/[name].[ext]'},
     ],
   },
 
