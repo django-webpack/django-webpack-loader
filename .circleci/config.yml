@@ -3,11 +3,6 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-3.5-18
-      - test-3.5-19
-      - test-3.5-110
-      - test-3.5-111
-
       - test-3.6-18
       - test-3.6-19
       - test-3.6-110
@@ -73,31 +68,6 @@ jobs:
             cd tests
             ln -s ../webpack_loader webpack_loader
             coverage run --source=webpack_loader manage.py test
-
-  test-3.5-18:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "18"
-  test-3.5-19:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "19"
-  test-3.5-110:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "110"
-  test-3.5-111:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "111"
 
   test-3.6-18:
     <<: *test-template
