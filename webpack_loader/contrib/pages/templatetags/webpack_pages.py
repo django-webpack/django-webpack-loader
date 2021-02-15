@@ -50,13 +50,13 @@ def render_js(context, config="DEFAULT"):
     return mark_safe("".join(f"<script src='{file['url']}'></script>" for file in files))
 
 
-@functools.lru_cache
+@functools.lru_cache()
 def inline_static_file(path):
     with open(finders.find(path)) as f:
         return mark_safe(f.read())
 
 
-@functools.lru_cache
+@functools.lru_cache()
 def inline_entrypoint(entrypoint, extension, config="DEFAULT"):
     inlined = ""
     for file in get_unique_entrypoint_files((entrypoint,), extension, config=config):
