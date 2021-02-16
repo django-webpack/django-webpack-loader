@@ -64,6 +64,7 @@ jobs:
             cd tests
             ln -s ../webpack_loader webpack_loader
             coverage run --source=webpack_loader manage.py test
+            coveralls
 
   test-3.6-18:
     <<: *test-template

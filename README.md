@@ -1,8 +1,9 @@
 # django-webpack5-loader
 
+[![PyPI version](https://badge.fury.io/py/django-webpack5-loader.svg)](https://badge.fury.io/py/django-webpack5-loader)
+[![Build Status](https://circleci.com/gh/MrP01/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/owais/django-webpack-loader/tree/master)
+[![Coverage Status](https://coveralls.io/repos/MrP01/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/owais/django-webpack-loader?branch=master)
 [![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://circleci.com/gh/owais/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/owais/django-webpack-loader/tree/master)
-[![Coverage Status](https://coveralls.io/repos/owais/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/owais/django-webpack-loader?branch=master)
 
 Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step-by-step guide on setting up webpack
 with django using this library.
