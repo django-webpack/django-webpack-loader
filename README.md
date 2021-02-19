@@ -14,6 +14,9 @@ Django webpack loader consumes the output generated
 by [webpack-bundle-tracker](https://github.com/owais/webpack-bundle-tracker) and lets you use the generated bundles in
 django. **If you want to use entrypoints**, please use [webpack4-bundle-tracker](https://www.npmjs.com/package/webpack4-bundle-tracker).
 
+If you want to leverage webpack critical css generation while maintaining
+a Django-like structure in your project, have a look at [webpack-critical-pages](https://www.npmjs.com/package/webpack-critical-pages).
+
 A [changelog](CHANGELOG.md) is also available.
 
 ## Purpose of this Fork
@@ -134,7 +137,7 @@ At the top of your individual page, do:
 {% do register_entrypoint("myapp/dashboard") %}
 ```
 
-In the layout's (base template's) head, place the following
+In the layout's (base template's) head, place the following:
 ```HTML+Jinja
 <!DOCTYPE html>
 {% do register_entrypoint("main") %}
@@ -143,10 +146,6 @@ In the layout's (base template's) head, place the following
   ...
   {{ render_css() }}
 </head>
-```
-
-Usually in the body, but also possible in the head:
-```HTML+Jinja
 <body>
   ...
   {{ render_js() }}
