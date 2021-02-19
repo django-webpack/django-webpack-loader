@@ -6,6 +6,7 @@ from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
 
 from ..pageassetfinder import PageAssetFinder
+from ..utils import is_first_visit
 from ....config import load_config
 from ....utils import get_unique_entrypoint_files
 
@@ -31,7 +32,7 @@ def render_css(context, config="DEFAULT"):
         noscriptTags.append(f'<link rel="stylesheet" href="{file["url"]}">')
     criticalPath = finders.find(f"bundles/{entrypoints[-1]}.critical.css")
     cfg = load_config(config)
-    if context["request"].first_visit and cfg["CRITICAL_CSS_ENABLED"] and criticalPath:
+    if is_first_visit(context["request"]) and cfg["CRITICAL_CSS_ENABLED"] and criticalPath:
         with open(criticalPath) as f:
             criticalCss = f.read()
         return mark_safe(
