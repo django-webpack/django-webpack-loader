@@ -99,3 +99,10 @@ class WebpackLoader(object):
             "The stats file does not contain valid data. Make sure "
             "webpack-bundle-tracker plugin is enabled and try to run "
             "webpack again.")
+
+
+class NewWebpackLoader(WebpackLoader):
+    # for webpack-bundle-tracker@>1.0.0-alpha.1
+    def filter_chunks(self, chunks):
+        chunks = [chunk if isinstance(chunk, dict) else {'name': chunk} for chunk in chunks]
+        return super().filter_chunks(chunks)
