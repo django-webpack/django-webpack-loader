@@ -423,3 +423,4 @@ Enjoy your webpack with django :)
 _Below are known projects that attempt to solve the same problem:_
 
 * [Django Manifest Loader](https://github.com/shonin/django-manifest-loader)
+* [Python Webpack Boilerplate](https://github.com/AccordBox/python-webpack-boilerplate)
