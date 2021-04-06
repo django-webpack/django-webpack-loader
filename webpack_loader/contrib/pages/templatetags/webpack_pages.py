@@ -74,7 +74,7 @@ def asset_url(context, path, absolute=False, config="DEFAULT"):
         pagename = context.assets_pagename
     else:
         template_ = context.environment.get_template(context.name)
-        pages_location = os.path.normpath(template_.filename).rstrip(os.path.normpath(context.name))  # 'pages' folder
+        pages_location = os.path.normpath(template_.filename)[:-(len(os.path.normpath(context.name)) + 1)]  # 'pages' folder
         cfg = load_config(config)
         if pages_location == cfg["ROOT_PAGE_DIR"]:
             app_name = "root"
