@@ -524,4 +524,9 @@ Enjoy your webpack with django :)
 
 _Below are known projects that attempt to solve the same problem:_
 
+Note that these projects have not been vetted or reviewed in any way by me.
+These are not recommendation.
+Anyone can add their project to this by sending a PR.
+
 * [Django Manifest Loader](https://github.com/shonin/django-manifest-loader)
+* [Python Webpack Boilerplate](https://github.com/AccordBox/python-webpack-boilerplate)
