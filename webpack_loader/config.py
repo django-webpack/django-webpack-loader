@@ -17,7 +17,8 @@ DEFAULT_CONFIG = {
         "EXCLUDE_RUNTIME": False,
         "BASE_ENTRYPOINT": "",
         "ROOT_PAGE_DIR": "pages/",
-        "CRITICAL_CSS_ENABLED": False
+        "CRITICAL_CSS_ENABLED": False,
+        "LOCALIZED_BUILDS": False,
     }
 }
 

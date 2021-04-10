@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import translation
 from django.utils.module_loading import import_string
 
 from .config import load_config
@@ -7,11 +8,18 @@ _loaders = {}
 
 
 def get_loader(config_name):
-    if config_name not in _loaders:
-        config = load_config(config_name)
+    config = load_config(config_name)
+
+    loader_name = config_name
+    locale = None
+    if config["LOCALIZED_BUILDS"]:
+        locale = translation.get_language()
+        loader_name += "-" + locale
+
+    if loader_name not in _loaders:
         loader_class = import_string(config["LOADER_CLASS"])
-        _loaders[config_name] = loader_class(config_name, config)
-    return _loaders[config_name]
+        _loaders[loader_name] = loader_class(loader_name, config, locale)
+    return _loaders[loader_name]
 
 
 def _filter_by_extension(bundle, extension):
