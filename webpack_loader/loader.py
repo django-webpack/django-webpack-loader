@@ -16,20 +16,18 @@ from .exceptions import (
 class WebpackLoader(object):
     _assets = {}
 
-    def __init__(self, name, config, locale=None):
+    def __init__(self, name, config):
         self.name = name
         self.config = config
-        self.locale = locale
 
     def load_assets(self):
-        statsFile = self.config["STATS_FILE"].format(locale=self.locale)
+        statsFile = self.config["STATS_FILE"]
         try:
             with open(statsFile, encoding="utf-8") as f:
                 return json.load(f)
         except IOError:
-            raise IOError(
-                "Error reading {0}. Are you sure webpack has generated "
-                "the file and the path is correct?".format(statsFile))
+            raise IOError("Error reading {0}. Are you sure webpack has generated "
+                          "the file and the path is correct?".format(statsFile))
 
     def get_assets(self):
         if self.config["CACHE"]:
