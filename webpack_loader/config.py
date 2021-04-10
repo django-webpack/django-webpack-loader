@@ -16,9 +16,6 @@ DEFAULT_CONFIG = {
         "LOADER_CLASS": "webpack_loader.loader.WebpackLoader",
         "EXCLUDE_RUNTIME": False,
         "BASE_ENTRYPOINT": "",
-        "ROOT_PAGE_DIR": "pages/",
-        "CRITICAL_CSS_ENABLED": False,
-        "LOCALIZED_BUILDS": False,
     }
 }
 
