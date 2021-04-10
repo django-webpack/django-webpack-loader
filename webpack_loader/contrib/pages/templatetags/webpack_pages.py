@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from ..pageassetfinder import PageAssetFinder
 from ..utils import is_first_visit
 from ....config import load_config
-from ....utils import get_unique_entrypoint_files
+from ....utils import get_unique_entrypoint_files, get_loader
 
 register = template.Library()
 
@@ -30,15 +30,17 @@ def render_css(context, config="DEFAULT"):
         preloadTags.append(f'<link rel="preload" href="{file["url"]}" as="style" '
                            f'onload="this.onload=null;this.rel=\'stylesheet\'">')
         noscriptTags.append(f'<link rel="stylesheet" href="{file["url"]}">')
-    criticalPath = finders.find(f"bundles/{entrypoints[-1]}.critical.css")
     cfg = load_config(config)
+    loader = get_loader(config)
+    base = cfg["STATICFILE_BUNDLES_BASE"].format(locale=loader.locale)
+    criticalPath = finders.find(f"{base}{entrypoints[-1]}.critical.css")
     if is_first_visit(context["request"]) and cfg["CRITICAL_CSS_ENABLED"] and criticalPath:
         with open(criticalPath) as f:
             criticalCss = f.read()
         return mark_safe(
             f"<style>{criticalCss}</style>\n"
             f"{''.join(preloadTags)}\n"
-            f"<script>{inline_static_file('bundles/cssrelpreload.js')}</script>\n"
+            f"<script>{inline_static_file(base + 'cssrelpreload.js')}</script>\n"
             f"<noscript>{''.join(noscriptTags)}</noscript>"
         )
     else:
@@ -60,8 +62,11 @@ def inline_static_file(path):
 @functools.lru_cache()
 def inline_entrypoint(entrypoint, extension, config="DEFAULT"):
     inlined = ""
+    cfg = load_config(config)
+    loader = get_loader(config)
+    base = cfg["STATICFILE_BUNDLES_BASE"].format(locale=loader.locale)
     for file in get_unique_entrypoint_files((entrypoint,), extension, config=config):
-        with open(finders.find(f"bundles/{file['name']}")) as f:
+        with open(finders.find(base + file['name'])) as f:
             inlined += f.read()
     return mark_safe(inlined)
 
@@ -74,7 +79,7 @@ def asset_url(context, path, absolute=False, config="DEFAULT"):
         pagename = context.assets_pagename
     else:
         template_ = context.environment.get_template(context.name)
-        pages_location = os.path.normpath(template_.filename)[:-(len(os.path.normpath(context.name)) + 1)]  # 'pages' folder
+        pages_location = os.path.normpath(template_.filename)[:-(len(os.path.normpath(context.name)) + 1)]
         cfg = load_config(config)
         if pages_location == cfg["ROOT_PAGE_DIR"]:
             app_name = "root"

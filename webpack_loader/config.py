@@ -19,6 +19,7 @@ DEFAULT_CONFIG = {
         "ROOT_PAGE_DIR": "pages/",
         "CRITICAL_CSS_ENABLED": False,
         "LOCALIZED_BUILDS": False,
+        "STATICFILE_BUNDLES_BASE": "bundles/",  # e.g. example.org/static/bundles/entry.js; should end in /
     }
 }
 

@@ -27,9 +27,8 @@ class WebpackLoader(object):
             with open(statsFile, encoding="utf-8") as f:
                 return json.load(f)
         except IOError:
-            raise IOError(
-                "Error reading {0}. Are you sure webpack has generated "
-                "the file and the path is correct?".format(statsFile))
+            raise IOError("Error reading {0}. Are you sure webpack has generated "
+                          "the file and the path is correct?".format(statsFile))
 
     def get_assets(self):
         if self.config["CACHE"]:
