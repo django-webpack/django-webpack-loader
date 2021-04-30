@@ -161,7 +161,7 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 
 #### POLL_INTERVAL
 
-`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 100 miliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
+`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 100 milliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
 
 **NOTE:** Stats file is not polled when in production (DEBUG=False).
 
