@@ -1,8 +1,7 @@
 var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
-var SplitByPathPlugin = require('webpack-split-by-path');
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
 module.exports = {
@@ -15,26 +14,42 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin("styles.css"),
-    new BundleTracker({filename: './webpack-stats.json'}),
-    new SplitByPathPlugin([
-      {
-        name: 'vendor',
-        path: path.join(__dirname, '/node_modules/')
-      }
-    ])
+    new MiniCssExtractPlugin(),
+    new BundleTracker({path: __dirname, filename: './webpack-stats.json'}),
   ],
 
   module: {
-    loaders: [
+    rules: [
       // we pass the output from babel loader to react-hot loader
-      { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel'], },
-      { test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react']
+          }
+        }
+      },
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] }
     ],
   },
 
   resolve: {
-    modulesDirectories: ['node_modules', 'bower_components'],
-    extensions: ['', '.js', '.jsx']
+    modules: ['node_modules', 'bower_components'],
+    extensions: ['.js', '.jsx']
   },
+
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+          enforce: true
+        }
+      }
+    }
+  }
 }

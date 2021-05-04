@@ -38,20 +38,23 @@ class WebpackLoader(object):
         return self.load_assets()
 
     def filter_chunks(self, chunks):
+        assets = self.get_assets()
+
         for chunk in chunks:
-            ignore = any(regex.match(chunk['name'])
+            ignore = any(regex.match(chunk)
                          for regex in self.config['ignores'])
             if not ignore:
-                chunk['url'] = self.get_chunk_url(chunk)
-                yield chunk
+                files = assets['assets']
+                url = self.get_chunk_url(files[chunk])
+                yield { 'name': chunk, 'url': url }
 
-    def get_chunk_url(self, chunk):
-        public_path = chunk.get('publicPath')
+    def get_chunk_url(self, chunk_file):
+        public_path = chunk_file.get('publicPath')
         if public_path:
             return public_path
 
         relpath = '{0}{1}'.format(
-            self.config['BUNDLE_DIR_NAME'], chunk['name']
+            self.config['BUNDLE_DIR_NAME'], chunk_file['name']
         )
         return staticfiles_storage.url(relpath)
 
@@ -64,7 +67,7 @@ class WebpackLoader(object):
             timeout = self.config['TIMEOUT'] or 0
             timed_out = False
             start = time.time()
-            while assets['status'] == 'compiling' and not timed_out:
+            while assets['status'] == 'compile' and not timed_out:
                 time.sleep(self.config['POLL_INTERVAL'])
                 if timeout and (time.time() - timeout > start):
                     timed_out = True
@@ -80,6 +83,12 @@ class WebpackLoader(object):
             chunks = assets['chunks'].get(bundle_name, None)
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
+
+            for chunk in chunks:
+                asset = assets['assets'][chunk]
+                if asset is None:
+                    raise WebpackBundleLookupError('Cannot resolve asset {0}.'.format(chunk))
+
             return self.filter_chunks(chunks)
 
         elif assets.get('status') == 'error':
