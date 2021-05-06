@@ -1,4 +1,4 @@
-twine==1.7.4
+twine==3.4.1
 Django==1.10.1
 django-jinja==2.2.1
 django-jinja2==0.1

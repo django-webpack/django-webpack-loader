@@ -1,7 +1,3 @@
-# Looking for maintainers
-
-This repository is unmaintained as I don't have any free time to dedicate to this effort. If you or your organisation are heavy users of this library along with it's JS cousin (webpack-bundle-tracker), I'd be happy to add you as maintainers or even transfer the repo to you. Feel free to email me and we'll take it on from there. Thanks.
-
 # django-webpack-loader
 
 [![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
