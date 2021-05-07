@@ -1,2 +1,2 @@
 Django
-django-webpack-loader
+git+https://github.com/django-webpack/django-webpack-loader.git@78025557436b869d1d3c34b6f62355eb198febf5
