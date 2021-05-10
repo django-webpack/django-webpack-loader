@@ -1,5 +1,4 @@
 var path = require("path");
-var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 
 
@@ -7,8 +6,9 @@ module.exports = {
   context: __dirname,
   entry: './assets/js/index',
   output: {
-      path: path.resolve('./assets/bundles/'),
-      filename: "[name]-[hash].js",
+    path: path.resolve('./assets/bundles/'),
+    filename: "[name]-[hash].js",
+    chunkFilename: "[name]-[hash].js"
   },
 
   plugins: [
@@ -16,14 +16,18 @@ module.exports = {
   ],
 
   module: {
-    loaders: [
+    rules: [
       // we pass the output from babel loader to react-hot loader
-      { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel'], },
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        loaders: ['babel-loader'],
+      },
     ],
   },
 
   resolve: {
-    modulesDirectories: ['node_modules', 'bower_components'],
-    extensions: ['', '.js', '.jsx']
+    modules: ['node_modules', 'bower_components'],
+    extensions: ['.js', '.jsx']
   },
 }
