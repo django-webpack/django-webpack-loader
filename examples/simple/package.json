@@ -17,7 +17,6 @@
     "webpack": "^4.0.0",
     "webpack-bundle-tracker": "1.0.0-alpha.1",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.0.0",
-    "webpack-split-by-path": "2.0.0"
+    "webpack-dev-server": "^3.0.0"
   }
 }
