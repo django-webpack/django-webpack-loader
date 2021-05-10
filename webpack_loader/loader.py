@@ -56,7 +56,7 @@ class WebpackLoader(object):
 
         # Use os.path.normpath for Windows paths
         relpath = os.path.normpath(
-            os.path.join(self.config['BUNDLE_DIR_NAME'], chunk['name'])
+            os.path.join(self.config['BUNDLE_DIR_NAME'], chunk_file['name'])
         )
         return staticfiles_storage.url(relpath)
 
