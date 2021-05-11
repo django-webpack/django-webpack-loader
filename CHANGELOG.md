@@ -5,6 +5,10 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.0.0] -- 2021-05-12
+
+- Added support for `webpack-bundle-tracker@1.0.0`
+- Updated and corrected examples
 ## [0.6.0] -- 2018-02-22
 
 - Added support for 'Access-Control-Allow-Origin' header
