@@ -4,8 +4,6 @@ workflows:
   test:
     jobs:
       - test-3.4-20
-      - test-3.4-21
-      - test-3.4-22
 
       - test-3.5-20
       - test-3.5-21
@@ -90,18 +88,6 @@ jobs:
       - image: circleci/python:3.4-stretch-node
     environment:
       DJANGO_VERSION: "20"
-  test-3.4-21:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.4-stretch-node
-    environment:
-      DJANGO_VERSION: "21"
-  test-3.4-22:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.4-stretch-node
-    environment:
-      DJANGO_VERSION: "22"
 
   test-3.5-20:
     <<: *test-template
