@@ -1,8 +1,6 @@
-version: 2.1
-orbs:
-  coveralls: coveralls/coveralls@1.0.6
+version: 2
 workflows:
-  version: 2.1
+  version: 2
   test:
     jobs:
       - test-3.5-20
@@ -81,8 +79,7 @@ jobs:
             source venv/bin/activate
             cd tests
             coverage run --source=webpack_loader manage.py test
-
-      - coveralls/upload
+            coveralls
 
   test-3.5-20:
     <<: *test-template
@@ -90,21 +87,18 @@ jobs:
       - image: circleci/python:3.5-stretch-node
     environment:
       DJANGO_VERSION: "20"
-      PYTHON_VERSION: "35"
   test-3.5-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.5-stretch-node
     environment:
       DJANGO_VERSION: "21"
-      PYTHON_VERSION: "35"
   test-3.5-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.5-stretch-node
     environment:
       DJANGO_VERSION: "22"
-      PYTHON_VERSION: "35"
 
   test-3.6-20:
     <<: *test-template
@@ -112,42 +106,36 @@ jobs:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "20"
-      PYTHON_VERSION: "36"
   test-3.6-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "21"
-      PYTHON_VERSION: "36"
   test-3.6-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "22"
-      PYTHON_VERSION: "36"
   test-3.6-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "30"
-      PYTHON_VERSION: "36"
   test-3.6-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "31"
-      PYTHON_VERSION: "36"
   test-3.6-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "32"
-      PYTHON_VERSION: "36"
 
   test-3.7-20:
     <<: *test-template
@@ -155,42 +143,36 @@ jobs:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "20"
-      PYTHON_VERSION: "37"
   test-3.7-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "21"
-      PYTHON_VERSION: "37"
   test-3.7-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "22"
-      PYTHON_VERSION: "37"
   test-3.7-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "30"
-      PYTHON_VERSION: "37"
   test-3.7-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "31"
-      PYTHON_VERSION: "37"
   test-3.7-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "32"
-      PYTHON_VERSION: "37"
 
   test-3.8-20:
     <<: *test-template
@@ -198,42 +180,36 @@ jobs:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "20"
-      PYTHON_VERSION: "38"
   test-3.8-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "21"
-      PYTHON_VERSION: "38"
   test-3.8-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "22"
-      PYTHON_VERSION: "38"
   test-3.8-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "30"
-      PYTHON_VERSION: "38"
   test-3.8-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "31"
-      PYTHON_VERSION: "38"
   test-3.8-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "32"
-      PYTHON_VERSION: "38"
 
   test-3.9-20:
     <<: *test-template
@@ -241,39 +217,33 @@ jobs:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "20"
-      PYTHON_VERSION: "39"
   test-3.9-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "21"
-      PYTHON_VERSION: "39"
   test-3.9-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "22"
-      PYTHON_VERSION: "39"
   test-3.9-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "30"
-      PYTHON_VERSION: "39"
   test-3.9-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "31"
-      PYTHON_VERSION: "39"
   test-3.9-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "32"
-      PYTHON_VERSION: "39"
