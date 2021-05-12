@@ -1,12 +1,9 @@
-# Looking for maintainers
-
-This repository is unmaintained as I don't have any free time to dedicate to this effort. If you or your organisation are heavy users of this library along with it's JS cousin (webpack-bundle-tracker), I'd be happy to add you as maintainers or even transfer the repo to you. Feel free to email me and we'll take it on from there. Thanks.
-
 # django-webpack-loader
 
-[![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://circleci.com/gh/owais/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/owais/django-webpack-loader/tree/master)
-[![Coverage Status](https://coveralls.io/repos/owais/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/owais/django-webpack-loader?branch=master)
+[![Build Status](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master)
+[![Coverage Status](https://coveralls.io/repos/github/django-webpack/django-webpack-loader/badge.svg?branch=master)](https://coveralls.io/github/django-webpack/django-webpack-loader?branch=master)
+![pyversions](https://img.shields.io/pypi/pyversions/django-webpack-loader)
+![djversions](https://img.shields.io/pypi/djversions/django-webpack-loader)
 
 <br>
 
@@ -23,7 +20,7 @@ A [changelog](CHANGELOG.md) is also available.
 
 ## Compatibility
 
-Test cases cover Django>=1.6 on Python 2.7 and Python>=3.4. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
+Test cases cover Django>=2.0 on Python>=3.5. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
 
 
 ## Install

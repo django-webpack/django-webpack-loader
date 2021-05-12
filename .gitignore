@@ -1,4 +1,5 @@
 venv/
+*.sqlite3
 
 # auto generated
 README.rst
