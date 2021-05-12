@@ -290,6 +290,7 @@ jobs:
       - image: circleci/python:3.9-buster-node
     steps:
       - run:
-        - command: |
+        name: Finish Coveralls
+        command: |
           pip install coveralls
           coveralls --finish
