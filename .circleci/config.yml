@@ -1,6 +1,8 @@
-version: 2
+version: 2.1
+orbs:
+  coveralls: coveralls/coveralls@1.0.6
 workflows:
-  version: 2
+  version: 2.1
   test:
     jobs:
       - test-3.5-20
@@ -34,6 +36,41 @@ workflows:
       - test-3.9-30
       - test-3.9-31
       - test-3.9-32
+
+      - done:
+        requires:
+          - test-3.5-20
+          - test-3.5-21
+          - test-3.5-22
+
+          - test-3.6-20
+          - test-3.6-21
+          - test-3.6-22
+          - test-3.6-30
+          - test-3.6-31
+          - test-3.6-32
+
+          - test-3.7-20
+          - test-3.7-21
+          - test-3.7-22
+          - test-3.7-30
+          - test-3.7-31
+          - test-3.7-32
+
+          - test-3.8-20
+          - test-3.8-21
+          - test-3.8-22
+          - test-3.8-30
+          - test-3.8-31
+          - test-3.8-32
+
+          - test-3.9-20
+          - test-3.9-21
+          - test-3.9-22
+          - test-3.9-30
+          - test-3.9-31
+          - test-3.9-32
+
 jobs:
   base: &test-template
     docker:
@@ -79,7 +116,9 @@ jobs:
             source venv/bin/activate
             cd tests
             coverage run --source=webpack_loader manage.py test
-            coveralls
+
+      - coveralls/upload:
+          parallel: true
 
   test-3.5-20:
     <<: *test-template
@@ -247,3 +286,10 @@ jobs:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "32"
+
+  done:
+    docker:
+      - image: 'circleci/node:10.0.0'
+    steps:
+      - coveralls/upload:
+          parallel_finished: true
