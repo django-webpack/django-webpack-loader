@@ -82,13 +82,7 @@ jobs:
             cd tests
             coverage run --source=webpack_loader manage.py test
 
-      - when:
-        condition:
-          and:
-            - equal: ["32", "${DJANGO_VERSION}"]
-            - equal: ["39", "${PYTHON_VERSION}"]
-        steps:
-          - coveralls/upload
+      - coveralls/upload
 
   test-3.5-20:
     <<: *test-template
