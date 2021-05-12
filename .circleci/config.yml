@@ -1,45 +1,73 @@
-version: 2.1
-orbs:
-  coveralls: coveralls/coveralls@1.0.6
+version: 2.
 workflows:
-  version: 2.1
+  version: 2
   test:
     jobs:
-      - test-35-20
-      - test-35-21
-      - test-35-22
+      - test-3.5-20
+      - test-3.5-21
+      - test-3.5-22
 
-      - test-36-20
-      - test-36-21
-      - test-36-22
-      - test-36-30
-      - test-36-31
-      - test-36-32
+      - test-3.6-20
+      - test-3.6-21
+      - test-3.6-22
+      - test-3.6-30
+      - test-3.6-31
+      - test-3.6-32
 
-      - test-37-20
-      - test-37-21
-      - test-37-22
-      - test-37-30
-      - test-37-31
-      - test-37-32
+      - test-3.7-20
+      - test-3.7-21
+      - test-3.7-22
+      - test-3.7-30
+      - test-3.7-31
+      - test-3.7-32
 
-      - test-38-20
-      - test-38-21
-      - test-38-22
-      - test-38-30
-      - test-38-31
-      - test-38-32
+      - test-3.8-20
+      - test-3.8-21
+      - test-3.8-22
+      - test-3.8-30
+      - test-3.8-31
+      - test-3.8-32
 
-      - test-39-20
-      - test-39-21
-      - test-39-22
-      - test-39-30
-      - test-39-31
-      - test-39-32
+      - test-3.9-20
+      - test-3.9-21
+      - test-3.9-22
+      - test-3.9-30
+      - test-3.9-31
+      - test-3.9-32
 
       - done:
           requires:
-            - test-39-32
+            - test-3.5-20
+            - test-3.5-21
+            - test-3.5-22
+
+            - test-3.6-20
+            - test-3.6-21
+            - test-3.6-22
+            - test-3.6-30
+            - test-3.6-31
+            - test-3.6-32
+
+            - test-3.7-20
+            - test-3.7-21
+            - test-3.7-22
+            - test-3.7-30
+            - test-3.7-31
+            - test-3.7-32
+
+            - test-3.8-20
+            - test-3.8-21
+            - test-3.8-22
+            - test-3.8-30
+            - test-3.8-31
+            - test-3.8-32
+
+            - test-3.9-20
+            - test-3.9-21
+            - test-3.9-22
+            - test-3.9-30
+            - test-3.9-31
+            - test-3.9-32
 
 jobs:
   base: &test-template
@@ -86,171 +114,171 @@ jobs:
             source venv/bin/activate
             cd tests
             coverage run --source=webpack_loader manage.py test
+            coveralls
+          environment:
+            COVERALLS_PARALLEL: true
 
-      - coveralls/upload:
-          parallel: true
-
-  test-35-20:
+  test-3.5-20:
     <<: *test-template
     docker:
       - image: circleci/python:3.5-stretch-node
     environment:
       DJANGO_VERSION: "20"
-  test-35-21:
+  test-3.5-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.5-stretch-node
     environment:
       DJANGO_VERSION: "21"
-  test-35-22:
+  test-3.5-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.5-stretch-node
     environment:
       DJANGO_VERSION: "22"
 
-  test-36-20:
+  test-3.6-20:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "20"
-  test-36-21:
+  test-3.6-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "21"
-  test-36-22:
+  test-3.6-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "22"
-  test-36-30:
+  test-3.6-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "30"
-  test-36-31:
+  test-3.6-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "31"
-  test-36-32:
+  test-3.6-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.6-stretch-node
     environment:
       DJANGO_VERSION: "32"
 
-  test-37-20:
+  test-3.7-20:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "20"
-  test-37-21:
+  test-3.7-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "21"
-  test-37-22:
+  test-3.7-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "22"
-  test-37-30:
+  test-3.7-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "30"
-  test-37-31:
+  test-3.7-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "31"
-  test-37-32:
+  test-3.7-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.7-stretch-node
     environment:
       DJANGO_VERSION: "32"
 
-  test-38-20:
+  test-3.8-20:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "20"
-  test-38-21:
+  test-3.8-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "21"
-  test-38-22:
+  test-3.8-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "22"
-  test-38-30:
+  test-3.8-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "30"
-  test-38-31:
+  test-3.8-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "31"
-  test-38-32:
+  test-3.8-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "32"
 
-  test-39-20:
+  test-3.9-20:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "20"
-  test-39-21:
+  test-3.9-21:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "21"
-  test-39-22:
+  test-3.9-22:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "22"
-  test-39-30:
+  test-3.9-30:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "30"
-  test-39-31:
+  test-3.9-31:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "31"
-  test-39-32:
+  test-3.9-32:
     <<: *test-template
     docker:
       - image: circleci/python:3.9-buster-node
@@ -259,7 +287,9 @@ jobs:
 
   done:
     docker:
-      - image: 'circleci/node:10.0.0'
+      - image: circleci/python:3.9-buster-node
     steps:
-      - coveralls/upload:
-          parallel_finished: true
+      - run:
+        - command: |
+          pip install coveralls
+          coveralls --finish
