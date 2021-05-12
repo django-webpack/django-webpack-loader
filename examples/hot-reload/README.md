@@ -21,3 +21,5 @@ Run webpack dev server
 ```bash
 node server.js
 ```
+
+Now you can make changes to `assets/js/app.jsx` and the changes will show up in the browser automagically.
