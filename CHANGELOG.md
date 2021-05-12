@@ -7,8 +7,10 @@ Releases are added to the
 
 ## [1.0.0] -- 2021-05-12
 
-- Added support for `webpack-bundle-tracker@1.0.0`
+- Added support for custom loader classes
+- Added compatibility with `webpack-bundle-tracker@1.0.0-alpha.1`
 - Updated and corrected examples
+- Updated Python and Django supported versions on tests
 ## [0.6.0] -- 2018-02-22
 
 - Added support for 'Access-Control-Allow-Origin' header
