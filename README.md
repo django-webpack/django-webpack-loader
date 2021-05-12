@@ -1,7 +1,7 @@
 # django-webpack-loader
 
 [![Build Status](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master)
-[![Coverage Status](https://coveralls.io/repos/django-webpack/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/django-webpack/django-webpack-loader?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/django-webpack/django-webpack-loader/badge.svg?branch=master)](https://coveralls.io/github/django-webpack/django-webpack-loader?branch=master)
 ![pyversions](https://img.shields.io/pypi/pyversions/django-webpack-loader)
 ![djversions](https://img.shields.io/pypi/djversions/django-webpack-loader)
 
