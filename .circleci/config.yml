@@ -116,7 +116,7 @@ jobs:
             coverage run --source=webpack_loader manage.py test
             coveralls
           environment:
-            COVERALLS_PARALLEL: true
+            COVERALLS_PARALLEL: 1
 
   test-3.5-20:
     <<: *test-template
