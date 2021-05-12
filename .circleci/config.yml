@@ -38,7 +38,8 @@ workflows:
       - test-3.9-32
 
       - done:
-        requires: [test-3.9-32]
+          requires:
+            - test-3.9-32
 
 jobs:
   base: &test-template
