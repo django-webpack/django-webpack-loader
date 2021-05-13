@@ -33,6 +33,14 @@ pip install django-webpack-loader
 
 <br>
 
+## Migrating from version < 1.0.0
+
+In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages, for full compatibility.
+
+This is necessary because the formatting of `webpack-stats.json` that `webpack-bundle-tracker` outputs has changed starting at version `1.0.0-alpha.1`. Starting at `django-webpack-loader==1.0.0`, this is the only formatting accepted here, meaning that other versions of that package don't output compatible files anymore, thereby breaking compatibility with older `webpack-bundle-tracker` releases.
+
+<br>
+
 ## Configuration
 
 <br>
