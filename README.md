@@ -328,7 +328,7 @@ CKEDITOR.config.contentsCss = '{{ editor_css_files.0.publicPath }}';
 in django templates. It is like django's built in `static` tag but for webpack assets instead.
 
 
-In the below example, `logo.png` can be any static asset shipped with any npm or bower package.
+In the below example, `logo.png` can be any static asset shipped with any npm package.
 
 ```HTML+Django
 {% load webpack_static from webpack_loader %}
