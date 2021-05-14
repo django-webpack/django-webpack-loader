@@ -398,12 +398,12 @@ If you need to output your assets in a jinja template we provide a Jinja2 extens
 To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
 
 ```python
+from django_jinja.builtins import DEFAULT_EXTENSIONS
 TEMPLATES = [
     {
         "BACKEND": "django_jinja.backend.Jinja2",
         "OPTIONS": {
-            "extensions": [
-                "django_jinja.builtins.extensions.DjangoFiltersExtension",
+            "extensions": DEFAULT_EXTENSIONS + [
                 "webpack_loader.contrib.jinja2ext.WebpackExtension",
             ],
         }
