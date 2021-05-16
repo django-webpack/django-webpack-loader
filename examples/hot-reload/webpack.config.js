@@ -37,7 +37,7 @@ module.exports = {
   },
 
   resolve: {
-    modules: ['node_modules', 'bower_components'],
+    modules: ['node_modules'],
     extensions: ['.js', '.jsx']
   },
 }
