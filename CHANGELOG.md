@@ -5,6 +5,12 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.1.0] -- 2021-06-18
+
+- Added compatibility with `webpack-bundle-tracker@1.1.0`
+- Removes bower references in project
+- Fix jinja configuration example in README.md
+
 ## [1.0.0] -- 2021-05-12
 
 - Added support for custom loader classes
