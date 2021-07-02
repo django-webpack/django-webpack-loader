@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from shutil import rmtree
 from subprocess import call
 from threading import Thread
 
@@ -26,6 +27,10 @@ DEFAULT_CONFIG = 'DEFAULT'
 class LoaderTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.cleanup_bundles_folder()
+
+    def cleanup_bundles_folder(self):
+        rmtree('./assets/bundles', ignore_errors=True)
 
     def compile_bundles(self, config, wait=None):
         if wait:
