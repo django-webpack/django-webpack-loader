@@ -67,6 +67,18 @@ class LoaderTestCase(TestCase):
         self.assertEqual(files['main.css']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.css'))
         self.assertEqual(files['main.js']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
 
+    def test_default_ignore_config_ignores_map_files(self):
+        self.compile_bundles('webpack.config.sourcemaps.js')
+        chunks = get_loader('NO_IGNORE').get_bundle('main')
+        has_map_files_chunks = any([".map" in chunk["name"] for chunk in chunks])
+
+        self.assertTrue(has_map_files_chunks)
+
+        chunks = get_loader(DEFAULT_CONFIG).get_bundle('main')
+        has_map_files_chunks = any([".map" in chunk["name"] for chunk in chunks])
+
+        self.assertFalse(has_map_files_chunks)
+
     def test_js_gzip_extract(self):
         self.compile_bundles('webpack.config.gzipTest.js')
         assets = get_loader(DEFAULT_CONFIG).get_assets()
