@@ -39,15 +39,23 @@ class WebpackLoader(object):
         return self.load_assets()
 
     def filter_chunks(self, chunks):
-        assets = self.get_assets()
+        filtered_chunks = []
 
         for chunk in chunks:
             ignore = any(regex.match(chunk)
                          for regex in self.config['ignores'])
             if not ignore:
-                files = assets['assets']
-                url = self.get_chunk_url(files[chunk])
-                yield { 'name': chunk, 'url': url }
+                filtered_chunks.append(chunk)
+
+        return filtered_chunks
+
+    def map_chunk_files_to_url(self, chunks):
+        assets = self.get_assets()
+
+        for chunk in chunks:
+            files = assets['assets']
+            url = self.get_chunk_url(files[chunk])
+            yield { 'name': chunk, 'url': url }
 
     def get_chunk_url(self, chunk_file):
         public_path = chunk_file.get('publicPath')
@@ -86,12 +94,14 @@ class WebpackLoader(object):
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
 
-            for chunk in chunks:
+            filtered_chunks = self.filter_chunks(chunks)
+
+            for chunk in filtered_chunks:
                 asset = assets['assets'][chunk]
                 if asset is None:
                     raise WebpackBundleLookupError('Cannot resolve asset {0}.'.format(chunk))
 
-            return self.filter_chunks(chunks)
+            return self.map_chunk_files_to_url(filtered_chunks)
 
         elif assets.get('status') == 'error':
             if 'file' not in assets:
