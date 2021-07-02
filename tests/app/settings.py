@@ -118,7 +118,10 @@ WEBPACK_LOADER = {
         'CACHE': False,
         'BUNDLE_DIR_NAME': 'bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
-    }
+    },
+    'NO_IGNORE': {
+        'IGNORE': [],
+    },
 }
 
 from django_jinja.builtins import DEFAULT_EXTENSIONS
