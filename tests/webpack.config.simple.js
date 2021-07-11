@@ -1,35 +1,41 @@
 var path = require("path");
 var webpack = require('webpack');
-var BundleTracker = require('webpack4-bundle-tracker');
-var MiniCssPlugin = require("mini-css-extract-plugin");
+var BundleTracker = require('webpack-bundle-tracker');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 
 module.exports = {
-  mode: 'production',
   context: __dirname,
   entry: './assets/js/index',
   output: {
-    path: path.resolve('./assets/bundles/'),
-    filename: "[name].js"
+      path: path.resolve('./assets/bundles/'),
+      filename: "[name].js"
   },
 
   plugins: [
-    new MiniCssPlugin({filename: '[name].css', chunkFilename: '[id].css'}),
-    new BundleTracker({
-      filename: "./webpack-stats.json",
-      publicPath: "/static/bundles/",
-    }),
+    new MiniCssExtractPlugin(),
+    new BundleTracker({path: __dirname, filename: './webpack-stats.json'}),
   ],
 
   module: {
     rules: [
       // we pass the output from babel loader to react-hot loader
-      {test: /\.jsx?$/, exclude: /node_modules/, use: ['babel-loader'],},
-      {test: /\.css$/, use: [MiniCssPlugin.loader, "css-loader"]},
-      {test: /\.png$/, type: 'asset/resource', use: 'file-loader?name=assets/[name].[ext]'},
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react']
+          }
+        }
+      },
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'], }
     ],
   },
 
   resolve: {
-    extensions: ['.css', '.js', '.jsx']
+    modules: ['node_modules'],
+    extensions: ['.js', '.jsx']
   },
 }

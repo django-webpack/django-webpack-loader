@@ -9,7 +9,8 @@ module.exports = {
   entry: './assets/js/index',
   output: {
       path: path.resolve('./assets/bundles/'),
-      filename: "[name].js.gz"
+      filename: "[name].js",
+      chunkFilename: "[name].js"
   },
 
   plugins: [
@@ -30,7 +31,7 @@ module.exports = {
           }
         }
       },
-      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'], }
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] }
     ],
   },
 
@@ -38,4 +39,17 @@ module.exports = {
     modules: ['node_modules'],
     extensions: ['.js', '.jsx']
   },
+
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+          enforce: true
+        }
+      }
+    }
+  }
 }

@@ -27,9 +27,9 @@ install:
 	@$(ENV)/bin/pip install $(requirements)
 
 publish: build
-	@echo "Publishing to pypi..."
+	@echo "Publishing to $(REPOSITORY)..."
 	@$(ENV)/bin/twine upload -r $(REPOSITORY) dist/*
 
 register:
-	@echo "Registering package on pypi..."
+	@echo "Registering package on $(REPOSITORY)..."
 	@$(ENV)/bin/twine register -r $(REPOSITORY)

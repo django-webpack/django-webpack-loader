@@ -1,5 +1,6 @@
 venv/
 .DS_Store
+*.sqlite3
 
 # auto generated
 README.rst
@@ -71,7 +72,7 @@ examples/**/ve/
 examples/**/venv/
 examples/**/node_modules/
 examples/**/assets/bundles/
-examples/**/assets/webpack-stats.json
+examples/**/webpack-stats.json
 
 tests/ve/
 tests/ve3/

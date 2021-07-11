@@ -252,9 +252,8 @@ the `webpack_loader.utils` module.
 
 ## Compatibility
 
-Test cases cover Django>=1.6 on Python 2.7 and Python>=3.4. 100% code coverage is the target, so we can be sure
-everything works anytime. It should probably work on older version of django as well, but the package does not ship any
-test cases for them.
+Test cases cover Django>=2.0 on Python>=3.5. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
+
 
 ## Install
 
@@ -263,6 +262,16 @@ npm install --save-dev webpack-bundle-tracker
 
 pip install django-webpack-loader
 ```
+
+<br>
+
+## Migrating from version < 1.0.0
+
+In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages, for full compatibility.
+
+This is necessary because the formatting of `webpack-stats.json` that `webpack-bundle-tracker` outputs has changed starting at version `1.0.0-alpha.1`. Starting at `django-webpack-loader==1.0.0`, this is the only formatting accepted here, meaning that other versions of that package don't output compatible files anymore, thereby breaking compatibility with older `webpack-bundle-tracker` releases.
+
+<br>
 
 ## Configuration
 
@@ -389,9 +398,7 @@ not be included in the template.
 
 #### POLL_INTERVAL
 
-`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is
-polled every 100 miliseconds by default and any requests to are blocked while webpack compiles the bundles. You can
-reduce this if your bundles take shorter to compile.
+`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 100 milliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
 
 **NOTE:** Stats file is not polled when in production (DEBUG=False).
 
@@ -443,12 +450,35 @@ using `{% render_entrypoint 'example_entry_point' %}`
 
 #### BASE_ENTRYPOINT
 
-`BASE_ENTRYPOINT` is meant to be used with `render_entrypoint`. When creating multi-page applications, it's common to
-want to include common js in the base HTML. If the main entrypoint's name is `main`, you can do that by
-including `{% render_entrypoint 'main' %}` in your base HTML file. Now in another entrypoints (that extend the base HTML
-file), there might be some chunks that were already included in `main`, that means they would be included twice in the
-final rendered HTML, to avoid that, set `BASE_ENTRYPOINT` to `'main'`, then any duplicate chunks between an entrypoint
-and the main entrypoint would be included only once.
+`webpack_static` template tag provides facilities to load static assets managed by webpack
+in django templates. It is like django's built in `static` tag but for webpack assets instead.
+
+
+In the below example, `logo.png` can be any static asset shipped with any npm package.
+
+```HTML+Django
+{% load webpack_static from webpack_loader %}
+
+<!-- render full public path of logo.png -->
+<img src="{% webpack_static 'logo.png' %}"/>
+```
+The public path is based on `webpack.config.js` [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath).
+
+<br>
+
+### From Python code
+
+If you want to access the webpack asset path information from your application code then you can use
+the function in the `webpack_loader.utils` module.
+
+```python
+>>> utils.get_files('main')
+[{'url': '/static/bundles/main.js', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/main.js', u'name': u'main.js'},
+ {'url': '/static/bundles/styles.css', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/styles.css', u'name': u'styles.css'}]
+>>> utils.get_as_tags('main')
+['<script type="text/javascript" src="/static/bundles/main.js" ></script>',
+ '<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />']
+```
 
 ## How to use in Production
 
@@ -497,12 +527,12 @@ the [Django Jinja](https://github.com/niwinz/django-jinja) module and Django 1.8
 To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
 
 ```python
+from django_jinja.builtins import DEFAULT_EXTENSIONS
 TEMPLATES = [
     {
         "BACKEND": "django_jinja.backend.Jinja2",
         "OPTIONS": {
-            "extensions": [
-                "django_jinja.builtins.extensions.DjangoFiltersExtension",
+            "extensions": DEFAULT_EXTENSIONS + [
                 "webpack_loader.contrib.jinja2ext.WebpackExtension",
             ],
         }
