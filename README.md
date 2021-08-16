@@ -133,7 +133,7 @@ WEBPACK_LOADER = {
 If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your STATIC_URL is `/static/`, then the `<script>` tag will look like this
 
 ```html
-<script type="text/javascript" src="/static/output/bundles/main-cf4b5fab6e00a404e0c7.js"/>
+<script src="/static/output/bundles/main-cf4b5fab6e00a404e0c7.js"/>
 ```
 
 **NOTE:** If your webpack config outputs the bundles at the root of your `staticfiles` dir, then `BUNDLE_DIR_NAME` should be an empty string `''`, not `'/'`. 
@@ -350,8 +350,8 @@ the function in the `webpack_loader.utils` module.
 [{'url': '/static/bundles/main.js', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/main.js', u'name': u'main.js'},
  {'url': '/static/bundles/styles.css', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/styles.css', u'name': u'styles.css'}]
 >>> utils.get_as_tags('main')
-['<script type="text/javascript" src="/static/bundles/main.js" ></script>',
- '<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />']
+['<script src="/static/bundles/main.js" ></script>',
+ '<link href="/static/bundles/styles.css" rel="stylesheet" />']
 ```
 
 ## How to use in Production
