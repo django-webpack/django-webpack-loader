@@ -111,12 +111,12 @@ STATICFILES_DIRS = (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': False,
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     },
     'APP2': {
         'CACHE': False,
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
     },
     'NO_IGNORE_APP': {

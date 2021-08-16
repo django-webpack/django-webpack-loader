@@ -8,7 +8,7 @@ module.exports = {
   context: __dirname,
   entry: './assets/js/bad_index',
   output: {
-      path: path.resolve('./assets/bundles/'),
+      path: path.resolve('./assets/django_webpack_loader_bundles/'),
       filename: "[name].js",
   },
 

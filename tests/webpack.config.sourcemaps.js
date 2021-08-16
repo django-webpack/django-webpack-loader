@@ -9,7 +9,7 @@ module.exports = {
   entry: './assets/js/index',
   devtool: 'source-map',
   output: {
-      path: path.resolve('./assets/bundles/'),
+      path: path.resolve('./assets/django_webpack_loader_bundles/'),
       filename: "[name].js"
   },
 
