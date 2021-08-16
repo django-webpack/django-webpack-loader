@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     'django_jinja',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,7 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-)
+]
 
 ROOT_URLCONF = 'app.urls'
 
@@ -111,14 +111,17 @@ STATICFILES_DIRS = (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': False,
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     },
     'APP2': {
         'CACHE': False,
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
-    }
+    },
+    'NO_IGNORE_APP': {
+        'IGNORE': [],
+    },
 }
 
 from django_jinja.builtins import DEFAULT_EXTENSIONS

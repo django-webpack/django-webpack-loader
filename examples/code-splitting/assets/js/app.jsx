@@ -1,7 +1,7 @@
-var React = require('react');
+import React from 'react';
 
-module.exports = React.createClass({
-   render: function(){
-       return <h1>Hello, world.</h1>
-   }
-});
+const App = () => {
+  return <h1>Hello, world.</h1>;
+}
+
+export default App;
