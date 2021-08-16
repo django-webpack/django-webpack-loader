@@ -51,9 +51,9 @@ class WebpackLoader(object):
 
     def map_chunk_files_to_url(self, chunks):
         assets = self.get_assets()
+        files = assets['assets']
 
         for chunk in chunks:
-            files = assets['assets']
             url = self.get_chunk_url(files[chunk])
             yield { 'name': chunk, 'url': url }
 
