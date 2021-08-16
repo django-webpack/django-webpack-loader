@@ -74,7 +74,7 @@ class LoaderTestCase(TestCase):
 
     def test_default_ignore_config_ignores_map_files(self):
         self.compile_bundles('webpack.config.sourcemaps.js')
-        chunks = get_loader('NO_IGNORE').get_bundle('main')
+        chunks = get_loader('NO_IGNORE_APP').get_bundle('main')
         has_map_files_chunks = any([".map" in chunk["name"] for chunk in chunks])
 
         self.assertTrue(has_map_files_chunks)
