@@ -119,7 +119,7 @@ WEBPACK_LOADER = {
         'BUNDLE_DIR_NAME': 'bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
     },
-    'NO_IGNORE': {
+    'NO_IGNORE_APP': {
         'IGNORE': [],
     },
 }
