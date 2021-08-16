@@ -5,6 +5,10 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## Unreleased
+- Applies ignore rule before checking assets
+
+
 ## [1.1.0] -- 2021-06-18
 
 - Added compatibility with `webpack-bundle-tracker@1.1.0`
