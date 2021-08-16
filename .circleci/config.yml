@@ -1,0 +1,296 @@
+version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-3.5-20
+      - test-3.5-21
+      - test-3.5-22
+
+      - test-3.6-20
+      - test-3.6-21
+      - test-3.6-22
+      - test-3.6-30
+      - test-3.6-31
+      - test-3.6-32
+
+      - test-3.7-20
+      - test-3.7-21
+      - test-3.7-22
+      - test-3.7-30
+      - test-3.7-31
+      - test-3.7-32
+
+      - test-3.8-20
+      - test-3.8-21
+      - test-3.8-22
+      - test-3.8-30
+      - test-3.8-31
+      - test-3.8-32
+
+      - test-3.9-20
+      - test-3.9-21
+      - test-3.9-22
+      - test-3.9-30
+      - test-3.9-31
+      - test-3.9-32
+
+      - done:
+          requires:
+            - test-3.5-20
+            - test-3.5-21
+            - test-3.5-22
+
+            - test-3.6-20
+            - test-3.6-21
+            - test-3.6-22
+            - test-3.6-30
+            - test-3.6-31
+            - test-3.6-32
+
+            - test-3.7-20
+            - test-3.7-21
+            - test-3.7-22
+            - test-3.7-30
+            - test-3.7-31
+            - test-3.7-32
+
+            - test-3.8-20
+            - test-3.8-21
+            - test-3.8-22
+            - test-3.8-30
+            - test-3.8-31
+            - test-3.8-32
+
+            - test-3.9-20
+            - test-3.9-21
+            - test-3.9-22
+            - test-3.9-30
+            - test-3.9-31
+            - test-3.9-32
+
+jobs:
+  base: &test-template
+    docker:
+      - image: circleci/python:3.4-stretch-node
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: python version
+          command: python --version
+
+      - restore_cache:
+          keys:
+          - v1-js
+      - restore_cache:
+          keys:
+          - v1-py
+
+      - run:
+          name: JS deps 
+          command: cd tests && yarn
+      - save_cache:
+          paths:
+            - ./npm
+          key: v1-js
+
+      - run:
+          name: setup python
+          command: |
+            python3 -m venv venv 
+            source venv/bin/activate
+            rm -f requirements.txt
+            pip install -r tests/requirements/common.txt
+            pip install -r tests/requirements/django${DJANGO_VERSION}.txt
+      - save_cache:
+          paths:
+            - ./cache/pip
+          key: v1-py
+
+      - run:
+          name: Run tests
+          command: |
+            source venv/bin/activate
+            cd tests
+            coverage run --source=webpack_loader manage.py test
+            coveralls
+          environment:
+            COVERALLS_PARALLEL: 1
+
+  test-3.5-20:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5-stretch-node
+    environment:
+      DJANGO_VERSION: "20"
+  test-3.5-21:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5-stretch-node
+    environment:
+      DJANGO_VERSION: "21"
+  test-3.5-22:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5-stretch-node
+    environment:
+      DJANGO_VERSION: "22"
+
+  test-3.6-20:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6-stretch-node
+    environment:
+      DJANGO_VERSION: "20"
+  test-3.6-21:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6-stretch-node
+    environment:
+      DJANGO_VERSION: "21"
+  test-3.6-22:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6-stretch-node
+    environment:
+      DJANGO_VERSION: "22"
+  test-3.6-30:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6-stretch-node
+    environment:
+      DJANGO_VERSION: "30"
+  test-3.6-31:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6-stretch-node
+    environment:
+      DJANGO_VERSION: "31"
+  test-3.6-32:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6-stretch-node
+    environment:
+      DJANGO_VERSION: "32"
+
+  test-3.7-20:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7-stretch-node
+    environment:
+      DJANGO_VERSION: "20"
+  test-3.7-21:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7-stretch-node
+    environment:
+      DJANGO_VERSION: "21"
+  test-3.7-22:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7-stretch-node
+    environment:
+      DJANGO_VERSION: "22"
+  test-3.7-30:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7-stretch-node
+    environment:
+      DJANGO_VERSION: "30"
+  test-3.7-31:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7-stretch-node
+    environment:
+      DJANGO_VERSION: "31"
+  test-3.7-32:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7-stretch-node
+    environment:
+      DJANGO_VERSION: "32"
+
+  test-3.8-20:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "20"
+  test-3.8-21:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "21"
+  test-3.8-22:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "22"
+  test-3.8-30:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "30"
+  test-3.8-31:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "31"
+  test-3.8-32:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "32"
+
+  test-3.9-20:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "20"
+  test-3.9-21:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "21"
+  test-3.9-22:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "22"
+  test-3.9-30:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "30"
+  test-3.9-31:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "31"
+  test-3.9-32:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "32"
+
+  done:
+    docker:
+      - image: circleci/python:3.9-buster-node
+    steps:
+      - run:
+          name: Finish Coveralls
+          command: |
+            pip install coveralls
+            coveralls --finish
