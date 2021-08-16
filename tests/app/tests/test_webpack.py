@@ -20,7 +20,7 @@ from webpack_loader.exceptions import (
 from webpack_loader.utils import get_loader
 
 
-BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
+BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 
 
@@ -30,7 +30,7 @@ class LoaderTestCase(TestCase):
         self.cleanup_bundles_folder()
 
     def cleanup_bundles_folder(self):
-        rmtree('./assets/bundles', ignore_errors=True)
+        rmtree('./assets/django_webpack_loader_bundles', ignore_errors=True)
 
     def compile_bundles(self, config, wait=None):
         if wait:
@@ -44,7 +44,7 @@ class LoaderTestCase(TestCase):
         from webpack_loader.errors import BAD_CONFIG_ERROR
 
         with self.settings(WEBPACK_LOADER={
-                                'BUNDLE_DIR_NAME': 'bundles/',
+                                'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
                                 'STATS_FILE': 'webpack-stats.json',
                            }):
             errors = webpack_cfg_check(None)
@@ -69,8 +69,8 @@ class LoaderTestCase(TestCase):
         self.assertEqual(len(chunks), 1)
 
         files = assets['assets']
-        self.assertEqual(files['main.css']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.css'))
-        self.assertEqual(files['main.js']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
+        self.assertEqual(files['main.css']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.css'))
+        self.assertEqual(files['main.js']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.js'))
 
     def test_default_ignore_config_ignores_map_files(self):
         self.compile_bundles('webpack.config.sourcemaps.js')
@@ -95,8 +95,8 @@ class LoaderTestCase(TestCase):
         self.assertEqual(len(chunks), 1)
 
         files = assets['assets']
-        self.assertEqual(files['main.css']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.css'))
-        self.assertEqual(files['main.js.gz']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
+        self.assertEqual(files['main.css']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.css'))
+        self.assertEqual(files['main.js.gz']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.js.gz'))
 
     def test_static_url(self):
         self.compile_bundles('webpack.config.publicPath.js')
@@ -115,8 +115,8 @@ class LoaderTestCase(TestCase):
         self.assertEquals(len(chunks), 1)
 
         files = assets['assets']
-        self.assertEqual(files['main.js']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
-        self.assertEqual(files['vendors.js']['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/vendors.js'))
+        self.assertEqual(files['main.js']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.js'))
+        self.assertEqual(files['vendors.js']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/vendors.js'))
 
     def test_templatetags(self):
         self.compile_bundles('webpack.config.simple.js')
@@ -124,17 +124,17 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/django_webpack_loader_bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
-        self.assertIn('<link type="text/css" href="/static/bundles/app2.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>', result.rendered_content)
+        self.assertIn('<link type="text/css" href="/static/django_webpack_loader_bundles/app2.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script type="text/javascript" src="/static/django_webpack_loader_bundles/app2.js" ></script>', result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
         view = TemplateView.as_view(template_name='only_files.html')
         result = view(request)
-        self.assertIn("var contentCss = '/static/bundles/main.css'", result.rendered_content)
-        self.assertIn("var contentJS = '/static/bundles/main.js'", result.rendered_content)
+        self.assertIn("var contentCss = '/static/django_webpack_loader_bundles/main.css'", result.rendered_content)
+        self.assertIn("var contentJS = '/static/django_webpack_loader_bundles/main.js'", result.rendered_content)
 
         self.compile_bundles('webpack.config.publicPath.js')
         view = TemplateView.as_view(template_name='home.html')
@@ -173,8 +173,8 @@ class LoaderTestCase(TestCase):
         with self.settings(**settings):
             request = self.factory.get('/')
             result = view(request)
-            self.assertIn('<link type="text/css" href="/static/bundles/main.css" rel="stylesheet" />', result.rendered_content)
-            self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+            self.assertIn('<link type="text/css" href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', result.rendered_content)
+            self.assertIn('<script type="text/javascript" src="/static/django_webpack_loader_bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
     def test_reporting_errors(self):
         self.compile_bundles('webpack.config.error.js')
