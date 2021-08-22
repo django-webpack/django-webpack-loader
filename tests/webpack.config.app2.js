@@ -3,7 +3,7 @@ var BundleTracker = require('webpack-bundle-tracker');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 config.entry = {
-  app2: './assets/js/index'
+  app2: './assets/js/index1'
 };
 
 config.plugins = [

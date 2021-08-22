@@ -6,11 +6,14 @@ var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   context: __dirname,
-  entry: './assets/js/index1',
-  devtool: 'source-map',
+  entry: {
+    main1: './assets/js/index1',
+    main2: './assets/js/index2'
+  },
   output: {
       path: path.resolve('./assets/django_webpack_loader_bundles/'),
-      filename: "[name].js"
+      filename: "[name].js",
+      chunkFilename: "[name].js"
   },
 
   plugins: [
@@ -31,7 +34,7 @@ module.exports = {
           }
         }
       },
-      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'], }
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] }
     ],
   },
 
@@ -39,4 +42,17 @@ module.exports = {
     modules: ['node_modules'],
     extensions: ['.js', '.jsx']
   },
+
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+          enforce: true
+        }
+      }
+    }
+  }
 }

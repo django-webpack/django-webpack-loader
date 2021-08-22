@@ -6,7 +6,7 @@ var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   context: __dirname,
-  entry: './assets/js/index',
+  entry: './assets/js/index1',
   output: {
       path: path.resolve('./assets/django_webpack_loader_bundles/'),
       filename: "[name].js"

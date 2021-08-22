@@ -1,0 +1,17 @@
+{% load render_bundle webpack_static from webpack_loader %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {% render_bundle 'main1' 'css' %}
+    {% render_bundle 'main2' 'css' %}
+  </head>
+
+  <body>
+    <img src="{% webpack_static 'my-image.png' %}"/>
+    <div id="react-app"></div>
+    {% render_bundle 'main1' 'js' attrs='async charset="UTF-8"'%}
+    {% render_bundle 'main2' 'js' attrs='async charset="UTF-8"'%}
+  </body>
+</html>

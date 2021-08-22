@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import re
 from shutil import rmtree
 from subprocess import call
 from threading import Thread
@@ -261,3 +262,14 @@ class LoaderTestCase(TestCase):
             result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
+
+
+    def test_templatetag_multi_entries_duplicate(self):
+        self.compile_bundles('webpack.config.multientries.js')
+        view = TemplateView.as_view(template_name='home_multi.html')
+        request = self.factory.get('/')
+        result = view(request)
+
+        regex = re.escape('<script src="/static/django_webpack_loader_bundles/vendors.js" async charset="UTF-8"></script>')
+        counts = len(re.findall(regex, result.rendered_content))
+        self.assertEqual(1, counts, msg="It should be only one vendors script")

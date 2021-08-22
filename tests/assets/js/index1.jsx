@@ -1,4 +1,4 @@
-var React = require('the-library-that-did-not-exist');
+var React = require('react');
 var App = require('./app1');
 var style = require('./style.css');
 

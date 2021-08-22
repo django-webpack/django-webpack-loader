@@ -21,5 +21,6 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
+    url(r'^multi/', TemplateView.as_view(template_name='home_multi.html'), name='home_multi'),
     url(r'^admin/', admin.site.urls),
 ]
