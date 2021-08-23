@@ -47,7 +47,7 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs='', is_preload=False):
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -65,15 +65,15 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs='', is_prel
             if is_preload:
                 tags.append((
                     '<link rel="preload" as="script" href="{0}" {1}/>'
-                ).format(chunk['url'], attrs))
+                ).format(''.join([chunk['url'], suffix]), attrs))
             else:
                 tags.append((
                     '<script src="{0}" {1}></script>'
-                ).format(chunk['url'], attrs))
+                ).format(''.join([chunk['url'], suffix]), attrs))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
                 '<link href="{0}" rel={2} {1}/>'
-            ).format(chunk['url'], attrs, '"stylesheet"' if not is_preload else '"preload" as="style"'))
+            ).format(''.join([chunk['url'], suffix]), attrs, '"stylesheet"' if not is_preload else '"preload" as="style"'))
     return tags
 
 

@@ -8,8 +8,11 @@ register = template.Library()
 
 
 @register.simple_tag
-def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs='', is_preload=False):
-    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs, is_preload=is_preload)
+def render_bundle(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+    tags = utils.get_as_tags(
+        bundle_name, extension=extension, config=config,
+        suffix=suffix, attrs=attrs, is_preload=is_preload
+    )
     return mark_safe('\n'.join(tags))
 
 
