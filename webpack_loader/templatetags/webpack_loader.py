@@ -8,8 +8,8 @@ register = template.Library()
 
 
 @register.simple_tag
-def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
-    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
+def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs='', is_preload=False):
+    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs, is_preload=is_preload)
     return mark_safe('\n'.join(tags))
 
 
@@ -19,6 +19,8 @@ def webpack_static(asset_name, config='DEFAULT'):
 
 
 assignment_tag = register.simple_tag if VERSION >= (1, 9) else register.assignment_tag
+
+
 @assignment_tag
 def get_files(bundle_name, extension=None, config='DEFAULT'):
     """

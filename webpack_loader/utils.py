@@ -2,7 +2,6 @@ from importlib import import_module
 from django.conf import settings
 from .config import load_config
 
-
 _loaders = {}
 
 
@@ -48,7 +47,7 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs='', is_preload=False):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -63,13 +62,18 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
     tags = []
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
-            tags.append((
-                '<script src="{0}" {1}></script>'
-            ).format(chunk['url'], attrs))
+            if is_preload:
+                tags.append((
+                    '<link rel="preload" as="script" href="{0}" {1}/>'
+                ).format(chunk['url'], attrs))
+            else:
+                tags.append((
+                    '<script src="{0}" {1}></script>'
+                ).format(chunk['url'], attrs))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
-                '<link href="{0}" rel="stylesheet" {1}/>'
-            ).format(chunk['url'], attrs))
+                '<link href="{0}" rel={2} {1}/>'
+            ).format(chunk['url'], attrs, '"stylesheet"' if not is_preload else '"preload" as="style"'))
     return tags
 
 

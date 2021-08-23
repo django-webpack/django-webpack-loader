@@ -142,6 +142,20 @@ class LoaderTestCase(TestCase):
         result = view(request)
         self.assertIn('<img src="http://custom-static-host.com/my-image.png"/>', result.rendered_content)
 
+    def test_preload(self):
+        self.compile_bundles('webpack.config.simple.js')
+        view = TemplateView.as_view(template_name='preload.html')
+        request = self.factory.get('/')
+        result = view(request)
+
+        # Preload
+        self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="preload" as="style" />', result.rendered_content)
+        self.assertIn('<link rel="preload" as="script" href="/static/django_webpack_loader_bundles/main.js" />', result.rendered_content)
+
+        # Resources
+        self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js" ></script>', result.rendered_content)
+
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
