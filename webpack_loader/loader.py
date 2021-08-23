@@ -61,6 +61,7 @@ class WebpackLoader(object):
         public_path = chunk_file.get('publicPath')
         if public_path:
             return public_path
+
         # Use os.path.normpath for Windows paths
         relpath = os.path.normpath(
             os.path.join(self.config['BUNDLE_DIR_NAME'], chunk_file['name'])
