@@ -2,6 +2,7 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var CompressionPlugin = require('compression-webpack-plugin');
 
 
 module.exports = {
@@ -9,11 +10,12 @@ module.exports = {
   entry: './assets/js/index',
   output: {
       path: path.resolve('./assets/django_webpack_loader_bundles/'),
-      filename: "[name].js.gz"
+      filename: "[name].js"
   },
 
   plugins: [
     new MiniCssExtractPlugin(),
+    new CompressionPlugin(),
     new BundleTracker({path: __dirname, filename: './webpack-stats.json'}),
   ],
 

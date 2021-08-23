@@ -1,0 +1,13 @@
+{% load render_bundle from webpack_loader %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {% render_bundle 'main' 'css' %}
+  </head>
+
+  <body>
+    {% render_bundle 'main' 'js' suffix='.gz' %}
+  </body>
+</html>

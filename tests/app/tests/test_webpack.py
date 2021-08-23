@@ -156,6 +156,14 @@ class LoaderTestCase(TestCase):
         self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', result.rendered_content)
         self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js" ></script>', result.rendered_content)
 
+    def test_append_extensions(self):
+        self.compile_bundles('webpack.config.gzipTest.js')
+        view = TemplateView.as_view(template_name='append_extensions.html')
+        request = self.factory.get('/')
+        result = view(request)
+
+        self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js.gz" ></script>', result.rendered_content)
+
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
