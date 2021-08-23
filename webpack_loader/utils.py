@@ -47,8 +47,7 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def get_as_tags(
-        bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
