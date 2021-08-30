@@ -5,8 +5,15 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
-## Unreleased
-- Applies ignore rule before checking assets
+## [1.3.0] -- 2021-08-30
+
+- Add option for rel="preload" in JS/CSS tags #203
+- Add option for extension appending in the url files #135
+- Fixes RemovedInDjango41Warning #290
+- Applies IGNORE setting before checking assets #286
+- Removed type from link and script tags per #152
+
+NOTE: Skipped version 1.2.0 to match `webpack-bundle-tracker` version
 
 
 ## [1.1.0] -- 2021-06-18

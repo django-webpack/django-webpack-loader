@@ -260,7 +260,48 @@ INSTALLED_APPS = (
 </head>
 ```
 
-<br>
+### Preload
+
+The `is_preload=True` option in the `render_bundle` template tag can be used to add `rel="preload"` link tags.
+
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+
+<html>
+  <head>
+    {% render_bundle 'main' 'css' is_preload=True %}
+    {% render_bundle 'main' 'js' is_preload=True %}
+
+    {% render_bundle 'main' 'css' %}
+  </head>
+
+  <body>
+    {% render_bundle 'main' 'js' %}
+  </body>
+</html>
+```
+
+### Appending file extensions
+
+The `suffix` option can be used to append a string at the end of the file URL. For instance, it can be used if your webpack configuration emits compressed `.gz` files.
+
+qwe
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {% render_bundle 'main' 'css' %}
+  </head>
+
+  <body>
+    {% render_bundle 'main' 'js' suffix='.gz' %}
+  </body>
+</html>
+```
+
 
 
 ### Multiple webpack projects
@@ -299,7 +340,6 @@ WEBPACK_LOADER = {
 
     <!-- add some extra attributes to the tag -->
     {% render_bundle 'main' 'js' 'DEFAULT' attrs='async charset="UTF-8"'%}
-    {% render_bundle 'main' 'js' 'DEFAULT' attrs='async charset="UTF-8"' suffix=".gz" %}
   </body>
 </head>
 ```
