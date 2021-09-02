@@ -1,13 +1,10 @@
-# django-webpack-loader for gzip
-
-Different from the original repository, it appends an extension in the creation of the tags (as .gzip). The append is also dynamic, and can be done for css or js
+# django-webpack-loader
 
 [![Build Status](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/django-webpack/django-webpack-loader/badge.svg?branch=master)](https://coveralls.io/github/django-webpack/django-webpack-loader?branch=master)
 ![pyversions](https://img.shields.io/pypi/pyversions/django-webpack-loader)
 ![djversions](https://img.shields.io/pypi/djversions/django-webpack-loader)
 
-<br>
 
 Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step by step guide on setting up webpack with django using this library.
 
