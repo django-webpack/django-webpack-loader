@@ -13,14 +13,13 @@ def render_bundle(context, bundle_name, extension=None, config='DEFAULT', suffix
         bundle_name, extension=extension, config=config,
         suffix=suffix, attrs=attrs, is_preload=is_preload
     )
-    used_tags = context.get("webpack_loader_used_tags", [])
-    if not used_tags:
-        context["webpack_loader_used_tags"] = []
+    if "webpack_loader_used_tags" not in context:
+        context["webpack_loader_used_tags"] = set()
+    used_tags = context["webpack_loader_used_tags"]
     if skip_common_chunks:
         tags = [mark_safe(tag) for tag in tags if tag not in used_tags]
+    context["webpack_loader_used_tags"].update(tags)
 
-    context["webpack_loader_used_tags"] = context["webpack_loader_used_tags"] + tags
-    
     return mark_safe('\n'.join(tags))
 
 @register.simple_tag
