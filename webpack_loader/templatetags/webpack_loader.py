@@ -7,14 +7,21 @@ from .. import utils
 register = template.Library()
 
 
-@register.simple_tag
-def render_bundle(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+@register.simple_tag(takes_context=True)
+def render_bundle(context, bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False, skip_common_chunks=False):
     tags = utils.get_as_tags(
         bundle_name, extension=extension, config=config,
         suffix=suffix, attrs=attrs, is_preload=is_preload
     )
-    return mark_safe('\n'.join(tags))
+    used_tags = context.get("webpack_loader_used_tags", [])
+    if not used_tags:
+        context["webpack_loader_used_tags"] = []
+    if skip_common_chunks:
+        tags = [mark_safe(tag) for tag in tags if tag not in used_tags]
 
+    context["webpack_loader_used_tags"] = context["webpack_loader_used_tags"] + tags
+    
+    return mark_safe('\n'.join(tags))
 
 @register.simple_tag
 def webpack_static(asset_name, config='DEFAULT'):
