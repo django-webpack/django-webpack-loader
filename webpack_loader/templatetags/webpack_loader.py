@@ -17,7 +17,7 @@ def render_bundle(context, bundle_name, extension=None, config='DEFAULT', suffix
         context["webpack_loader_used_tags"] = set()
     used_tags = context["webpack_loader_used_tags"]
     if skip_common_chunks:
-        tags = [mark_safe(tag) for tag in tags if tag not in used_tags]
+        tags = [tag for tag in tags if tag not in used_tags]
     context["webpack_loader_used_tags"].update(tags)
 
     return mark_safe('\n'.join(tags))

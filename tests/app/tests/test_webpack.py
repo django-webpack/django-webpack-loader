@@ -9,6 +9,7 @@ import django
 from django.conf import settings
 from django.test import RequestFactory, TestCase
 from django.views.generic.base import TemplateView
+from django.template import Context, Template
 from django_jinja.builtins import DEFAULT_EXTENSIONS
 from unittest2 import skipIf
 from webpack_loader.exceptions import (
@@ -180,7 +181,6 @@ class LoaderTestCase(TestCase):
                             "extensions": DEFAULT_EXTENSIONS + [
                                 "webpack_loader.contrib.jinja2ext.WebpackExtension",
                             ]
-
                         }
                     },
                 ]
@@ -283,3 +283,46 @@ class LoaderTestCase(TestCase):
             result.rendered_content
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
+
+    def test_takes_context(self):
+        self.compile_bundles('webpack.config.simple.js')
+        self.compile_bundles('webpack.config.app2.js')
+        template_to_test = Template(
+            "{% load render_bundle from webpack_loader %}"
+            "{% render_bundle 'main' 'css' %}"
+            "{% render_bundle 'main' 'js' %}"
+        )
+        context = Context({})
+        rendered_template = template_to_test.render(context)
+        self.assertIn("webpack_loader_used_tags", context)
+        used_tags = context["webpack_loader_used_tags"]
+        self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', used_tags)
+        self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js" ></script>', used_tags)
+
+        
+
+    def test_skip_common_chunks(self):
+        self.compile_bundles('webpack.config.skipCommon.js')
+        # Test default case where duplicates will be generated
+        template_to_test_duplicates = Template(
+            "{% load render_bundle from webpack_loader %}"
+            "{% render_bundle 'app1' %}"
+            "{% render_bundle 'app2' %}"
+        )
+        context = Context({})
+        rendered_template = template_to_test_duplicates.render(context)
+        self.assertIn("webpack_loader_used_tags", context)
+        used_tags = context["webpack_loader_used_tags"]
+        self.assertEqual(rendered_template.count('<script src="/static/django_webpack_loader_bundles/vendors.js" ></script>'), 2)
+
+        template_to_test_skipped_chunks = Template(
+            "{% load render_bundle from webpack_loader %}"
+            "{% render_bundle 'app1' %}"
+            "{% render_bundle 'app2' skip_common_chunks=True %}"
+        )
+        context = Context({})
+        rendered_template = template_to_test_skipped_chunks.render(context)
+        self.assertEqual(rendered_template.count('<script src="/static/django_webpack_loader_bundles/vendors.js" ></script>'), 1)
+
+        
+
