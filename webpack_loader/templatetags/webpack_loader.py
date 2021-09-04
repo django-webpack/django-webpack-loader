@@ -14,12 +14,15 @@ def render_bundle(context, bundle_name, extension=None, config='DEFAULT', suffix
         suffix=suffix, attrs=attrs, is_preload=is_preload
     )
     if "webpack_loader_used_tags" not in context:
+        # Jinja Context object stores actual mutable variables on vars attribute that doesn't exist on normal Django Context
+        if hasattr(context, "vars"):
+            context = context.vars
         context["webpack_loader_used_tags"] = set()
     used_tags = context["webpack_loader_used_tags"]
     if skip_common_chunks:
         tags = [tag for tag in tags if tag not in used_tags]
     context["webpack_loader_used_tags"].update(tags)
-
+    
     return mark_safe('\n'.join(tags))
 
 @register.simple_tag
