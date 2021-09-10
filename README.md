@@ -6,9 +6,6 @@
 ![djversions](https://img.shields.io/pypi/djversions/django-webpack-loader)
 
 
-Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step by step guide on setting up webpack with django using this library.
-
-
 Use webpack to generate your static bundles without django's staticfiles or opaque wrappers.
 
 
