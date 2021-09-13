@@ -334,8 +334,9 @@ class LoaderTestCase(TestCase):
             self.assertTrue(elapsed < wait_for)
 
     def test_skip_common_chunks_djangoengine(self):
-        'Test case for deduplication of modules with the django engine.'
+        """Test case for deduplication of modules with the django engine."""
         self.compile_bundles('webpack.config.skipCommon.js')
+
         django_engine = engines['django']
         dups_template = django_engine.from_string(template_code=(
             r'{% load render_bundle from webpack_loader %}'
@@ -354,11 +355,13 @@ class LoaderTestCase(TestCase):
         rendered_template = dups_template.render(
             context=None, request=request)
         used_tags = getattr(request, '_webpack_loader_used_tags', None)
+
         self.assertIsNotNone(used_tags, msg=(
             '_webpack_loader_used_tags should be a property of request!'))
         self.assertEqual(rendered_template.count(asset_app1), 1)
         self.assertEqual(rendered_template.count(asset_app2), 1)
         self.assertEqual(rendered_template.count(asset_vendor), 2)
+
         nodups_template = django_engine.from_string(template_code=(
             r'{% load render_bundle from webpack_loader %}'
             r'{% render_bundle "app1" %}'
@@ -368,6 +371,7 @@ class LoaderTestCase(TestCase):
         rendered_template = nodups_template.render(
             context=None, request=request)
         used_tags = getattr(request, '_webpack_loader_used_tags', None)
+
         self.assertIsNotNone(used_tags, msg=(
             '_webpack_loader_used_tags should be a property of request!'))
         self.assertEqual(rendered_template.count(asset_app1), 1)
@@ -375,8 +379,9 @@ class LoaderTestCase(TestCase):
         self.assertEqual(rendered_template.count(asset_vendor), 1)
 
     def test_skip_common_chunks_jinja2engine(self):
-        'Test case for deduplication of modules with the Jinja2 engine.'
+        """Test case for deduplication of modules with the Jinja2 engine."""
         self.compile_bundles('webpack.config.skipCommon.js')
+
         view = TemplateView.as_view(template_name='home-deduplicated.jinja')
         settings = {
             'TEMPLATES': [
@@ -399,6 +404,7 @@ class LoaderTestCase(TestCase):
         asset_app2 = (
             '<script src="/static/django_webpack_loader_bundles/app2.js" >'
             '</script>')
+
         with self.settings(**settings):
             request = self.factory.get('/')
             result = view(request)  # type: TemplateResponse

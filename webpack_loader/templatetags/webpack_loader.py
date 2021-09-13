@@ -35,12 +35,15 @@ def render_bundle(
     tags = utils.get_as_tags(
         bundle_name, extension=extension, config=config, suffix=suffix,
         attrs=attrs, is_preload=is_preload)
+
     if not hasattr(context['request'], '_webpack_loader_used_tags'):
         context['request']._webpack_loader_used_tags = set()
+
     used_tags = context['request']._webpack_loader_used_tags
     if skip_common_chunks:
         tags = [tag for tag in tags if tag not in used_tags]
     used_tags.update(tags)
+
     return mark_safe('\n'.join(tags))
 
 
