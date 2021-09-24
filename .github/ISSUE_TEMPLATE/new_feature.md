@@ -24,7 +24,3 @@ Suggested test cases: **PLEASE-FILL-HERE**
 ### Related Issues
 
 If any: **PLEASE-FILL-HERE**
-
-### References
-
-Any papers or existing code that can be helpful? **PLEASE-FILL-HERE**
