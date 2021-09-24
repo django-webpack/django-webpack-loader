@@ -5,6 +5,12 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.4.0] -- 2021-09-24
+
+- Bump django from 3.2.4 to 3.2.5 #299
+- Add issue templates #293
+- Add skip_common_chunks functionality #297
+
 ## [1.3.0] -- 2021-08-30
 
 - Add option for rel="preload" in JS/CSS tags #203
