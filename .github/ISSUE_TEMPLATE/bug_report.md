@@ -18,6 +18,5 @@ Detailed steps to reproduce the bug, if possible with minimal runnable code.
 
 * Paste `python --version` output here: **PLEASE-FILL-HERE**
 * Paste `pip freeze` output here: **PLEASE-FILL-HERE**
-* Paste `nvidia-smi` output here: **PLEASE-FILL-HERE**
-* GPU used: **PLEASE-FILL-HERE**
+* Paste `node --version` output here: **PLEASE-FILL-HERE**
 * Remove any sensitive info from the outputs above!
