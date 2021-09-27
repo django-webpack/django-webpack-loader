@@ -8,10 +8,11 @@ def rel(*parts):
     '''returns the relative path to a file wrt to the current directory'''
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *parts))
 
-README = open('README.md', 'r').read()
+with open('README.md', 'r') as handler:
+  README = handler.read()
 
 with open(rel('webpack_loader', '__init__.py')) as handler:
-    INIT_PY = handler.read()
+  INIT_PY = handler.read()
 
 
 VERSION = re.findall("__version__ = '([^']+)'", INIT_PY)[0]
@@ -30,7 +31,6 @@ setup(
   keywords = ['django', 'webpack', 'assets'], # arbitrary keywords
   classifiers = [
     'Programming Language :: Python',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
