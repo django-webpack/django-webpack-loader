@@ -25,9 +25,9 @@ def render_bundle(
         if skip_common_chunks:
             warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
         return mark_safe('\n'.join(tags))
-    used_tags = getattr(context['request'], '_webpack_loader_used_tags', None)
+    used_tags = getattr(request, '_webpack_loader_used_tags', None)
     if not used_tags:
-        used_tags = context['request']._webpack_loader_used_tags = set()
+        used_tags = request._webpack_loader_used_tags = set()
     if skip_common_chunks:
         tags = [tag for tag in tags if tag not in used_tags]
     used_tags.update(tags)
