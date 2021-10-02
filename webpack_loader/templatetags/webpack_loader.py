@@ -1,31 +1,16 @@
-from django.conf import settings
+from warnings import warn
+
 from django.template import Library
 from django.utils.safestring import mark_safe
 
 from .. import utils
 
 register = Library()
-_PROC_DJTEMPLATE = 'django.template.context_processors.request'
-_DJ_TEMPLATEPROCESSOR = 'django.template.backends.django.DjangoTemplates'
-_STARTUP_ERROR = (
-    f'Please make sure that "{_PROC_DJTEMPLATE}" is added '
-    'to your ["OPTIONS"]["context_processors"] list in your '
-    f'settings.TEMPLATES where the BACKEND is "{_DJ_TEMPLATEPROCESSOR}". '
-    'django-webpack-loader needs it and cannot run without it.')
-
-
-def _is_request_in_context():
-    for item in settings.TEMPLATES:
-        backend = item.get('BACKEND', {})
-        if backend == _DJ_TEMPLATEPROCESSOR:
-            processors = set(
-                item.get('OPTIONS', {}).get('context_processors', []))
-            if _PROC_DJTEMPLATE not in processors:
-                raise RuntimeError(_STARTUP_ERROR)
-
-
-# Check settings at module import time
-_is_request_in_context()
+_WARNING_MESSAGE = (
+    'You have specified skip_common_chunks=True but the passed context '
+    'doesn\'t have a request. django_webpack_loader needs a request object to '
+    'filter out duplicate chunks. Please see https://github.com/django-webpack'
+    '/django-webpack-loader#skipping-the-generation-of-multiple-common-chunks')
 
 
 @register.simple_tag(takes_context=True)
@@ -35,15 +20,17 @@ def render_bundle(
     tags = utils.get_as_tags(
         bundle_name, extension=extension, config=config, suffix=suffix,
         attrs=attrs, is_preload=is_preload)
-
-    if not hasattr(context['request'], '_webpack_loader_used_tags'):
-        context['request']._webpack_loader_used_tags = set()
-
-    used_tags = context['request']._webpack_loader_used_tags
+    request = context.get('request')
+    if request is None:
+        if skip_common_chunks:
+            warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
+        return mark_safe('\n'.join(tags))
+    used_tags = getattr(context['request'], '_webpack_loader_used_tags', None)
+    if not used_tags:
+        used_tags = context['request']._webpack_loader_used_tags = set()
     if skip_common_chunks:
         tags = [tag for tag in tags if tag not in used_tags]
     used_tags.update(tags)
-
     return mark_safe('\n'.join(tags))
 
 
