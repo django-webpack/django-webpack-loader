@@ -208,7 +208,10 @@ python manage.py runserver
 > You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
 
 ## Usage in production
-...
+We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile the assets during the deployment phase. We also recommend Django's automatic collecstatic to be disabled during the deployment and that you manually run it when deploying via a script.
+
+However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline, however you must remember to always generate new bundles before pushing to remote. If you wish to follow this approach and also keep Django's collectstatic turned on, you can store the stats file and bundles in a directory that is added to the `STATICFILES_DIR`. This ensure that the generated bundles are automatically collected to the target directory.
+
 ## Code splitting
 In case you wish to use code-splitting, follow the recipe below on the Javascript side.
 
