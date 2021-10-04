@@ -5,6 +5,10 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.4.1] -- 2021-10-04
+
+- Fixes #300, failsafe request checking #301
+
 ## [1.4.0] -- 2021-09-24
 
 - Bump django from 3.2.4 to 3.2.5 #299

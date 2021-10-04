@@ -194,7 +194,13 @@ There are 2 approaches for when `render_bundle` shows up in tests, since we don'
 2. The second approach is to leverage [`LOADER_CLASS` overriding](#extra-settings) for the test settings and customize the `get_bundle` method to return the url of a stats file. Note that, using this approach, the stats file doesn't have to [exist](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-901449290).
 
 ### Use `skip_common_chunks` on `render_bundle`
-To avoid importing the same chunks multiple times (i.e.: you have multiple entrypoints that share a common output chunk), you may provide the `skip_common_chunks=True` parameter to the `render_bundle` template tag. This way you can ensure that no file will be loaded more than once.
+You can use the parameter `skip_common_chunks=True` to specify that you don't want an already generated chunk be generated again in the same page.
+
+In order for this option to work, `django-webpack-loader` requires the `request` object to be in the context, to be able to keep track of the generated chunks.
+
+The `request` object is passed by default via the `django.template.context_processors.request` middleware with using the Django built-in templating system, and also with using Jinja2.
+
+If you don't have `request` in the context for some reason (e.g. using `Template.render` or `render_to_string` directly without passing the request), you'll get warnings on the console.
 
 ## Running the project
 We must run both back-end and front-end projects to fully utilize `django-webpack-loader` and `webpack-bundle-tracker`. For the Webpack pipeline, please refer to [this section](#compiling-the-front-end-assets).
