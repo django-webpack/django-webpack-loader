@@ -27,22 +27,15 @@ npm install --save-dev webpack-bundle-tracker
 pip install django-webpack-loader
 ```
 
-## Migrating from version < 1.0.0
-
-In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages, for full compatibility.
-
-This is necessary because the formatting of `webpack-stats.json` that `webpack-bundle-tracker` outputs has changed starting at version `1.0.0-alpha.1`. Starting at `django-webpack-loader==1.0.0`, this is the only formatting accepted here, meaning that other versions of that package don't output compatible files anymore, thereby breaking compatibility with older `webpack-bundle-tracker` releases.
-
-
 ## Configuration
 
 ### Configuring `webpack-bundle-tracker`
-Before configuring `django-webpack-loader`, let's first configure what's necessary on `webpack-bundle-tracker` side. Update your Webpack configuration file (it's usually on `webpack.config.js` in the project root). Add the following lines to the file:
+Before configuring `django-webpack-loader`, let's first configure what's necessary on `webpack-bundle-tracker` side. Update your Webpack configuration file (it's usually on `webpack.config.js` in the project root). Make sure your file looks like this (adapt to your needs):
 
 ```javascript
-var path = require('path');
-var webpack = require('webpack');
-var BundleTracker = require('webpack-bundle-tracker');
+const path = require('path');
+const webpack = require('webpack');
+const BundleTracker = require('webpack-bundle-tracker');
 
 module.exports = {
   context: __dirname,
@@ -59,13 +52,13 @@ module.exports = {
 
 The configuration above expects the `index.js` (the app entrypoint file) to live inside the `/assets/js/` directory (this guide going forward will assume that all front-end related files are placed inside the `/assets/` directory, with the different kinds of files arranged within its subdirectories).
 
-The generated compiled files will be placed inside the `/assets/webpack_bundles/` directory and the file with the informations regarding the bundles and assets (`webpack-stats.json`) will be stored in the project root.
+The generated compiled files will be placed inside the `/assets/webpack_bundles/` directory and the file with the information regarding the bundles and assets (`webpack-stats.json`) will be stored in the project root.
 
 ### Compiling the front-end assets
 
 Generally, `webpack-bundle-tracker` is used as part of an already existing build pipeline that is provided by a front-end framework/library, such as React.
 
-However, if you wish to compile the files by yourself, you can do so by running `./node_modules/.bin/webpack --config webpack.config.js --watch`. We do so on our examples, which you can check out by going [here](https://github.com/django-webpack/django-webpack-loader/tree/master/examples).
+However, if you wish to compile the files by yourself, you can do so by running `npx /webpack --config webpack.config.js --watch`.
 
 ### Configuring the settings file
 First of all, add `webpack_loader` to `INSTALLED_APPS`.
@@ -133,6 +126,30 @@ Below is the basic usage for `render_bundle` within a template.
 
 That will render the proper `<script>` and `<link>` tags needed in your template.
 
+## Running the project
+We must run both back-end and front-end projects to fully utilize `django-webpack-loader` and `webpack-bundle-tracker`. For the Webpack pipeline, please refer to [this section](#compiling-the-front-end-assets).
+
+Regarding the Django part, it should be run as a regular project.
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+> You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
+
+## Usage in production
+We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile the assets during the deployment phase. We also recommend Django's automatic collecstatic to be disabled during the deployment and that you manually run it when deploying via a script.
+
+However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline, however you must remember to always generate new bundles before pushing to remote. If you wish to follow this approach and also keep Django's collectstatic turned on, you can store the stats file and bundles in a directory that is added to the `STATICFILES_DIR`. This ensure that the generated bundles are automatically collected to the target directory.
+
+## Usage in tests
+There are 2 approaches for when `render_bundle` shows up in tests, since we don't have `webpack-bundle-tracker` at that point to generate the stats file.
+
+1. The first approach is to have specific settings for them (which is how we approach on our [tests](https://github.com/django-webpack/django-webpack-loader/blob/master/tests/app/settings.py#L111-L125)), such as done [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-470055769). Please note that it's necessary to have a pre-made stats file for the tests (which in general can be empty, such as [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-464250721)).
+
+2. The second approach is to leverage [`LOADER_CLASS` overriding](#extra-settings) for the test settings and customize the `get_bundle` method to return the url of a stats file. Note that, using this approach, the stats file doesn't have to [exist](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-901449290).
+
+## Advanced Usage
 ### Rendering by file extension
 
 `render_bundle` also takes a second argument which can be a file extension to match. This is useful when you want to render different types for files in separately. For example, to render CSS in head and JS at bottom we can do something like this,
@@ -186,13 +203,6 @@ The public path is based on `webpack.config.js` [output.publicPath](https://webp
 
 Please note that this approach will use the original asset file, and not a post-processed one from the Webpack pipeline, in case that file had gone through such flow (i.e.: You've imported an image on the React side and used it there, the file used within the React components will probably have a hash string on its name, etc. This processed file will be different than the one you'll grab with `webpack_static`).
 
-### Using `render_bundle` within tests
-There are 2 approaches for when `render_bundle` shows up in tests, since we don't have `webpack-bundle-tracker` at that point to generate the stats file.
-
-1. The first approach is to have specific settings for them (which is how we approach on our [tests](https://github.com/django-webpack/django-webpack-loader/blob/master/tests/app/settings.py#L111-L125)), such as done [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-470055769). Please note that it's necessary to have a pre-made stats file for the tests (which in general can be empty, such as [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-464250721)).
-
-2. The second approach is to leverage [`LOADER_CLASS` overriding](#extra-settings) for the test settings and customize the `get_bundle` method to return the url of a stats file. Note that, using this approach, the stats file doesn't have to [exist](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-901449290).
-
 ### Use `skip_common_chunks` on `render_bundle`
 You can use the parameter `skip_common_chunks=True` to specify that you don't want an already generated chunk be generated again in the same page.
 
@@ -202,23 +212,24 @@ The `request` object is passed by default via the `django.template.context_proce
 
 If you don't have `request` in the context for some reason (e.g. using `Template.render` or `render_to_string` directly without passing the request), you'll get warnings on the console.
 
-## Running the project
-We must run both back-end and front-end projects to fully utilize `django-webpack-loader` and `webpack-bundle-tracker`. For the Webpack pipeline, please refer to [this section](#compiling-the-front-end-assets).
-
-Regarding the Django part, it should be run as a regular project.
-```bash
-python manage.py migrate
-python manage.py runserver
+### Appending file extensions
+The `suffix` option can be used to append a string at the end of the file URL. For instance, it can be used if your webpack configuration emits compressed `.gz` files.
+qwe
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {% render_bundle 'main' 'css' %}
+  </head>
+  <body>
+    {% render_bundle 'main' 'js' suffix='.gz' %}
+  </body>
+</html>
 ```
 
-> You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
-
-## Usage in production
-We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile the assets during the deployment phase. We also recommend Django's automatic collecstatic to be disabled during the deployment and that you manually run it when deploying via a script.
-
-However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline, however you must remember to always generate new bundles before pushing to remote. If you wish to follow this approach and also keep Django's collectstatic turned on, you can store the stats file and bundles in a directory that is added to the `STATICFILES_DIR`. This ensure that the generated bundles are automatically collected to the target directory.
-
-## Code splitting
+### Code splitting
 In case you wish to use code-splitting, follow the recipe below on the Javascript side.
 
 Create your entrypoint file and add elements to the DOM, while leveraging the lazy imports.
@@ -286,16 +297,11 @@ On your template, render the bundle as usual:
 </html>
 ```
 
-## Hot reload
+### Hot reload
 In case you wish to enable hot reload for your project using `django-webpack-loader` and `webpack-bundle-tracker`, please check out [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/hot-reload), in particular how [server.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/server.js) and [webpack.config.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/webpack.config.js) are configured.
 
-## Alternatives to Django-Webpack-Loader
+## Migrating from version < 1.0.0
 
-_Below are known projects that attempt to solve the same problem:_
+In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages, for full compatibility.
 
-Note that these projects have not been vetted or reviewed in any way by me.
-These are not recommendation.
-Anyone can add their project to this by sending a PR.
-
-* [Django Manifest Loader](https://github.com/shonin/django-manifest-loader)
-* [Python Webpack Boilerplate](https://github.com/AccordBox/python-webpack-boilerplate)
+This is necessary because the formatting of `webpack-stats.json` that `webpack-bundle-tracker` outputs has changed starting at version `1.0.0-alpha.1`. Starting at `django-webpack-loader==1.0.0`, this is the only formatting accepted here, meaning that other versions of that package don't output compatible files anymore, thereby breaking compatibility with older `webpack-bundle-tracker` releases.
