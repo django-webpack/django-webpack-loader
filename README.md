@@ -56,9 +56,9 @@ The generated compiled files will be placed inside the `/assets/webpack_bundles/
 
 ### Compiling the front-end assets
 
-Generally, `webpack-bundle-tracker` is used as part of an already existing build pipeline that is provided by a front-end framework/library, such as React.
+You must generate the front-end bundle using `webpack-bundle-tracker` before using `django-webpack-loader`. You can compile the assets and generate the bundles by running `npx /webpack --config webpack.config.js --watch`. This will also generate the stats file. You can also refer to how `django-react-boilerplate` configure the [package.json](https://github.com/vintasoftware/django-react-boilerplate/blob/master/package.json) scripts for different situations.
 
-However, if you wish to compile the files by yourself, you can do so by running `npx /webpack --config webpack.config.js --watch`.
+> This is the recommended usage for the development environment. For usage in production, please refer to [this section](#usage-in-production)
 
 ### Configuring the settings file
 First of all, add `webpack_loader` to `INSTALLED_APPS`.
@@ -142,9 +142,23 @@ python manage.py runserver
 > You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
 
 ## Usage in production
-We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile the assets during the deployment phase. We also recommend Django's automatic collecstatic to be disabled during the deployment and that you manually run it when deploying via a script.
+We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile and collect the assets during the deployment phase. To make sure collectstatic collects the webpack outputs, we recommend disabling automatic collectstatic during the deployment and running it manually. Below are the commands that should be run to achieve this (please note this may change from platform to platform):
+```
+if [ ! -f webpack-stats.json ]; then
+  touch webpack-stats.json
+  chmod 777 webpack-stats.json
+fi
 
-However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline, however you must remember to always generate new bundles before pushing to remote. If you wish to follow this approach and also keep Django's collectstatic turned on, you can store the stats file and bundles in a directory that is added to the `STATICFILES_DIR`. This ensure that the generated bundles are automatically collected to the target directory.
+npm run build
+
+python manage.py collectstatic --noinput
+```
+
+First we create an empty stats file and ensure it has all the required permissions. Then we build the assets and, since we have `webpack-bundle-tracker` in our front-end building pipeline, the stats file will be populated. In the end, we manually run collecstatic to collect the compiled assets.
+
+> Heroku is one plataform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running Webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
+
+However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline. However, you must remember to always build the frontend and generate the bundle before pushing to remote.
 
 ## Usage in tests
 There are 2 approaches for when `render_bundle` shows up in tests, since we don't have `webpack-bundle-tracker` at that point to generate the stats file.
