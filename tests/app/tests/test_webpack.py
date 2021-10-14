@@ -137,7 +137,7 @@ class LoaderTestCase(TestCase):
 
         chunks = assets['chunks']
         self.assertIn('main', chunks)
-        self.assertEquals(len(chunks), 1)
+        self.assertEqual(len(chunks), 1)
 
         files = assets['assets']
         self.assertEqual(files['main.js']['path'], os.path.join(
