@@ -124,7 +124,7 @@ The `STATS_FILE` parameter represents the output file produced by `webpack-bundl
 ## Rendering
 In order to render the front-end code into the Django templates, we use the `render_bundle` template tag.
 
-Its behavior is to accept a string with the name of an entrypoint from the stats file (in our case, we're using `main`) and it'll proceed to include all files under that entrypoint. You can read more about the entrypoints concept [here](https://webpack.js.org/concepts/entry-points/).
+Its behavior is to accept a string with the name of an entrypoint from the stats file (in our case, we're using `main`, which is [the default](https://webpack.js.org/concepts/entry-points/#single-entry-shorthand-syntax)) and it'll proceed to include all files under that entrypoint. You can read more about the entrypoints concept [here](https://webpack.js.org/concepts/entry-points/).
 
 > ⚠️ You can also check an example on how to use multiple `entry` values [here](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/code-splitting).
 
