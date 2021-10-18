@@ -146,7 +146,6 @@ We recommend that you keep your local bundles and the stats file outside the ver
 ```
 if [ ! -f webpack-stats.json ]; then
   touch webpack-stats.json
-  chmod 777 webpack-stats.json
 fi
 
 npm run build
