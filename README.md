@@ -237,13 +237,13 @@ The public path is based on `webpack.config.js` [output.publicPath](https://webp
 Please note that this approach will use the original asset file, and not a post-processed one from the Webpack pipeline, in case that file had gone through such flow (i.e.: You've imported an image on the React side and used it there, the file used within the React components will probably have a hash string on its name, etc. This processed file will be different than the one you'll grab with `webpack_static`).
 
 ### Use `skip_common_chunks` on `render_bundle`
-You can use the parameter `skip_common_chunks=True` to specify that you don't want an already generated chunk be generated again in the same page.
+You can use the parameter `skip_common_chunks=True` to specify that you don't want an already generated chunk be included again in the same page. This should only happen if you use more than one entrypoint per Django template (multiple `render_bundle` calls). By using `skip_common_chunks=True`, you can get the same default behavior of the [HtmlWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin/).
 
 In order for this option to work, `django-webpack-loader` requires the `request` object to be in the context, to be able to keep track of the generated chunks.
 
 The `request` object is passed by default via the `django.template.context_processors.request` middleware with using the Django built-in templating system, and also with using Jinja2.
 
-If you don't have `request` in the context for some reason (e.g. using `Template.render` or `render_to_string` directly without passing the request), you'll get warnings on the console.
+If you don't have `request` in the context for some reason (e.g. using `Template.render` or `render_to_string` directly without passing the request), you'll get warnings on the console and the common chunks will remain duplicated.
 
 ### Appending file extensions
 The `suffix` option can be used to append a string at the end of the file URL. For instance, it can be used if your webpack configuration emits compressed `.gz` files.
