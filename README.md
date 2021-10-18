@@ -390,6 +390,32 @@ On your template, render the bundle as usual:
 ### Hot reload
 In case you wish to enable hot reload for your project using `django-webpack-loader` and `webpack-bundle-tracker`, please check out [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/hot-reload), in particular how [server.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/server.js) and [webpack.config.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/webpack.config.js) are configured.
 
+### Jinja2 Configuration
+
+If you need to output your assets in a jinja template, we provide a Jinja2 extension that's compatible with the [Django Jinja](https://github.com/niwinz/django-jinja) module and Django 1.8.
+
+To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
+
+```python
+from django_jinja.builtins import DEFAULT_EXTENSIONS
+TEMPLATES = [
+  {
+    "BACKEND": "django_jinja.backend.Jinja2",
+    "OPTIONS": {
+      "extensions": DEFAULT_EXTENSIONS + [
+        "webpack_loader.contrib.jinja2ext.WebpackExtension",
+      ],
+    }
+  }
+]
+```
+
+Then in your base jinja template:
+
+```HTML
+{{ render_bundle('main') }}
+```
+
 ## Migrating from version < 1.0.0
 
 In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages, for full compatibility.
