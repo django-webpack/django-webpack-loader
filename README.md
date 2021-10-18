@@ -56,7 +56,15 @@ The generated compiled files will be placed inside the `/assets/webpack_bundles/
 
 ### Compiling the front-end assets
 
-You must generate the front-end bundle using `webpack-bundle-tracker` before using `django-webpack-loader`. You can compile the assets and generate the bundles by running `npx webpack --config webpack.config.js --watch`. This will also generate the stats file. You can also refer to how `django-react-boilerplate` configure the [package.json](https://github.com/vintasoftware/django-react-boilerplate/blob/master/package.json) scripts for different situations.
+You must generate the front-end bundle using `webpack-bundle-tracker` before using `django-webpack-loader`. You can compile the assets and generate the bundles by running: 
+
+```bash
+npx webpack --config webpack.config.js --watch
+```
+
+This will also generate the stats file. You can also refer to how `django-react-boilerplate` configure the [package.json](https://github.com/vintasoftware/django-react-boilerplate/blob/master/package.json) scripts for different situations.
+
+> ⚠️ Hot reload is available through a specific config. Check [this section](#hot-reload).
 
 > ⚠️ This is the recommended usage for the development environment. For **usage in production**, please refer to [this section](#usage-in-production)
 
@@ -83,7 +91,7 @@ WEBPACK_LOADER = {
 }
 ```
 
-For that setup, we're using the `DEBUG` variable provided by Django when bootstraping a new project. Since in a production environment (`DEBUG = False`) the assets files won't constantly change, we can safely cache the results (`CACHE=True`) and optimize our flow, as `django-webpack-loader` will read the stats file only once and store the assets files paths in memory. From that point pnwards, it will use these stored paths as the source of truth. If `CACHE=False`, we'll always read the stats file to get the assets paths.
+For that setup, we're using the `DEBUG` variable provided by Django. Since in a production environment (`DEBUG = False`) the assets files won't constantly change, we can safely cache the results (`CACHE=True`) and optimize our flow, as `django-webpack-loader` will read the stats file only once and store the assets files paths in memory. From that point pnwards, it will use these stored paths as the source of truth. If `CACHE=False`, we'll always read the stats file to get the assets paths.
 > ⚠️ If `CACHE=True`, any changes made in the assets files will only be read when the web workers are restarted.
 
 During development, when the stats file changes a lot, we want to always poll for its updated version (in our case, we'll fetch it every 0.1s, as defined on `POLL_INTERVAL`).
@@ -130,12 +138,16 @@ Below is the basic usage for `render_bundle` within a template.
 
 That will render the proper `<script>` and `<link>` tags needed in your template.
 
-## Running the project
-We must run both back-end and front-end projects to fully utilize `django-webpack-loader` and `webpack-bundle-tracker`. For the Webpack pipeline, please refer to [this section](#compiling-the-front-end-assets).
+## Running in development
+For `django-webpack-loader` to work, you must run the webpack pipeline. Please refer to [this section](#compiling-the-front-end-assets).
 
-Regarding the Django part, it should be run as a regular project.
+In summary, you should do the following:
+
 ```bash
-python manage.py migrate
+# in one shell
+npx webpack --config webpack.config.js --watch
+
+# in another shell
 python manage.py runserver
 ```
 
@@ -200,8 +212,8 @@ The `is_preload=True` option in the `render_bundle` template tag can be used to 
 </html>
 ```
 
-### Accessing other assets from the front-end project
-`webpack_static` template tag provides facilities to load static assets managed by webpack in django templates. It is like django's built in `static` tag but for webpack assets instead.
+### Accessing other webpack assets
+`webpack_static` template tag provides facilities to load static assets managed by webpack in Django templates. It is like Django's built in `static` tag but for webpack assets instead.
 
 In the below example, `logo.png` can be any static asset shipped with any npm package.
 
@@ -241,7 +253,7 @@ qwe
 </html>
 ```
 
-### Multiple Webpack projects
+### Multiple Webpack configurations
 Version 1.0 and up of `django-webpack-loader` also supports multiple Webpack configurations. The following configuration defines 2 Webpack stats files in settings and uses the `config` argument in the template tags to influence which stats file to load the bundles from.
 
 ```python
