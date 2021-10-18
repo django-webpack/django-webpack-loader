@@ -144,16 +144,11 @@ python manage.py runserver
 ## Usage in production
 We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile and collect the assets during the deployment phase. To make sure collectstatic collects the webpack outputs, we recommend disabling automatic collectstatic during the deployment and running it manually. Below are the commands that should be run to achieve this (please note this may change from platform to platform):
 ```
-if [ ! -f webpack-stats.json ]; then
-  touch webpack-stats.json
-fi
-
 npm run build
-
 python manage.py collectstatic --noinput
 ```
 
-First we create an empty stats file and ensure it has all the required permissions. Then we build the assets and, since we have `webpack-bundle-tracker` in our front-end building pipeline, the stats file will be populated. In the end, we manually run collecstatic to collect the compiled assets.
+First we build the assets and, since we have `webpack-bundle-tracker` in our front-end building pipeline, the stats file will be populated. Then, we manually run collecstatic to collect the compiled assets.
 
 > ⚠️ Heroku is one plataform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running Webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
 
