@@ -392,9 +392,9 @@ In case you wish to enable hot reload for your project using `django-webpack-loa
 
 ### Jinja2 Configuration
 
-If you need to output your assets in a jinja template, we provide a Jinja2 extension that's compatible with the [Django Jinja](https://github.com/niwinz/django-jinja) module and Django 1.8.
+If you need to output your assets in a jinja template, we provide a Jinja2 extension that's compatible with [django-jinja](https://github.com/niwinz/django-jinja).
 
-To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
+To install the extension, add it to the `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
 
 ```python
 from django_jinja.builtins import DEFAULT_EXTENSIONS
@@ -410,7 +410,7 @@ TEMPLATES = [
 ]
 ```
 
-Then in your base jinja template:
+Then in your base jinja template, do:
 
 ```HTML
 {{ render_bundle('main') }}
