@@ -56,7 +56,7 @@ The generated compiled files will be placed inside the `/assets/webpack_bundles/
 
 ### Compiling the front-end assets
 
-You must generate the front-end bundle using `webpack-bundle-tracker` before using `django-webpack-loader`. You can compile the assets and generate the bundles by running `npx /webpack --config webpack.config.js --watch`. This will also generate the stats file. You can also refer to how `django-react-boilerplate` configure the [package.json](https://github.com/vintasoftware/django-react-boilerplate/blob/master/package.json) scripts for different situations.
+You must generate the front-end bundle using `webpack-bundle-tracker` before using `django-webpack-loader`. You can compile the assets and generate the bundles by running `npx webpack --config webpack.config.js --watch`. This will also generate the stats file. You can also refer to how `django-react-boilerplate` configure the [package.json](https://github.com/vintasoftware/django-react-boilerplate/blob/master/package.json) scripts for different situations.
 
 > This is the recommended usage for the development environment. For usage in production, please refer to [this section](#usage-in-production)
 
