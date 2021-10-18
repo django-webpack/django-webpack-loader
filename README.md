@@ -109,7 +109,7 @@ The `STATS_FILE` parameter represents the output file produced by `webpack-bundl
 
 - `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external url, etc. For convenience, `webpack_loader.loader.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
 
-  Here's a simple example of loading from an external url:
+Here's a simple example of loading from an external url:
 
   ```py
   import requests
@@ -128,7 +128,7 @@ Its behavior is to accept a string with the name of an entrypoint from the stats
 
 > ⚠️ You can also check an example on how to use multiple `entry` values [here](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/code-splitting).
 
-Below is the basic usage for `render_bundle` within a template.
+Below is the basic usage for `render_bundle` within a template:
 
 ```HTML+Django
 {% load render_bundle from webpack_loader %}
