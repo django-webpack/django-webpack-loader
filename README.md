@@ -154,7 +154,7 @@ python manage.py runserver
 > ⚠️ You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
 
 ## Usage in production
-We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile and collect the assets during the deployment phase. To make sure collectstatic collects the webpack outputs, we recommend disabling automatic collectstatic during the deployment and running it manually.
+We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile and collect the assets during the deployment phase.
 
 You must add `STATICFILES_DIRS` to your settings file, pointing to the directory where the static files are located. This will let `collectstatic` know where it should look at:
 ```python
@@ -163,7 +163,7 @@ STATICFILES_DIRS = (
 )
 ```
 
-Below are the commands that should be run to manually collect the static files (please note this may change from platform to platform):
+Below are the commands that should be run to compile and collect the static files (please note this may change from platform to platform):
 ```
 npm run build
 python manage.py collectstatic --noinput
@@ -171,7 +171,7 @@ python manage.py collectstatic --noinput
 
 First we build the assets and, since we have `webpack-bundle-tracker` in our front-end building pipeline, the stats file will be populated. Then, we manually run collecstatic to collect the compiled assets.
 
-> ⚠️ Heroku is one plataform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running Webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
+> ⚠️ Heroku is one plataform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
 
 However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline. However, you must remember to always build the frontend and generate the bundle before pushing to remote.
 
