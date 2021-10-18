@@ -58,7 +58,7 @@ The generated compiled files will be placed inside the `/assets/webpack_bundles/
 
 You must generate the front-end bundle using `webpack-bundle-tracker` before using `django-webpack-loader`. You can compile the assets and generate the bundles by running `npx webpack --config webpack.config.js --watch`. This will also generate the stats file. You can also refer to how `django-react-boilerplate` configure the [package.json](https://github.com/vintasoftware/django-react-boilerplate/blob/master/package.json) scripts for different situations.
 
-> This is the recommended usage for the development environment. For usage in production, please refer to [this section](#usage-in-production)
+> ⚠️ This is the recommended usage for the development environment. For **usage in production**, please refer to [this section](#usage-in-production)
 
 ### Configuring the settings file
 First of all, add `webpack_loader` to `INSTALLED_APPS`.
@@ -84,10 +84,10 @@ WEBPACK_LOADER = {
 ```
 
 For that setup, we're using the `DEBUG` variable provided by Django when bootstraping a new project. Since in a production environment (`DEBUG = False`) the assets files won't constantly change, we can safely cache the results (`CACHE=True`) and optimize our flow, as `django-webpack-loader` will read the stats file only once and store the assets files paths in memory. From that point pnwards, it will use these stored paths as the source of truth. If `CACHE=False`, we'll always read the stats file to get the assets paths.
-> If `CACHE=True`, any changes made in the assets files will only be read when the web workers are restarted.
+> ⚠️ If `CACHE=True`, any changes made in the assets files will only be read when the web workers are restarted.
 
 During development, when the stats file changes a lot, we want to always poll for its updated version (in our case, we'll fetch it every 0.1s, as defined on `POLL_INTERVAL`).
-> In production (`DEBUG=False`), we'll only fetch the stats file once, so `POLL_INTERVAL` is ignored.
+> ⚠️ In production (`DEBUG=False`), we'll only fetch the stats file once, so `POLL_INTERVAL` is ignored.
 
 While `CACHE` isn't directly related to `POLL_INTERVAL`, it's interesting to keep `CACHE` binded to the `DEBUG` logic value (in this case, the negation of the logic value) in order to only cache the assets in production, as we'd not continuously poll the stats file in that environment.
 
@@ -118,7 +118,7 @@ In order to render the front-end code into the Django templates, we use the `ren
 
 Its behavior is to accept a string with the name of an entrypoint from the stats file (in our case, we're using `main`) and it'll proceed to include all files under that entrypoint. You can read more about the entrypoints concept [here](https://webpack.js.org/concepts/entry-points/).
 
-> You can also check an example on how to use multiple `entry` values [here](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/code-splitting).
+> ⚠️ You can also check an example on how to use multiple `entry` values [here](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/code-splitting).
 
 Below is the basic usage for `render_bundle` within a template.
 
@@ -139,7 +139,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-> You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
+> ⚠️ You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
 
 ## Usage in production
 We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile and collect the assets during the deployment phase. To make sure collectstatic collects the webpack outputs, we recommend disabling automatic collectstatic during the deployment and running it manually. Below are the commands that should be run to achieve this (please note this may change from platform to platform):
@@ -156,7 +156,7 @@ python manage.py collectstatic --noinput
 
 First we create an empty stats file and ensure it has all the required permissions. Then we build the assets and, since we have `webpack-bundle-tracker` in our front-end building pipeline, the stats file will be populated. In the end, we manually run collecstatic to collect the compiled assets.
 
-> Heroku is one plataform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running Webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
+> ⚠️ Heroku is one plataform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running Webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
 
 However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline. However, you must remember to always build the frontend and generate the bundle before pushing to remote.
 
