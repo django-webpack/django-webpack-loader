@@ -171,7 +171,7 @@ python manage.py collectstatic --noinput
 
 First we build the assets and, since we have `webpack-bundle-tracker` in our front-end building pipeline, the stats file will be populated. Then, we manually run collecstatic to collect the compiled assets.
 
-> ⚠️ Heroku is one plataform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
+> ⚠️ Heroku is one platform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
 
 However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline. However, you must remember to always build the frontend and generate the bundle before pushing to remote.
 
