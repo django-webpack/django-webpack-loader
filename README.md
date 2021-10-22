@@ -91,7 +91,7 @@ WEBPACK_LOADER = {
 }
 ```
 
-For that setup, we're using the `DEBUG` variable provided by Django. Since in a production environment (`DEBUG = False`) the assets files won't constantly change, we can safely cache the results (`CACHE=True`) and optimize our flow, as `django-webpack-loader` will read the stats file only once and store the assets files paths in memory. From that point pnwards, it will use these stored paths as the source of truth. If `CACHE=False`, we'll always read the stats file to get the assets paths.
+For that setup, we're using the `DEBUG` variable provided by Django. Since in a production environment (`DEBUG = False`) the assets files won't constantly change, we can safely cache the results (`CACHE=True`) and optimize our flow, as `django-webpack-loader` will read the stats file only once and store the assets files paths in memory. From that point onwards, it will use these stored paths as the source of truth. If `CACHE=False`, we'll always read the stats file to get the assets paths.
 > ⚠️ If `CACHE=True`, any changes made in the assets files will only be read when the web workers are restarted.
 
 During development, when the stats file changes a lot, we want to always poll for its updated version (in our case, we'll fetch it every 0.1s, as defined on `POLL_INTERVAL`).
