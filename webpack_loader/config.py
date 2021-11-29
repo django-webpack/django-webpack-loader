@@ -2,7 +2,6 @@ import re
 
 from django.conf import settings
 
-
 __all__ = ('load_config',)
 
 
@@ -14,7 +13,7 @@ DEFAULT_CONFIG = {
         # FIXME: Explore usage of fsnotify
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map'],
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
         'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
     }
 }
