@@ -46,7 +46,7 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     Example usage::
 
         {% get_files 'editor' 'css' as editor_css_chunks %}
-        CKEDITOR.config.contentsCss = '{{ editor_css_chunks.0.publicPath }}';
+        CKEDITOR.config.contentsCss = '{{ editor_css_chunks.0.url }}';
 
     :param bundle_name: The name of the bundle
     :param extension: (optional) filter by extension

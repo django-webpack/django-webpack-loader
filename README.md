@@ -305,16 +305,26 @@ WEBPACK_LOADER = {
 
 If you need the URL to an asset without the HTML tags, the `get_files` template tag can be used. A common use case is specifying the URL to a custom css file for a Javascript plugin.
 
-`get_files` works exactly like `render_bundle` except it returns a list of matching files and lets you assign the list to a custom template variable. For example:
+`get_files` works exactly like `render_bundle` except it returns a list of matching files and lets you assign the list to a custom template variable.
+
+Each object in the returned list has 2 properties:
+1. `name`, which is the name of the chunk from the stats file;
+2. `url`, which can be:
+  1. The `publicPath` if the asset has one;
+  2. The `path` to the asset in the static files storage, if the asset doesn't have a `publicPath`.
+
+For example:
 
 ```HTML+Django
-{% get_files 'editor' 'css' as editor_css_files %}
-CKEDITOR.config.contentsCss = '{{ editor_css_files.0.publicPath }}';
+{% load get_files from webpack_loader %}
 
-<!-- or list down name, path and download url for every file -->
+{% get_files 'editor' 'css' as editor_css_files %}
+CKEDITOR.config.contentsCss = '{{ editor_css_files.0.url }}';
+
+<!-- or list down name and url for every file -->
 <ul>
 {% for css_file in editor_css_files %}
-    <li>{{ css_file.name }} : {{ css_file.path }} : {{ css_file.publicPath }}</li>
+    <li>{{ css_file.name }} : {{ css_file.url }}</li>
 {% endfor %}
 </ul>
 ```
