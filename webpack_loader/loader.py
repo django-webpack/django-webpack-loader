@@ -1,4 +1,6 @@
 import time
+import os
+from io import open
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -19,9 +21,9 @@ class WebpackLoader(object):
     _assets = {}
     _cache_timestamp = 0
 
-    def __init__(self, name='DEFAULT'):
+    def __init__(self, name, config):
         self.name = name
-        self.config = load_config(self.name)
+        self.config = config
 
     def _load_assets(self):
         func_name = self.config['ASSETS_LOADER_FUNCTION']
@@ -52,20 +54,32 @@ class WebpackLoader(object):
         return self._load_assets()
 
     def filter_chunks(self, chunks):
+        filtered_chunks = []
+
         for chunk in chunks:
-            ignore = any(regex.match(chunk['name'])
+            ignore = any(regex.match(chunk)
                          for regex in self.config['ignores'])
             if not ignore:
-                chunk['url'] = self.get_chunk_url(chunk)
-                yield chunk
+                filtered_chunks.append(chunk)
 
-    def get_chunk_url(self, chunk):
-        public_path = chunk.get('publicPath')
+        return filtered_chunks
+
+    def map_chunk_files_to_url(self, chunks):
+        assets = self.get_assets()
+        files = assets['assets']
+
+        for chunk in chunks:
+            url = self.get_chunk_url(files[chunk])
+            yield { 'name': chunk, 'url': url }
+
+    def get_chunk_url(self, chunk_file):
+        public_path = chunk_file.get('publicPath')
         if public_path:
             return public_path
 
-        relpath = '{0}{1}'.format(
-            self.config['BUNDLE_DIR_NAME'], chunk['name']
+        # Use os.path.normpath for Windows paths
+        relpath = os.path.normpath(
+            os.path.join(self.config['BUNDLE_DIR_NAME'], chunk_file['name'])
         )
         return staticfiles_storage.url(relpath)
 
@@ -78,7 +92,7 @@ class WebpackLoader(object):
             timeout = self.config['TIMEOUT'] or 0
             timed_out = False
             start = time.time()
-            while assets['status'] == 'compiling' and not timed_out:
+            while assets['status'] == 'compile' and not timed_out:
                 time.sleep(self.config['POLL_INTERVAL'])
                 if timeout and (time.time() - timeout > start):
                     timed_out = True
@@ -94,7 +108,15 @@ class WebpackLoader(object):
             chunks = assets['chunks'].get(bundle_name, None)
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
-            return self.filter_chunks(chunks)
+
+            filtered_chunks = self.filter_chunks(chunks)
+
+            for chunk in filtered_chunks:
+                asset = assets['assets'][chunk]
+                if asset is None:
+                    raise WebpackBundleLookupError('Cannot resolve asset {0}.'.format(chunk))
+
+            return self.map_chunk_files_to_url(filtered_chunks)
 
         elif assets.get('status') == 'error':
             if 'file' not in assets:

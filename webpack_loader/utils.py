@@ -1,16 +1,33 @@
+from importlib import import_module
 from django.conf import settings
+from .config import load_config
 
 import json
 from io import open
 from .loader import WebpackLoader
-
-
 _loaders = {}
+
+
+def import_string(dotted_path):
+    '''
+    This is a rough copy of django's import_string, which wasn't introduced until Django 1.7
+
+    Once this package's support for Django 1.6 has been removed, this can be safely replaced with
+    `from django.utils.module_loading import import_string`
+    '''
+    try:
+        module_path, class_name = dotted_path.rsplit('.', 1)
+        module = import_module(module_path)
+        return getattr(module, class_name)
+    except (ValueError, AttributeError, ImportError):
+        raise ImportError('%s doesn\'t look like a valid module path' % dotted_path)
 
 
 def get_loader(config_name):
     if config_name not in _loaders:
-        _loaders[config_name] = WebpackLoader(config_name)
+        config = load_config(config_name)
+        loader_class = import_string(config['LOADER_CLASS'])
+        _loaders[config_name] = loader_class(config_name, config)
     return _loaders[config_name]
 
 
@@ -23,7 +40,7 @@ def load_assets_from_filesystem(loader):
         raise IOError(
             'Error reading {0}. Are you sure webpack has generated '
             'the file and the path is correct?'.format(stats_file))
- 
+
 
 def _filter_by_extension(bundle, extension):
     '''Return only files with the given extension'''
@@ -44,7 +61,7 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -59,13 +76,18 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', attrs=''):
     tags = []
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
-            tags.append((
-                '<script type="text/javascript" src="{0}" {1}></script>'
-            ).format(chunk['url'], attrs))
+            if is_preload:
+                tags.append((
+                    '<link rel="preload" as="script" href="{0}" {1}/>'
+                ).format(''.join([chunk['url'], suffix]), attrs))
+            else:
+                tags.append((
+                    '<script src="{0}" {1}></script>'
+                ).format(''.join([chunk['url'], suffix]), attrs))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
-                '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
-            ).format(chunk['url'], attrs))
+                '<link href="{0}" rel={2} {1}/>'
+            ).format(''.join([chunk['url'], suffix]), attrs, '"stylesheet"' if not is_preload else '"preload" as="style"'))
     return tags
 
 

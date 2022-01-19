@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     'django_jinja',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,7 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-)
+]
 
 ROOT_URLCONF = 'app.urls'
 
@@ -111,19 +111,24 @@ STATICFILES_DIRS = (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': False,
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     },
     'APP2': {
         'CACHE': False,
-        'BUNDLE_DIR_NAME': 'bundles/',
+        'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
     },
+<<<<<<< HEAD
     'APP_WITH_CUSTOM_ASSETS_LOADER': {
         'ASSETS_LOADER_FUNCTION': 'app.tests.test_webpack.custom_asset_loader_for_testing',
     },
     'APP_WITH_INVALID_ASSETS_LOADER': {
         'ASSETS_LOADER_FUNCTION': 'nonexistent.function',
+=======
+    'NO_IGNORE_APP': {
+        'IGNORE': [],
+>>>>>>> a234f7f63070e72d9fe37a681a1599d9899712ca
     },
 }
 

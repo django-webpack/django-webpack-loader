@@ -1,5 +1,5 @@
-twine==1.7.4
-Django==1.10.1
-django-jinja==2.2.1
-django-jinja2==0.1
+twine==3.4.1
+Django==3.2.7
+django-jinja==2.7.0
 unittest2==1.1.0
+wheel==0.36.2

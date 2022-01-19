@@ -4,11 +4,10 @@
   <head>
     <meta charset="UTF-8">
     <title>Example</title>
+    {% render_bundle 'main' 'css' %}
   </head>
-  
+
   <body>
-    <div id="react-app"></div>
-    {% render_bundle 'vendor' %}
-    {% render_bundle 'main' %}
+    {% render_bundle 'main' 'js' suffix='.gz' %}
   </body>
 </html>

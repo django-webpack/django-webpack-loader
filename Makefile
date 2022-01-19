@@ -18,20 +18,18 @@ clean:
 
 build: clean
 	@echo "Building..."
+	@pip install -U setuptools
 	@python setup.py sdist bdist_wheel --universal
 
 install:
 	@echo "Installing build dependencies"
-	@[ ! -d $(ENV)/ ] && virtualenv $(ENV)/ || :
+	@[ ! -d $(ENV)/ ] && python3 -m venv $(ENV)/ || :
 	@$(ENV)/bin/pip install $(requirements)
 
-generate-rst:
-	@pandoc --from=markdown --to=rst --output=README.rst README.md
-
-publish: generate-rst build
-	@echo "Publishing to pypi..."
+publish: build
+	@echo "Publishing to $(REPOSITORY)..."
 	@$(ENV)/bin/twine upload -r $(REPOSITORY) dist/*
 
 register:
-	@echo "Registering package on pypi..."
+	@echo "Registering package on $(REPOSITORY)..."
 	@$(ENV)/bin/twine register -r $(REPOSITORY)
