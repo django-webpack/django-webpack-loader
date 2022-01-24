@@ -308,7 +308,7 @@ If you need the URL to an asset without the HTML tags, the `get_files` template 
 `get_files` works exactly like `render_bundle` except it returns a list of matching files and lets you assign the list to a custom template variable.
 
 Each object in the returned list has 2 properties:
-1. `name`, which is the name of the chunk from the stats file;
+1. `name`, which is the name of a chunk from the stats file;
 2. `url`, which can be:
   1. The `publicPath` if the asset has one;
   2. The `path` to the asset in the static files storage, if the asset doesn't have a `publicPath`.
