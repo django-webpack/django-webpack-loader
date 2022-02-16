@@ -75,7 +75,7 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
                 ).format(
                     ''.join([chunk['url'], suffix]),
                     attrs,
-                    loader.get_integrity_attr(chunk) or ' ',
+                    loader.get_integrity_attr(chunk),
                 ))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
@@ -84,7 +84,7 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
                 ''.join([chunk['url'], suffix]),
                 attrs,
                 '"stylesheet"' if not is_preload else '"preload" as="style"',
-                loader.get_integrity_attr(chunk) or ' ',
+                loader.get_integrity_attr(chunk),
             ))
     return tags
 

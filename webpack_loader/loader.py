@@ -40,7 +40,7 @@ class WebpackLoader(object):
 
     def get_integrity_attr(self, chunk):
         if not self.config.get('INTEGRITY'):
-            return ''
+            return ' '
 
         integrity = chunk.get('integrity')
         if not integrity:
