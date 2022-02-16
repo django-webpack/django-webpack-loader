@@ -107,6 +107,8 @@ The `STATS_FILE` parameter represents the output file produced by `webpack-bundl
 
 - `TIMEOUT` is the number of seconds webpack_loader should wait for webpack to finish compiling before raising an exception. `0`, `None` or leaving the value out of settings disables timeouts
 
+- `INTEGRITY` is flag enabling [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) on rendered `<script>` and `<link>` tags.  Integrity hash is get from stats file and configuration on side of `BundleTracker`, where configuration option `integrity: true` is required.
+
 - `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external url, etc. For convenience, `webpack_loader.loader.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
 
 Here's a simple example of loading from an external url:
