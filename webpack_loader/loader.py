@@ -38,6 +38,18 @@ class WebpackLoader(object):
             return self._assets[self.name]
         return self.load_assets()
 
+    def get_integrity_attr(self, chunk):
+        if not self.config['INTEGRITY']:
+            return ''
+
+        integrity = chunk.get('integrity')
+        if not integrity:
+            raise WebpackLoaderBadStatsError(
+                "The stats file does not contain valid data: INTEGRITY is set to True, "
+                "but chunk does not contain \"integrity\" key.")
+
+        return 'integrity="{}"'.format(integrity.partition(' ')[0])
+
     def filter_chunks(self, chunks):
         filtered_chunks = []
 
@@ -53,9 +65,15 @@ class WebpackLoader(object):
         assets = self.get_assets()
         files = assets['assets']
 
+        add_integrity = self.config['INTEGRITY']
+
         for chunk in chunks:
             url = self.get_chunk_url(files[chunk])
-            yield { 'name': chunk, 'url': url }
+
+            if add_integrity:
+                yield {'name': chunk, 'url': url, 'integrity': files[chunk].get('integrity')}
+            else:
+                yield {'name': chunk, 'url': url}
 
     def get_chunk_url(self, chunk_file):
         public_path = chunk_file.get('publicPath')
