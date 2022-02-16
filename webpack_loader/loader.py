@@ -39,14 +39,15 @@ class WebpackLoader(object):
         return self.load_assets()
 
     def get_integrity_attr(self, chunk):
-        if not self.config['INTEGRITY']:
+        if not self.config.get('INTEGRITY'):
             return ''
 
         integrity = chunk.get('integrity')
         if not integrity:
             raise WebpackLoaderBadStatsError(
                 "The stats file does not contain valid data: INTEGRITY is set to True, "
-                "but chunk does not contain \"integrity\" key.")
+                "but chunk does not contain \"integrity\" key. Maybe you forgot to add "
+                "integrity: true in your BundleTracker configuration?")
 
         return ' integrity="{}" '.format(integrity.partition(' ')[0])
 
@@ -65,7 +66,7 @@ class WebpackLoader(object):
         assets = self.get_assets()
         files = assets['assets']
 
-        add_integrity = self.config['INTEGRITY']
+        add_integrity = self.config.get('INTEGRITY')
 
         for chunk in chunks:
             url = self.get_chunk_url(files[chunk])
