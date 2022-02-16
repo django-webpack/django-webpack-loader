@@ -210,6 +210,25 @@ class LoaderTestCase(TestCase):
             '<script src="/static/django_webpack_loader_bundles/main.js" >'
             '</script>'), result.rendered_content)
 
+    def test_integrity(self):
+        self.compile_bundles('webpack.config.integrity.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {'INTEGRITY': True}):
+            view = TemplateView.as_view(template_name='single.html')
+            request = self.factory.get('/')
+            result = view(request)
+
+            self.assertIn((
+                '<script src="/static/django_webpack_loader_bundles/main.js" '
+                'integrity="sha256-1wgFMxcDlOWYV727qRvWNoPHdnOGFNVMLuKd25cjR+o=">'
+                '</script>'), result.rendered_content)
+            self.assertIn((
+                '<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" '
+                'integrity="sha256-cYWwRvS04/VsttQYx4BalKYrBDuw5t8vKFhWB/LKX30="/>'),
+                result.rendered_content
+            )
+
     def test_append_extensions(self):
         self.compile_bundles('webpack.config.gzipTest.js')
         view = TemplateView.as_view(template_name='append_extensions.html')

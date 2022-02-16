@@ -60,6 +60,9 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
 
     bundle = _get_bundle(bundle_name, extension, config)
     tags = []
+
+    loader = get_loader(config)
+
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
             if is_preload:
@@ -68,12 +71,21 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
                 ).format(''.join([chunk['url'], suffix]), attrs))
             else:
                 tags.append((
-                    '<script src="{0}" {1}></script>'
-                ).format(''.join([chunk['url'], suffix]), attrs))
+                    '<script src="{0}" {1}{2}></script>'
+                ).format(
+                    ''.join([chunk['url'], suffix]),
+                    attrs,
+                    loader.get_integrity_attr(chunk),
+                ))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
-                '<link href="{0}" rel={2} {1}/>'
-            ).format(''.join([chunk['url'], suffix]), attrs, '"stylesheet"' if not is_preload else '"preload" as="style"'))
+                '<link href="{0}" rel={2} {1}{3}/>'
+            ).format(
+                ''.join([chunk['url'], suffix]),
+                attrs,
+                '"stylesheet"' if not is_preload else '"preload" as="style"',
+                loader.get_integrity_attr(chunk),
+            ))
     return tags
 
 
