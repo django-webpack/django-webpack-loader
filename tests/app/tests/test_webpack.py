@@ -229,6 +229,15 @@ class LoaderTestCase(TestCase):
                 result.rendered_content
             )
 
+    def test_integrity_missing_hash(self):
+        self.compile_bundles('webpack.config.simple.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {'INTEGRITY': True}), self.assertRaises(WebpackLoaderBadStatsError):
+            view = TemplateView.as_view(template_name='single.html')
+            request = self.factory.get('/')
+            str(view(request).rendered_content)
+
     def test_append_extensions(self):
         self.compile_bundles('webpack.config.gzipTest.js')
         view = TemplateView.as_view(template_name='append_extensions.html')
