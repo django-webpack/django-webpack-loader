@@ -221,11 +221,11 @@ class LoaderTestCase(TestCase):
 
             self.assertIn((
                 '<script src="/static/django_webpack_loader_bundles/main.js" '
-                'integrity="sha256-1wgFMxcDlOWYV727qRvWNoPHdnOGFNVMLuKd25cjR+o=">'
+                'integrity="sha256-1wgFMxcDlOWYV727qRvWNoPHdnOGFNVMLuKd25cjR+o=" >'
                 '</script>'), result.rendered_content)
             self.assertIn((
                 '<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" '
-                'integrity="sha256-cYWwRvS04/VsttQYx4BalKYrBDuw5t8vKFhWB/LKX30="/>'),
+                'integrity="sha256-cYWwRvS04/VsttQYx4BalKYrBDuw5t8vKFhWB/LKX30=" />'),
                 result.rendered_content
             )
 

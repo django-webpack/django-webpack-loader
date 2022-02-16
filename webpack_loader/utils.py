@@ -71,20 +71,20 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
                 ).format(''.join([chunk['url'], suffix]), attrs))
             else:
                 tags.append((
-                    '<script src="{0}" {1}{2}></script>'
+                    '<script src="{0}"{2}{1}></script>'
                 ).format(
                     ''.join([chunk['url'], suffix]),
                     attrs,
-                    loader.get_integrity_attr(chunk),
+                    loader.get_integrity_attr(chunk) or ' ',
                 ))
         elif chunk['name'].endswith(('.css', '.css.gz')):
             tags.append((
-                '<link href="{0}" rel={2} {1}{3}/>'
+                '<link href="{0}" rel={2}{3}{1}/>'
             ).format(
                 ''.join([chunk['url'], suffix]),
                 attrs,
                 '"stylesheet"' if not is_preload else '"preload" as="style"',
-                loader.get_integrity_attr(chunk),
+                loader.get_integrity_attr(chunk) or ' ',
             ))
     return tags
 
