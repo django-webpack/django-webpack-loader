@@ -48,7 +48,7 @@ class WebpackLoader(object):
                 "The stats file does not contain valid data: INTEGRITY is set to True, "
                 "but chunk does not contain \"integrity\" key.")
 
-        return 'integrity="{}"'.format(integrity.partition(' ')[0])
+        return ' integrity="{}" '.format(integrity.partition(' ')[0])
 
     def filter_chunks(self, chunks):
         filtered_chunks = []
