@@ -229,6 +229,29 @@ class LoaderTestCase(TestCase):
                 result.rendered_content
             )
 
+    def test_integrity_missing_config(self):
+        self.compile_bundles('webpack.config.integrity.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        # remove INTEGRITY from config completely to test backward compatibility
+        integrity_from_config = loader.config.pop('INTEGRITY')
+
+        view = TemplateView.as_view(template_name='single.html')
+        request = self.factory.get('/')
+        result = view(request)
+
+        self.assertIn((
+            '<script src="/static/django_webpack_loader_bundles/main.js" >'
+            '</script>'), result.rendered_content
+        )
+        self.assertIn((
+            '<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />'),
+            result.rendered_content
+        )
+
+        # return removed key
+        loader.config['INTEGRITY'] = integrity_from_config
+
     def test_integrity_missing_hash(self):
         self.compile_bundles('webpack.config.simple.js')
 
