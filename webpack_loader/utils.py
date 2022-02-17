@@ -35,8 +35,8 @@ def _filter_by_extension(bundle, extension):
             yield chunk
 
 
-def _get_bundle(bundle_name, extension, config):
-    bundle = get_loader(config).get_bundle(bundle_name)
+def _get_bundle(loader, bundle_name, extension):
+    bundle = loader.get_bundle(bundle_name)
     if extension:
         bundle = _filter_by_extension(bundle, extension)
     return bundle
@@ -44,7 +44,8 @@ def _get_bundle(bundle_name, extension, config):
 
 def get_files(bundle_name, extension=None, config='DEFAULT'):
     '''Returns list of chunks from named bundle'''
-    return list(_get_bundle(bundle_name, extension, config))
+    loader = get_loader(config)
+    return list(_get_bundle(loader, bundle_name, extension))
 
 
 def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
@@ -58,10 +59,9 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
     :return: a list of formatted tags as strings
     '''
 
-    bundle = _get_bundle(bundle_name, extension, config)
-    tags = []
-
     loader = get_loader(config)
+    bundle = _get_bundle(loader, bundle_name, extension)
+    tags = []
 
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
