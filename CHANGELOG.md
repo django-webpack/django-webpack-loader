@@ -5,6 +5,15 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.5.0] -- 2022-03-25
+- Added support for Subresource Integrity 
+- Bump django from 3.2.7 to 3.2.12
+- Fix get_files on readme 
+- Use r-prefixed strings in IGNORE
+- Fix small typo in README.md 
+- Use assertNotEqual instead of assertNotEquals for Python 3.11 compatibility
+- Readme revamp
+
 ## [1.4.1] -- 2021-10-04
 
 - Fixes #300, failsafe request checking #301
