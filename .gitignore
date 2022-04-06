@@ -86,3 +86,8 @@ tests/webpack-stats-app2.json
 # PyCharm IDE
 .idea
 .vscode
+
+# General
+.direnv
+.envrc
+.tool-versions
