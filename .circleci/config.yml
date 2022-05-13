@@ -3,71 +3,51 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-3.5-20
-      - test-3.5-21
-      - test-3.5-22
-
-      - test-3.6-20
-      - test-3.6-21
       - test-3.6-22
       - test-3.6-30
       - test-3.6-31
       - test-3.6-32
 
-      - test-3.7-20
-      - test-3.7-21
       - test-3.7-22
       - test-3.7-30
       - test-3.7-31
       - test-3.7-32
 
-      - test-3.8-20
-      - test-3.8-21
       - test-3.8-22
       - test-3.8-30
       - test-3.8-31
       - test-3.8-32
+      - test-3.8-40
 
-      - test-3.9-20
-      - test-3.9-21
       - test-3.9-22
       - test-3.9-30
       - test-3.9-31
       - test-3.9-32
+      - test-3.9-40
 
       - done:
           requires:
-            - test-3.5-20
-            - test-3.5-21
-            - test-3.5-22
-
-            - test-3.6-20
-            - test-3.6-21
             - test-3.6-22
             - test-3.6-30
             - test-3.6-31
             - test-3.6-32
 
-            - test-3.7-20
-            - test-3.7-21
             - test-3.7-22
             - test-3.7-30
             - test-3.7-31
             - test-3.7-32
 
-            - test-3.8-20
-            - test-3.8-21
             - test-3.8-22
             - test-3.8-30
             - test-3.8-31
             - test-3.8-32
+            - test-3.8-40
 
-            - test-3.9-20
-            - test-3.9-21
             - test-3.9-22
             - test-3.9-30
             - test-3.9-31
             - test-3.9-32
+            - test-3.9-40
 
 jobs:
   base: &test-template
@@ -118,37 +98,6 @@ jobs:
           environment:
             COVERALLS_PARALLEL: 1
 
-  test-3.5-20:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "20"
-  test-3.5-21:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "21"
-  test-3.5-22:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch-node
-    environment:
-      DJANGO_VERSION: "22"
-
-  test-3.6-20:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.6-stretch-node
-    environment:
-      DJANGO_VERSION: "20"
-  test-3.6-21:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.6-stretch-node
-    environment:
-      DJANGO_VERSION: "21"
   test-3.6-22:
     <<: *test-template
     docker:
@@ -174,18 +123,6 @@ jobs:
     environment:
       DJANGO_VERSION: "32"
 
-  test-3.7-20:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.7-stretch-node
-    environment:
-      DJANGO_VERSION: "20"
-  test-3.7-21:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.7-stretch-node
-    environment:
-      DJANGO_VERSION: "21"
   test-3.7-22:
     <<: *test-template
     docker:
@@ -211,18 +148,6 @@ jobs:
     environment:
       DJANGO_VERSION: "32"
 
-  test-3.8-20:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.8-buster-node
-    environment:
-      DJANGO_VERSION: "20"
-  test-3.8-21:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.8-buster-node
-    environment:
-      DJANGO_VERSION: "21"
   test-3.8-22:
     <<: *test-template
     docker:
@@ -247,19 +172,13 @@ jobs:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "32"
+  test-3.8-40:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "40"
 
-  test-3.9-20:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.9-buster-node
-    environment:
-      DJANGO_VERSION: "20"
-  test-3.9-21:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.9-buster-node
-    environment:
-      DJANGO_VERSION: "21"
   test-3.9-22:
     <<: *test-template
     docker:
@@ -284,6 +203,12 @@ jobs:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "32"
+  test-3.9-40:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "40"
 
   done:
     docker:

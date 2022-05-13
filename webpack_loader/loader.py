@@ -37,16 +37,43 @@ class WebpackLoader(object):
             return self._assets[self.name]
         return self.load_assets()
 
+    def get_integrity_attr(self, chunk):
+        if not self.config.get('INTEGRITY'):
+            return ' '
+
+        integrity = chunk.get('integrity')
+        if not integrity:
+            raise WebpackLoaderBadStatsError(
+                "The stats file does not contain valid data: INTEGRITY is set to True, "
+                "but chunk does not contain \"integrity\" key. Maybe you forgot to add "
+                "integrity: true in your BundleTracker configuration?")
+
+        return ' integrity="{}" '.format(integrity.partition(' ')[0])
+
     def filter_chunks(self, chunks):
-        assets = self.get_assets()
+        filtered_chunks = []
 
         for chunk in chunks:
             ignore = any(regex.match(chunk)
                          for regex in self.config['ignores'])
             if not ignore:
-                files = assets['assets']
-                url = self.get_chunk_url(files[chunk])
-                yield { 'name': chunk, 'url': url }
+                filtered_chunks.append(chunk)
+
+        return filtered_chunks
+
+    def map_chunk_files_to_url(self, chunks):
+        assets = self.get_assets()
+        files = assets['assets']
+
+        add_integrity = self.config.get('INTEGRITY')
+
+        for chunk in chunks:
+            url = self.get_chunk_url(files[chunk])
+
+            if add_integrity:
+                yield {'name': chunk, 'url': url, 'integrity': files[chunk].get('integrity')}
+            else:
+                yield {'name': chunk, 'url': url}
 
     def get_chunk_url(self, chunk_file):
         public_path = chunk_file.get('publicPath')
@@ -85,12 +112,14 @@ class WebpackLoader(object):
             if chunks is None:
                 raise WebpackBundleLookupError('Cannot resolve bundle {0}.'.format(bundle_name))
 
-            for chunk in chunks:
+            filtered_chunks = self.filter_chunks(chunks)
+
+            for chunk in filtered_chunks:
                 asset = assets['assets'][chunk]
                 if asset is None:
                     raise WebpackBundleLookupError('Cannot resolve asset {0}.'.format(chunk))
 
-            return self.filter_chunks(chunks)
+            return self.map_chunk_files_to_url(filtered_chunks)
 
         elif assets.get('status') == 'error':
             if 'file' not in assets:

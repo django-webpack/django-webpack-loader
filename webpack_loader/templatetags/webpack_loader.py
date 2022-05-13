@@ -1,14 +1,44 @@
-from django import template, VERSION
+from warnings import warn
+
+from django.template import Library
 from django.utils.safestring import mark_safe
 
 from .. import utils
 
-register = template.Library()
+register = Library()
+_WARNING_MESSAGE = (
+    "You have specified skip_common_chunks=True but the passed context "
+    "doesn't have a request. django_webpack_loader needs a request object to "
+    "filter out duplicate chunks. Please see https://github.com/django-webpack"
+    "/django-webpack-loader#skipping-the-generation-of-multiple-common-chunks"
+)
 
 
-@register.simple_tag
-def render_bundle(bundle_name, extension=None, config="DEFAULT", attrs=""):
-    tags = utils.get_as_tags(bundle_name, extension=extension, config=config, attrs=attrs)
+@register.simple_tag(takes_context=True)
+def render_bundle(
+    context,
+    bundle_name,
+    extension=None,
+    config="DEFAULT",
+    suffix="",
+    attrs="",
+    is_preload=False,
+    skip_common_chunks=False,
+):
+    tags = utils.get_as_tags(
+        bundle_name, extension=extension, config=config, suffix=suffix, attrs=attrs, is_preload=is_preload
+    )
+    request = context.get("request")
+    if request is None:
+        if skip_common_chunks:
+            warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
+        return mark_safe("\n".join(tags))
+    used_tags = getattr(request, "_webpack_loader_used_tags", None)
+    if not used_tags:
+        used_tags = request._webpack_loader_used_tags = set()
+    if skip_common_chunks:
+        tags = [tag for tag in tags if tag not in used_tags]
+    used_tags.update(tags)
     return mark_safe("\n".join(tags))
 
 
@@ -23,17 +53,14 @@ def webpack_static(asset_name, config="DEFAULT"):
     return utils.get_static(asset_name, config=config)
 
 
-assignment_tag = getattr(register, "simple_tag" if VERSION >= (1, 9) else "assignment_tag")
-
-
-@assignment_tag
+@register.simple_tag
 def get_files(bundle_name, extension=None, config="DEFAULT"):
     """
     Returns all chunks in the given bundle.
     Example usage::
 
-        {% get_files "editor" "css" as editor_css_chunks %}
-        CKEDITOR.config.contentsCss = "{{ editor_css_chunks.0.publicPath }}";
+        {% get_files 'editor' 'css' as editor_css_chunks %}
+        CKEDITOR.config.contentsCss = '{{ editor_css_chunks.0.url }}';
 
     :param bundle_name: The name of the bundle
     :param extension: (optional) filter by extension

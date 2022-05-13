@@ -21,8 +21,8 @@ def _filter_by_extension(bundle, extension):
             yield chunk
 
 
-def _get_bundle(bundle_name, extension, config):
-    bundle = get_loader(config).get_bundle(bundle_name)
+def _get_bundle(loader, bundle_name, extension):
+    bundle = loader.get_bundle(bundle_name)
     if extension:
         bundle = _filter_by_extension(bundle, extension)
     return bundle
@@ -37,13 +37,9 @@ def _render_tags(iterable, attrs=""):
     tags = []
     for chunk in iterable:
         if chunk["name"].endswith((".js", ".js.gz")):
-            tags.append((
-                '<script type="text/javascript" src="{0}" {1}></script>'
-            ).format(chunk["url"], attrs))
+            tags.append(('<script type="text/javascript" src="{0}" {1}></script>').format(chunk["url"], attrs))
         elif chunk["name"].endswith((".css", ".css.gz")):
-            tags.append((
-                '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
-            ).format(chunk["url"], attrs))
+            tags.append(('<link type="text/css" href="{0}" rel="stylesheet" {1}/>').format(chunk["url"], attrs))
     return tags
 
 
@@ -69,7 +65,7 @@ def _get_entrypoint_files(entrypoint_name, extension, config):
     return bundle
 
 
-def get_entrypoint_files_as_tags(entrypoint_name, extension=None, config="DEFAULT", attrs=''):
+def get_entrypoint_files_as_tags(entrypoint_name, extension=None, config="DEFAULT", attrs=""):
     """
     Get a list of formatted <script> & <link> tags for the assets required by a
     particular endpoint.
@@ -93,10 +89,7 @@ def get_static(asset_name, config="DEFAULT"):
     :return: path to webpack asset as a string
     """
     return "{0}{1}".format(
-        get_loader(config).get_assets().get(
-            "publicPath", getattr(settings, "STATIC_URL")
-        ),
-        asset_name
+        get_loader(config).get_assets().get("publicPath", getattr(settings, "STATIC_URL")), asset_name
     )
 
 

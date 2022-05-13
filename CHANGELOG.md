@@ -5,6 +5,36 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.5.0] -- 2022-03-25
+- Added support for Subresource Integrity 
+- Bump django from 3.2.7 to 3.2.12
+- Fix get_files on readme 
+- Use r-prefixed strings in IGNORE
+- Fix small typo in README.md 
+- Use assertNotEqual instead of assertNotEquals for Python 3.11 compatibility
+- Readme revamp
+
+## [1.4.1] -- 2021-10-04
+
+- Fixes #300, failsafe request checking #301
+
+## [1.4.0] -- 2021-09-24
+
+- Bump django from 3.2.4 to 3.2.5 #299
+- Add issue templates #293
+- Add skip_common_chunks functionality #297
+
+## [1.3.0] -- 2021-08-30
+
+- Add option for rel="preload" in JS/CSS tags #203
+- Add option for extension appending in the url files #135
+- Fixes RemovedInDjango41Warning #290
+- Applies IGNORE setting before checking assets #286
+- Removed type from link and script tags per #152
+
+NOTE: Skipped version 1.2.0 to match `webpack-bundle-tracker` version
+
+
 ## [1.1.0] -- 2021-06-18
 
 - Added compatibility with `webpack-bundle-tracker@1.1.0`

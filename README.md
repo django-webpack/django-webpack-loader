@@ -3,10 +3,8 @@
 [![PyPI version](https://badge.fury.io/py/django-webpack5-loader.svg)](https://badge.fury.io/py/django-webpack5-loader)
 [![Build Status](https://circleci.com/gh/MrP01/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/owais/django-webpack-loader/tree/master)
 [![Coverage Status](https://coveralls.io/repos/MrP01/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/owais/django-webpack-loader?branch=master)
-[![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-Read http://owaislone.org/blog/webpack-plus-reactjs-and-django/ for a detailed step-by-step guide on setting up webpack
-with django using this library.
+![pyversions](https://img.shields.io/pypi/pyversions/django-webpack5-loader)
+![djversions](https://img.shields.io/pypi/djversions/django-webpack5-loader)
 
 Use webpack to generate your static bundles without django's staticfiles or opaque wrappers.
 
@@ -31,32 +29,122 @@ The [initial webpack 4 port](https://github.com/alihazemfarouk/django-webpack-lo
 - Ali Farouk
 - Nikolaus Piccolotto
 
-apart from the
-[original package](https://github.com/owais/django-webpack-loader) author
-[Owais Lone](https://github.com/owais).
+## Install
 
-## Usage
+```bash
+npm install --save-dev webpack-bundle-tracker
 
-### Manually run webpack to build assets.
-
-One of the core principles of django-webpack-loader is to not manage webpack itself in order to give you the flexibility
-to run webpack the way you want. If you are new to webpack, check one of
-the [examples](https://github.com/owais/django-webpack-loader/tree/master/examples),
-read [my detailed blog post](http://owaislone.org/blog/webpack-plus-reactjs-and-django/) or
-check [webpack docs](http://webpack.github.io/).
-
-### Settings
-
-Add `webpack_loader` to `INSTALLED_APPS`
-
+pip install django-webpack-loader
 ```
+
+## Configuration
+
+### Configuring `webpack-bundle-tracker`
+
+Before configuring `django-webpack-loader`, let's first configure what's necessary on `webpack-bundle-tracker` side. Update your Webpack configuration file (it's usually on `webpack.config.js` in the project root). Make sure your file looks like this (adapt to your needs):
+
+```javascript
+const path = require("path");
+const webpack = require("webpack");
+const BundleTracker = require("webpack-bundle-tracker");
+
+module.exports = {
+  context: __dirname,
+  entry: "./assets/js/index",
+  output: {
+    path: path.resolve("./assets/webpack_bundles/"),
+    filename: "[name]-[hash].js",
+  },
+  plugins: [new BundleTracker({ filename: "./webpack-stats.json" })],
+};
+```
+
+The configuration above expects the `index.js` (the app entrypoint file) to live inside the `/assets/js/` directory (this guide going forward will assume that all front-end related files are placed inside the `/assets/` directory, with the different kinds of files arranged within its subdirectories).
+
+The generated compiled files will be placed inside the `/assets/webpack_bundles/` directory and the file with the information regarding the bundles and assets (`webpack-stats.json`) will be stored in the project root.
+
+### Compiling the front-end assets
+
+You must generate the front-end bundle using `webpack-bundle-tracker` before using `django-webpack-loader`. You can compile the assets and generate the bundles by running:
+
+```bash
+npx webpack --config webpack.config.js --watch
+```
+
+This will also generate the stats file. You can also refer to how `django-react-boilerplate` configure the [package.json](https://github.com/vintasoftware/django-react-boilerplate/blob/master/package.json) scripts for different situations.
+
+> ⚠️ Hot reload is available through a specific config. Check [this section](#hot-reload).
+
+> ⚠️ This is the recommended usage for the development environment. For **usage in production**, please refer to [this section](#usage-in-production)
+
+### Configuring the settings file
+
+First of all, add `webpack_loader` to `INSTALLED_APPS`.
+
+```python
 INSTALLED_APPS = (
-    ...
-    'webpack_loader',
+  ...
+  'webpack_loader',
+  ...
 )
 ```
 
-### Templates
+Below is the recommended setup for the Django settings file when using `django-webpack-loader`.
+
+```python
+WEBPACK_LOADER = {
+  'DEFAULT': {
+    'CACHE': not DEBUG,
+    'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    'POLL_INTERVAL': 0.1,
+    'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
+  }
+}
+```
+
+For that setup, we're using the `DEBUG` variable provided by Django. Since in a production environment (`DEBUG = False`) the assets files won't constantly change, we can safely cache the results (`CACHE=True`) and optimize our flow, as `django-webpack-loader` will read the stats file only once and store the assets files paths in memory. From that point onwards, it will use these stored paths as the source of truth. If `CACHE=False`, we'll always read the stats file to get the assets paths.
+
+> ⚠️ If `CACHE=True`, any changes made in the assets files will only be read when the web workers are restarted.
+
+During development, when the stats file changes a lot, we want to always poll for its updated version (in our case, we'll fetch it every 0.1s, as defined on `POLL_INTERVAL`).
+
+> ⚠️ In production (`DEBUG=False`), we'll only fetch the stats file once, so `POLL_INTERVAL` is ignored.
+
+While `CACHE` isn't directly related to `POLL_INTERVAL`, it's interesting to keep `CACHE` binded to the `DEBUG` logic value (in this case, the negation of the logic value) in order to only cache the assets in production, as we'd not continuously poll the stats file in that environment.
+
+The `STATS_FILE` parameter represents the output file produced by `webpack-bundle-tracker`. Since in the Webpack configuration file we've named it `webpack-stats.json` and stored it on the project root, we must replicate that setting on the back-end side.
+
+`IGNORE` is a list of regular expressions. If a file generated by Webpack matches one of the expressions, the file will not be included in the template.
+
+### Extra settings
+
+- `TIMEOUT` is the number of seconds webpack_loader should wait for webpack to finish compiling before raising an exception. `0`, `None` or leaving the value out of settings disables timeouts
+
+- `INTEGRITY` is flag enabling [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) on rendered `<script>` and `<link>` tags. Integrity hash is get from stats file and configuration on side of `BundleTracker`, where configuration option `integrity: true` is required.
+
+- `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external url, etc. For convenience, `webpack_loader.loader.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
+
+Here's a simple example of loading from an external url:
+
+```py
+import requests
+from webpack_loader.loader import WebpackLoader
+
+class ExternalWebpackLoader(WebpackLoader):
+  def load_assets(self):
+    url = self.config['STATS_URL']
+    return requests.get(url).json()
+```
+
+## Rendering
+
+In order to render the front-end code into the Django templates, we use the `render_bundle` template tag.
+
+Its behavior is to accept a string with the name of an entrypoint from the stats file (in our case, we're using `main`, which is [the default](https://webpack.js.org/concepts/entry-points/#single-entry-shorthand-syntax)) and it'll proceed to include all files under that entrypoint. You can read more about the entrypoints concept [here](https://webpack.js.org/concepts/entry-points/).
+
+> ⚠️ You can also check an example on how to use multiple `entry` values [here](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/code-splitting).
+
+Below is the basic usage for `render_bundle` within a template:
 
 #### render_bundle
 
@@ -66,7 +154,60 @@ INSTALLED_APPS = (
 {% render_bundle 'main' %}
 ```
 
-`render_bundle` will render the proper `<script>` and `<link>` tags needed in your template.
+That will render the proper `<script>` and `<link>` tags needed in your template.
+
+## Running in development
+
+For `django-webpack-loader` to work, you must run the webpack pipeline. Please refer to [this section](#compiling-the-front-end-assets).
+
+In summary, you should do the following:
+
+```bash
+# in one shell
+npx webpack --config webpack.config.js --watch
+
+# in another shell
+python manage.py runserver
+```
+
+> ⚠️ You can also check [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/simple) on how to run a project with `django-webpack-loader` and `webpack-bundle-track`.
+
+## Usage in production
+
+We recommend that you keep your local bundles and the stats file outside the version control, having a production pipeline that will compile and collect the assets during the deployment phase.
+
+You must add `STATICFILES_DIRS` to your settings file, pointing to the directory where the static files are located. This will let `collectstatic` know where it should look at:
+
+```python
+STATICFILES_DIRS = (
+  os.path.join(BASE_DIR, 'assets'),
+)
+```
+
+Below are the commands that should be run to compile and collect the static files (please note this may change from platform to platform):
+
+```
+npm run build
+python manage.py collectstatic --noinput
+```
+
+First we build the assets and, since we have `webpack-bundle-tracker` in our front-end building pipeline, the stats file will be populated. Then, we manually run collecstatic to collect the compiled assets.
+
+> ⚠️ Heroku is one platform that automatically runs collectstatic for you, so you need to set `DISABLE_COLLECTSTATIC=1` environment var. Instead, you must manually run collectstatic after running webpack. In Heroku, this is achieved with a `post_compile` hook. You can see an example on how to implement this flow on [django-react-boilerplate](https://github.com/vintasoftware/django-react-boilerplate/tree/master/bin).
+
+However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline. However, you must remember to always build the frontend and generate the bundle before pushing to remote.
+
+## Usage in tests
+
+There are 2 approaches for when `render_bundle` shows up in tests, since we don't have `webpack-bundle-tracker` at that point to generate the stats file.
+
+1. The first approach is to have specific settings for them (which is how we approach on our [tests](https://github.com/django-webpack/django-webpack-loader/blob/master/tests/app/settings.py#L111-L125)), such as done [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-470055769). Please note that it's necessary to have a pre-made stats file for the tests (which in general can be empty, such as [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-464250721)).
+
+2. The second approach is to leverage [`LOADER_CLASS` overriding](#extra-settings) for the test settings and customize the `get_bundle` method to return the url of a stats file. Note that, using this approach, the stats file doesn't have to [exist](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-901449290).
+
+## Advanced Usage
+
+### Rendering by file extension
 
 `render_bundle` also takes a second argument which can be a file extension to match. This is useful when you want to
 render different types for files in separately. For example, to render CSS in head and JS at bottom we can do something
@@ -132,12 +273,14 @@ can be used in a similar way,
 Using `webpack_loader.contrib.pages` you can register entrypoints for corresponding pages in templates.
 
 At the top of your individual page, do:
+
 ```HTML+Jinja
 {% extends "layout.jinja" %}
 {% do register_entrypoint("myapp/dashboard") %}
 ```
 
 In the layout's (base template's) head, place the following:
+
 ```HTML+Jinja
 <!DOCTYPE html>
 {% do register_entrypoint("main") %}
@@ -155,11 +298,71 @@ In the layout's (base template's) head, place the following:
 This will load the registered entrypoints in order (`main`, then `myapp/dashboard`) and automatically inject
 the webpack-generated css and js. It also supports critical css injection upon first request visits.
 
-### Multiple webpack projects
+```HTML+Jinja
+<html>
+  <head>
+    {% render_bundle 'main' 'css' is_preload=True %}
+    {% render_bundle 'main' 'js' is_preload=True %}
 
-Version 2.0 and up of webpack loader also supports multiple webpack configurations. The following configuration defines
-2 webpack stats files in settings and uses the `config` argument in the template tags to influence which stats file to
-load the bundles from.
+    {% render_bundle 'main' 'css' %}
+
+  </head>
+
+  <body>
+    {% render_bundle 'main' 'js' %}
+  </body>
+</html>
+```
+
+### Accessing other webpack assets
+
+`webpack_static` template tag provides facilities to load static assets managed by webpack in Django templates. It is like Django's built in `static` tag but for webpack assets instead.
+
+In the below example, `logo.png` can be any static asset shipped with any npm package.
+
+```HTML+Django
+{% load webpack_static from webpack_loader %}
+
+<!-- render full public path of logo.png -->
+<img src="{% webpack_static 'logo.png' %}"/>
+```
+
+The public path is based on `webpack.config.js` [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath).
+
+Please note that this approach will use the original asset file, and not a post-processed one from the Webpack pipeline, in case that file had gone through such flow (i.e.: You've imported an image on the React side and used it there, the file used within the React components will probably have a hash string on its name, etc. This processed file will be different than the one you'll grab with `webpack_static`).
+
+### Use `skip_common_chunks` on `render_bundle`
+
+You can use the parameter `skip_common_chunks=True` to specify that you don't want an already generated chunk be included again in the same page. This should only happen if you use more than one entrypoint per Django template (multiple `render_bundle` calls). By using `skip_common_chunks=True`, you can get the same default behavior of the [HtmlWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin/).
+
+In order for this option to work, `django-webpack-loader` requires the `request` object to be in the context, to be able to keep track of the generated chunks.
+
+The `request` object is passed by default via the `django.template.context_processors.request` middleware with using the Django built-in templating system, and also with using Jinja2.
+
+If you don't have `request` in the context for some reason (e.g. using `Template.render` or `render_to_string` directly without passing the request), you'll get warnings on the console and the common chunks will remain duplicated.
+
+### Appending file extensions
+
+The `suffix` option can be used to append a string at the end of the file URL. For instance, it can be used if your webpack configuration emits compressed `.gz` files.
+qwe
+
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {% render_bundle 'main' 'css' %}
+  </head>
+  <body>
+    {% render_bundle 'main' 'js' suffix='.gz' %}
+  </body>
+</html>
+```
+
+### Multiple Webpack configurations
+
+Version 1.0 and up of `django-webpack-loader` also supports multiple Webpack configurations. The following configuration defines 2 Webpack stats files in settings and uses the `config` argument in the template tags to influence which stats file to load the bundles from.
 
 ```python
 WEBPACK_LOADER = {
@@ -199,71 +402,134 @@ WEBPACK_LOADER = {
 
 ### File URLs instead of html tags
 
-If you need the URL to an asset without the HTML tags, the `get_files`
-template tag can be used. A common use case is specifying the URL to a custom css file for a Javascript plugin.
+If you need the URL to an asset without the HTML tags, the `get_files` template tag can be used. A common use case is specifying the URL to a custom css file for a Javascript plugin.
 
-`get_files` works exactly like `render_bundle` except it returns a list of matching files and lets you assign the list
-to a custom template variable. For example,
+`get_files` works exactly like `render_bundle` except it returns a list of matching files and lets you assign the list to a custom template variable.
+
+Each object in the returned list has 2 properties:
+
+1. `name`, which is the name of a chunk from the stats file;
+2. `url`, which can be:
+3. The `publicPath` if the asset has one;
+4. The `path` to the asset in the static files storage, if the asset doesn't have a `publicPath`.
+
+For example:
 
 ```HTML+Django
-{% get_files 'editor' 'css' as editor_css_files %}
-CKEDITOR.config.contentsCss = '{{ editor_css_files.0.publicPath }}';
+{% load get_files from webpack_loader %}
 
-<!-- or list down name, path and download url for every file -->
+{% get_files 'editor' 'css' as editor_css_files %}
+CKEDITOR.config.contentsCss = '{{ editor_css_files.0.url }}';
+
+<!-- or list down name and url for every file -->
 <ul>
 {% for css_file in editor_css_files %}
-    <li>{{ css_file.name }} : {{ css_file.path }} : {{ css_file.publicPath }}</li>
+    <li>{{ css_file.name }} : {{ css_file.url }}</li>
 {% endfor %}
 </ul>
 ```
 
-### Refer other static assets
+### Code splitting
 
-`webpack_static` template tag provides facilities to load static assets managed by webpack in django templates. It is
-like django's built in `static` tag but for webpack assets instead.
+In case you wish to use [code-splitting](https://webpack.js.org/guides/code-splitting/), follow the recipe below on the Javascript side.
 
-In the below example, `logo.png` can be any static asset shipped with any npm or bower package.
+Create your entrypoint file and add elements to the DOM, while leveraging the lazy imports.
+
+```js
+// src/principal.js
+function getComponent() {
+  return import(/* webpackChunkName: "lodash" */ "lodash")
+    .then(({ default: _ }) => {
+      const element = document.createElement("div");
+
+      element.innerHTML = _.join(["Hello", "webpack"], " ");
+
+      return element;
+    })
+    .catch((error) => "An error occurred while loading the component");
+}
+
+getComponent().then((component) => {
+  document.body.appendChild(component);
+});
+```
+
+On your configuration file, do the following:
+
+```js
+// webpack.config.js
+module.exports = {
+  context: __dirname,
+  entry: {
+    principal: "./src/principal",
+  },
+  output: {
+    path: path.resolve("./dist/"),
+    // publicPath should match your STATIC_URL config.
+    // This is required otherwise webpack will try to fetch
+    // our chunk generated by the dynamic import from "/" instead of "/dist/".
+    publicPath: "/dist/",
+    chunkFilename: "[name].bundle.js",
+    filename: "[name]-[hash].js",
+  },
+  plugins: [new BundleTracker({ filename: "./webpack-stats.json" })],
+};
+```
+
+If you're using Webpack 5 instead of 4, do the following:
+
+- Change `filename: "[name]-[hash].js"` to `filename: "[name]-[fullhash].js"`;
+- Remove `/* webpackChunkName: "lodash" */`, which is not needed anymore.
+
+On your template, render the bundle as usual:
 
 ```HTML+Django
-{% load webpack_static from webpack_loader %}
+<!-- index.html -->
+{% load render_bundle from webpack_loader %}
 
-<!-- render full public path of logo.png -->
-<img src="{% webpack_static 'logo.png' %}"/>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My test page</title>
+  </head>
+  <body>
+    <p>This is my page</p>
+
+    {% render_bundle 'principal' 'js' %}
+  </body>
+</html>
 ```
 
-The public path is based
-on `webpack.config.js` [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath).
+### Hot reload
 
-### From Python code
+In case you wish to enable hot reload for your project using `django-webpack-loader` and `webpack-bundle-tracker`, please check out [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/hot-reload), in particular how [server.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/server.js) and [webpack.config.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/webpack.config.js) are configured.
 
-If you want to access the webpack asset path information from your application code then you can use the function in
-the `webpack_loader.utils` module.
+### Jinja2 Configuration
+
+If you need to output your assets in a jinja template, we provide a Jinja2 extension that's compatible with [django-jinja](https://github.com/niwinz/django-jinja).
+
+To install the extension, add it to the `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
 
 ```python
->>> utils.get_files('main')
-[{'url': '/static/bundles/main.js',
-  u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/main.js', u'name': u'main.js'},
- {'url': '/static/bundles/styles.css',
-  u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/styles.css', u'name': u'styles.css'}]
->>> utils.get_as_tags('main')
-['<script type="text/javascript" src="/static/bundles/main.js" ></script>',
- '<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />']
+from django_jinja.builtins import DEFAULT_EXTENSIONS
+TEMPLATES = [
+  {
+    "BACKEND": "django_jinja.backend.Jinja2",
+    "OPTIONS": {
+      "extensions": DEFAULT_EXTENSIONS + [
+        "webpack_loader.contrib.jinja2ext.WebpackExtension",
+      ],
+    }
+  }
+]
 ```
 
-## Compatibility
+Then in your base jinja template, do:
 
-Test cases cover Django>=2.0 on Python>=3.5. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
-
-
-## Install
-
-```bash
-npm install --save-dev webpack-bundle-tracker
-
-pip install django-webpack-loader
+```HTML
+{{ render_bundle('main') }}
 ```
-
-<br>
 
 ## Migrating from version < 1.0.0
 
@@ -271,292 +537,8 @@ In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bu
 
 This is necessary because the formatting of `webpack-stats.json` that `webpack-bundle-tracker` outputs has changed starting at version `1.0.0-alpha.1`. Starting at `django-webpack-loader==1.0.0`, this is the only formatting accepted here, meaning that other versions of that package don't output compatible files anymore, thereby breaking compatibility with older `webpack-bundle-tracker` releases.
 
-<br>
+## Commercial Support
 
-## Configuration
+[![alt text](https://avatars2.githubusercontent.com/u/5529080?s=80&v=4 "Vinta Logo")](https://www.vinta.com.br/)
 
-### Assumptions
-
-Assuming `BASE_DIR` in settings refers to the root of your django app.
-
-```python
-import sys
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-```
-
-Assuming `assets/` is in `settings.STATICFILES_DIRS` like
-
-```python
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'assets'),
-)
-```
-
-Assuming your webpack config lives at `./webpack.config.js` and looks like this
-
-```javascript
-var path = require('path');
-var webpack = require('webpack');
-var BundleTracker = require('webpack-bundle-tracker');
-
-module.exports = {
-  context: __dirname,
-  entry: './assets/js/index',
-  output: {
-    path: path.resolve('./assets/webpack_bundles/'),
-    filename: "[name]-[hash].js"
-  },
-
-  plugins: [
-    new BundleTracker({filename: './webpack-stats.json'})
-  ]
-}
-```
-
-### Default Configuration
-
-```python
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'webpack_bundles/',  # must end with slash
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-        'POLL_INTERVAL': 0.1,
-        'TIMEOUT': None,
-        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
-        'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
-        'EXCLUDE_RUNTIME': False,
-        'BASE_ENTRYPOINT': ''
-    }
-}
-```
-
-#### CACHE
-
-```python
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG
-    }
-}
-```
-
-When `CACHE` is set to True, webpack-loader will read the stats file only once and cache the result. This means web
-workers need to be restarted in order to pick up any changes made to the stats files.
-
-#### BUNDLE_DIR_NAME
-
-```python
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/'  # end with slash
-    }
-}
-```
-
-`BUNDLE_DIR_NAME` refers to the dir in which webpack outputs the bundles. It should not be the full path. If `./assets`
-is one of your static dirs and webpack generates the bundles in `./assets/output/bundles/`, then `BUNDLE_DIR_NAME`
-should be `output/bundles/`.
-
-If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your STATIC_URL is `/static/`, then
-the `<script>` tag will look like this
-
-```html
-
-<script type="text/javascript" src="/static/output/bundles/main-cf4b5fab6e00a404e0c7.js"/>
-```
-
-**NOTE:** If your webpack config outputs the bundles at the root of your `staticfiles` dir, then `BUNDLE_DIR_NAME`
-should be an empty string `''`, not `'/'`.
-
-#### STATS_FILE
-
-```python
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
-    }
-}
-```
-
-`STATS_FILE` is the filesystem path to the file generated by `webpack-bundle-tracker` plugin. If you
-initialize `webpack-bundle-tracker` plugin like this
-
-```javascript
-new BundleTracker({filename: './webpack-stats.json'})
-```
-
-and your webpack config is located at `/home/src/webpack.config.js`, then the value of `STATS_FILE` should
-be `/home/src/webpack-stats.json`
-
-#### IGNORE
-
-`IGNORE` is a list of regular expressions. If a file generated by webpack matches one of the expressions, the file will
-not be included in the template.
-
-#### POLL_INTERVAL
-
-`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 100 milliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
-
-**NOTE:** Stats file is not polled when in production (DEBUG=False).
-
-#### TIMEOUT
-
-`TIMEOUT` is the number of seconds webpack_loader should wait for webpack to finish compiling before raising an
-exception. `0`, `None` or leaving the value out of settings disables timeouts.
-
-#### LOADER_CLASS
-
-`LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is
-where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a
-database, cache, external url, etc. For convenience, `webpack_loader.loader.WebpackLoader` can be extended;
-The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
-
-Here's a simple example of loading from an external url:
-
-```py
-# in app.module
-import requests
-from webpack_loader.loader import WebpackLoader
-
-
-class ExternalWebpackLoader(WebpackLoader):
-
-    def load_assets(self):
-        url = self.config['STATS_URL']
-        return requests.get(url).json()
-
-
-# in app.settings
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': False,
-        'BUNDLE_DIR_NAME': 'bundles/',
-        'LOADER_CLASS': 'app.module.ExternalWebpackLoader',
-        # Custom config setting made available in WebpackLoader's self.config
-        'STATS_URL': 'https://www.test.com/path/to/stats/',
-    }
-}
-```
-
-#### EXCLUDE_RUNTIME
-
-`EXCLUDE_RUNTIME` is meant to be used with `render_entrypoint`. When creating multi-page applications, it's common to
-want to split a single runtime file that is used by all chunks. You can do that by using `{% render_bundle 'runtime' %}`
-in your base HTML file and setting `EXCLUDE_RUNTIME` to `True` in order to not include it again when
-using `{% render_entrypoint 'example_entry_point' %}`
-
-#### BASE_ENTRYPOINT
-
-`webpack_static` template tag provides facilities to load static assets managed by webpack
-in django templates. It is like django's built in `static` tag but for webpack assets instead.
-
-
-In the below example, `logo.png` can be any static asset shipped with any npm package.
-
-```HTML+Django
-{% load webpack_static from webpack_loader %}
-
-<!-- render full public path of logo.png -->
-<img src="{% webpack_static 'logo.png' %}"/>
-```
-The public path is based on `webpack.config.js` [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath).
-
-<br>
-
-### From Python code
-
-If you want to access the webpack asset path information from your application code then you can use
-the function in the `webpack_loader.utils` module.
-
-```python
->>> utils.get_files('main')
-[{'url': '/static/bundles/main.js', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/main.js', u'name': u'main.js'},
- {'url': '/static/bundles/styles.css', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/styles.css', u'name': u'styles.css'}]
->>> utils.get_as_tags('main')
-['<script type="text/javascript" src="/static/bundles/main.js" ></script>',
- '<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />']
-```
-
-## How to use in Production
-
-**It is up to you**. There are a few ways to handle this. I like to have slightly separate configs for production and
-local. I tell git to ignore my local stats + bundle file but track the ones for production. Before pushing out newer
-version to production, I generate a new bundle using production config and commit the new stats file and bundle. I store
-the stats file and bundles in a directory that is added to the `STATICFILES_DIR`. This gives me integration with
-collectstatic for free. The generated bundles are automatically collected to the target directory and synched to S3.
-
-`./webpack_production.config.js`
-
-```javascript
-var config = require('./webpack.config.js');
-var BundleTracker = require('webpack-bundle-tracker');
-
-config.output.path = require('path').resolve('./assets/dist');
-
-config.plugins = [
-  new BundleTracker({filename: './webpack-stats-prod.json'})
-]
-
-// override any other settings here like using Uglify or other things that make sense for production environments.
-
-module.exports = config;
-```
-
-`settings.py`
-
-```python
-if not DEBUG:
-    WEBPACK_LOADER.update({
-        'BUNDLE_DIR_NAME': 'dist/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json')
-    })
-```
-
-You can also simply generate the bundles on the server before running collectstatic if that works for you.
-
-## Extra
-
-### Jinja2 Configuration
-
-If you need to output your assets in a jinja template we provide a Jinja2 extension that's compatible with
-the [Django Jinja](https://github.com/niwinz/django-jinja) module and Django 1.8.
-
-To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
-
-```python
-from django_jinja.builtins import DEFAULT_EXTENSIONS
-TEMPLATES = [
-    {
-        "BACKEND": "django_jinja.backend.Jinja2",
-        "OPTIONS": {
-            "extensions": DEFAULT_EXTENSIONS + [
-                "webpack_loader.contrib.jinja2ext.WebpackExtension",
-            ],
-        }
-    }
-]
-```
-
-Then in your base jinja template:
-
-```HTML
-{{ render_bundle('main') }}
-```
-
---------------------
-
-Enjoy your webpack with django :)
-
-# Alternatives to Django-Webpack-Loader
-
-_Below are known projects that attempt to solve the same problem:_
-
-Note that these projects have not been vetted or reviewed in any way by me.
-These are not recommendation.
-Anyone can add their project to this by sending a PR.
-
-* [Django Manifest Loader](https://github.com/shonin/django-manifest-loader)
-* [Python Webpack Boilerplate](https://github.com/AccordBox/python-webpack-boilerplate)
+This project is maintained by [Vinta Software](https://www.vinta.com.br/) and is used in products of Vinta's clients. We are always looking for exciting work, so if you need any commercial support, feel free to get in touch: contact@vinta.com.br

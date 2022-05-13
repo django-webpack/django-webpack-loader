@@ -20,15 +20,13 @@ DEFAULT_CONFIG = {
         "CRITICAL_CSS_ENABLED": False,
         "LOCALIZED_BUILDS": False,
         "STATICFILE_BUNDLES_BASE": "bundles/",  # e.g. example.org/static/bundles/entry.js; should end in /
+        "INTEGRITY": False,
     }
 }
 
 user_config = getattr(settings, "WEBPACK_LOADER", DEFAULT_CONFIG)
 
-user_config = dict(
-    (name, dict(DEFAULT_CONFIG["DEFAULT"], **cfg))
-    for name, cfg in user_config.items()
-)
+user_config = dict((name, dict(DEFAULT_CONFIG["DEFAULT"], **cfg)) for name, cfg in user_config.items())
 
 for entry in user_config.values():
     entry["ignores"] = [re.compile(I) for I in entry["IGNORE"]]

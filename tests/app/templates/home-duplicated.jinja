@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {{ render_bundle('app1', 'js') }}
+    {{ render_bundle('app2', 'js') }}
+  </head>
+
+  <body>
+    <div id="react-app"></div>
+    {{ render_bundle('app1', 'js') }}
+    {{ render_bundle('app2', 'js') }}
+  </body>
+</html>

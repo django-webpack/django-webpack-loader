@@ -80,9 +80,15 @@ tests/venv/
 tests/venv3/
 tests/node_modules/
 tests/assets/bundles/
+tests/assets/django_webpack_loader_bundles/
 tests/webpack-stats.json
 tests/webpack-stats-app2.json
 
 # PyCharm IDE
 .idea
 .vscode
+
+# General
+.direnv
+.envrc
+.tool-versions
