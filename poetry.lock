@@ -93,6 +93,18 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-jinja"
+version = "2.10.2"
+description = "Jinja2 templating language integrated in Django."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+django = ">=2.2"
+jinja2 = ">=3"
+
+[[package]]
 name = "isort"
 version = "5.10.1"
 description = "A Python utility / library to sort Python imports."
@@ -249,7 +261,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "54c1e58d15e70c6c05f7f50402794bc0b0f5550102ad2f7b5dd46f65c2841924"
+content-hash = "3692c402093c020821a422c06598e98b06d7d9fe32c1491121f7c99023fd9429"
 
 [metadata.files]
 asgiref = [
@@ -300,6 +312,10 @@ dill = [
 django = [
     {file = "Django-4.0.4-py3-none-any.whl", hash = "sha256:07c8638e7a7f548dc0acaaa7825d84b7bd42b10e8d22268b3d572946f1e9b687"},
     {file = "Django-4.0.4.tar.gz", hash = "sha256:4e8177858524417563cc0430f29ea249946d831eacb0068a1455686587df40b5"},
+]
+django-jinja = [
+    {file = "django-jinja-2.10.2.tar.gz", hash = "sha256:bfdfbb55c1f5a679d69ad575d550c4707d386634009152efe014089f3c4d1412"},
+    {file = "django_jinja-2.10.2-py3-none-any.whl", hash = "sha256:dd003ec1c95c0989eb28a538831bced62b1b61da551cb44a5dfd708fcf75589f"},
 ]
 isort = [
     {file = "isort-5.10.1-py3-none-any.whl", hash = "sha256:6f62d78e2f89b4500b080fe3a81690850cd254227f27f75c3a0c491a1f351ba7"},

@@ -31,14 +31,6 @@ repos:
         exclude: tests/
         types:
           - python
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.4
-    hooks:
-      - id: bandit
-        args:
-          - --ini
-          - pyproject.toml
-        exclude: tests/
   - repo: https://github.com/flakeheaven/flakeheaven
     rev: 0.11.0
     hooks:
