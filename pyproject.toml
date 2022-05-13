@@ -17,6 +17,10 @@ black = "^22.3.0"
 pylint = "^2.13.9"
 isort = "^5.10.1"
 
+[tool.poetry.group.demo.dependencies]
+Django = "^4.0.4"
+Jinja2 = "^3.1.2"
+
 [tool.nitpick]
 style = ["github://MrP01/lint-me-now/nitpick-base-style.toml", "github://MrP01/lint-me-now/nitpick-python-style.toml"]
 
