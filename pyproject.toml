@@ -10,11 +10,38 @@ keywords = ["django", "webpack", "assets"]
 packages = [{ include = "webpack_loader" }]
 
 [tool.poetry.dependencies]
-python = "^3.6.2"
+python = "^3.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.3.0"
 
+[tool.nitpick]
+style = ["github://MrP01/lint-me-now/nitpick-base-style.toml", "github://MrP01/lint-me-now/nitpick-python-style.toml"]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
+profile = "black"
+
+[tool.pylint]
+[tool.pylint.MASTER]
+jobs = 1
+extension-pkg-whitelist = "pydantic"
+
+[tool.pylint.REPORTS]
+output-format = "colorized"
+
+[tool.pylint.FORMAT]
+max-line-length = 120
+max-module-lines = 1000
+indent-after-paren = 4
+
+[tool.flakeheaven]
+ignore = "D107,D202,D203,D401,E203,E402,E501,W503"
+max_line_length = 120
+inline-quotes = "double"
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
