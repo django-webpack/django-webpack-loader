@@ -26,7 +26,7 @@ DEFAULT_CONFIG = {
 
 user_config = getattr(settings, "WEBPACK_LOADER", DEFAULT_CONFIG)
 
-user_config = dict((name, dict(DEFAULT_CONFIG["DEFAULT"], **cfg)) for name, cfg in user_config.items())
+user_config = {name: dict(DEFAULT_CONFIG["DEFAULT"], **cfg) for name, cfg in user_config.items()}
 
 for entry in user_config.values():
     entry["ignores"] = [re.compile(I) for I in entry["IGNORE"]]

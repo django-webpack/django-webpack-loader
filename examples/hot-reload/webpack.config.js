@@ -1,23 +1,22 @@
 var path = require("path");
-var BundleTracker = require('webpack-bundle-tracker');
-var MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
+var BundleTracker = require("webpack-bundle-tracker");
+var MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   context: __dirname,
-  entry: './assets/js/index',
+  entry: "./assets/js/index",
   output: {
-    path: path.resolve('./assets/bundles/'),
-    publicPath: 'http://localhost:3000/dist/',
+    path: path.resolve("./assets/bundles/"),
+    publicPath: "http://localhost:3000/dist/",
     filename: "[name]-[hash].js",
-    chunkFilename: "[name]-[hash].js"
+    chunkFilename: "[name]-[hash].js",
   },
 
   plugins: [
-    new BundleTracker({filename: './webpack-stats.json'}),
+    new BundleTracker({ filename: "./webpack-stats.json" }),
     new MiniCssExtractPlugin({
-      filename: '[name]-[hash].css',
-      chunkFilename: '[name]-[hash].css',
+      filename: "[name]-[hash].css",
+      chunkFilename: "[name]-[hash].css",
     }),
   ],
 
@@ -27,17 +26,17 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loaders: ['babel-loader'],
+        loaders: ["babel-loader"],
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      }
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
     ],
   },
 
   resolve: {
-    modules: ['node_modules'],
-    extensions: ['.js', '.jsx']
+    modules: ["node_modules"],
+    extensions: [".js", ".jsx"],
   },
-}
+};

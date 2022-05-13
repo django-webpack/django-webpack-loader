@@ -25,5 +25,6 @@ class WebpackLoaderConfig(AppConfig):
     verbose_name = "Webpack Loader"
 
     def ready(self):
-        from django.core.checks import register, Tags
+        from django.core.checks import Tags, register
+
         register(Tags.compatibility)(webpack_cfg_check)

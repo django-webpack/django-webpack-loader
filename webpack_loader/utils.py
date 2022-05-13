@@ -17,7 +17,7 @@ def get_loader(config_name):
 def _filter_by_extension(bundle, extension):
     """Return only files with the given extension"""
     for chunk in bundle:
-        if chunk["name"].endswith(".{0}".format(extension)):
+        if chunk["name"].endswith(f".{extension}"):
             yield chunk
 
 
@@ -37,9 +37,9 @@ def _render_tags(iterable, attrs=""):
     tags = []
     for chunk in iterable:
         if chunk["name"].endswith((".js", ".js.gz")):
-            tags.append(('<script type="text/javascript" src="{0}" {1}></script>').format(chunk["url"], attrs))
+            tags.append(('<script type="text/javascript" src="{}" {}></script>').format(chunk["url"], attrs))
         elif chunk["name"].endswith((".css", ".css.gz")):
-            tags.append(('<link type="text/css" href="{0}" rel="stylesheet" {1}/>').format(chunk["url"], attrs))
+            tags.append(('<link type="text/css" href="{}" rel="stylesheet" {}/>').format(chunk["url"], attrs))
     return tags
 
 
@@ -88,9 +88,7 @@ def get_static(asset_name, config="DEFAULT"):
     :param config: (optional) the name of the configuration
     :return: path to webpack asset as a string
     """
-    return "{0}{1}".format(
-        get_loader(config).get_assets().get("publicPath", getattr(settings, "STATIC_URL")), asset_name
-    )
+    return "{}{}".format(get_loader(config).get_assets().get("publicPath", getattr(settings, "STATIC_URL")), asset_name)
 
 
 def get_unique_entrypoint_files(entrypoints, extension, config):

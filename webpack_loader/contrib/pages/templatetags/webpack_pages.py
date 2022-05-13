@@ -5,10 +5,10 @@ from django import template
 from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
 
+from ....config import load_config
+from ....utils import get_loader, get_unique_entrypoint_files
 from ..pageassetfinder import PageAssetFinder
 from ..utils import is_first_visit
-from ....config import load_config
-from ....utils import get_unique_entrypoint_files, get_loader
 
 register = template.Library()
 
@@ -27,8 +27,10 @@ def render_css(context, config="DEFAULT"):
     preloadTags = []
     noscriptTags = []
     for file in get_unique_entrypoint_files(entrypoints, "css", config):
-        preloadTags.append(f'<link rel="preload" href="{file["url"]}" as="style" '
-                           f'onload="this.onload=null;this.rel=\'stylesheet\'">')
+        preloadTags.append(
+            f'<link rel="preload" href="{file["url"]}" as="style" '
+            f"onload=\"this.onload=null;this.rel='stylesheet'\">"
+        )
         noscriptTags.append(f'<link rel="stylesheet" href="{file["url"]}">')
     cfg = load_config(config)
     loader = get_loader(config)
@@ -66,7 +68,7 @@ def inline_entrypoint(entrypoint, extension, config="DEFAULT"):
     loader = get_loader(config)
     base = cfg["STATICFILE_BUNDLES_BASE"].format(locale=loader.locale)
     for file in get_unique_entrypoint_files((entrypoint,), extension, config=config):
-        with open(finders.find(base + file['name'])) as f:
+        with open(finders.find(base + file["name"])) as f:
             inlined += f.read()
     return mark_safe(inlined)
 
@@ -79,7 +81,7 @@ def asset_url(context, path, absolute=False, config="DEFAULT"):
         pagename = context.assets_pagename
     else:
         template_ = context.environment.get_template(context.name)
-        pages_location = os.path.normpath(template_.filename)[:-(len(os.path.normpath(context.name)) + 1)]
+        pages_location = os.path.normpath(template_.filename)[: -(len(os.path.normpath(context.name)) + 1)]
         cfg = load_config(config)
         if pages_location == cfg["ROOT_PAGE_DIR"]:
             app_name = "root"

@@ -1,9 +1,4 @@
-__all__ = (
-    "WebpackError",
-    "WebpackLoaderBadStatsError",
-    "WebpackLoaderTimeoutError",
-    "WebpackBundleLookupError"
-)
+__all__ = ("WebpackError", "WebpackLoaderBadStatsError", "WebpackLoaderTimeoutError", "WebpackBundleLookupError")
 
 
 class BaseWebpackLoaderException(Exception):

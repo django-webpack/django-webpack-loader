@@ -1,13 +1,13 @@
 {% load render_entrypoint from webpack_loader %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Example</title>
-  {% render_entrypoint 'main' 'css' 'EXCLUDE_RUNTIME' %}
-</head>
-<body>
-  <div id="react-app"></div>
-  {% render_entrypoint 'main' 'js' 'EXCLUDE_RUNTIME' %}
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Example</title>
+    {% render_entrypoint 'main' 'css' 'EXCLUDE_RUNTIME' %}
+  </head>
+  <body>
+    <div id="react-app"></div>
+    {% render_entrypoint 'main' 'js' 'EXCLUDE_RUNTIME' %}
+  </body>
 </html>

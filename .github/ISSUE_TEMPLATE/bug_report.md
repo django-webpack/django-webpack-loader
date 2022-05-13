@@ -16,7 +16,7 @@ Detailed steps to reproduce the bug, if possible with minimal runnable code.
 
 ### Environment
 
-* Paste `python --version` output here: **PLEASE-FILL-HERE**
-* Paste `pip freeze` output here: **PLEASE-FILL-HERE**
-* Paste `node --version` output here: **PLEASE-FILL-HERE**
-* Remove any sensitive info from the outputs above!
+- Paste `python --version` output here: **PLEASE-FILL-HERE**
+- Paste `pip freeze` output here: **PLEASE-FILL-HERE**
+- Paste `node --version` output here: **PLEASE-FILL-HERE**
+- Remove any sensitive info from the outputs above!

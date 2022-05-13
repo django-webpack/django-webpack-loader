@@ -6,11 +6,12 @@ Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
 ## [1.5.0] -- 2022-03-25
-- Added support for Subresource Integrity 
+
+- Added support for Subresource Integrity
 - Bump django from 3.2.7 to 3.2.12
-- Fix get_files on readme 
+- Fix get_files on readme
 - Use r-prefixed strings in IGNORE
-- Fix small typo in README.md 
+- Fix small typo in README.md
 - Use assertNotEqual instead of assertNotEquals for Python 3.11 compatibility
 - Readme revamp
 
@@ -34,7 +35,6 @@ Releases are added to the
 
 NOTE: Skipped version 1.2.0 to match `webpack-bundle-tracker` version
 
-
 ## [1.1.0] -- 2021-06-18
 
 - Added compatibility with `webpack-bundle-tracker@1.1.0`
@@ -47,6 +47,7 @@ NOTE: Skipped version 1.2.0 to match `webpack-bundle-tracker` version
 - Added compatibility with `webpack-bundle-tracker@1.0.0-alpha.1`
 - Updated and corrected examples
 - Updated Python and Django supported versions on tests
+
 ## [0.6.0] -- 2018-02-22
 
 - Added support for 'Access-Control-Allow-Origin' header
@@ -106,7 +107,7 @@ NOTE: Skipped version 1.2.0 to match `webpack-bundle-tracker` version
 
 - breaking 💥: revised django settings configuration syntax
 - webpack loader can now consume the output of multiple stats files in the same project
-- add ``get_files`` template tag
+- add `get_files` template tag
 
 ## [0.1.2] -- 2015-05-25
 

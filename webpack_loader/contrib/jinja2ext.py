@@ -12,7 +12,7 @@ def _render_bundle(context: Context, *args, **kwargs):
 
 class WebpackExtension(Extension):
     def __init__(self, environment):
-        super(WebpackExtension, self).__init__(environment)
+        super().__init__(environment)
         environment.globals.update(
             {
                 "render_bundle": render_bundle,

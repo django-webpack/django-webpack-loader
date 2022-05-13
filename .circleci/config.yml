@@ -62,13 +62,13 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-js
+            - v1-js
       - restore_cache:
           keys:
-          - v1-py
+            - v1-py
 
       - run:
-          name: JS deps 
+          name: JS deps
           command: cd tests && yarn
       - save_cache:
           paths:
@@ -78,7 +78,7 @@ jobs:
       - run:
           name: setup python
           command: |
-            python3 -m venv venv 
+            python3 -m venv venv
             source venv/bin/activate
             rm -f requirements.txt
             pip install -r tests/requirements/common.txt
