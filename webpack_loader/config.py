@@ -16,6 +16,10 @@ DEFAULT_CONFIG = {
         "LOADER_CLASS": "webpack_loader.loader.WebpackLoader",
         "EXCLUDE_RUNTIME": False,
         "BASE_ENTRYPOINT": "",
+        "ROOT_PAGE_DIR": "pages/",
+        "CRITICAL_CSS_ENABLED": False,
+        "LOCALIZED_BUILDS": False,
+        "STATICFILE_BUNDLES_BASE": "bundles/",  # e.g. example.org/static/bundles/entry.js; should end in /
     }
 }
 
