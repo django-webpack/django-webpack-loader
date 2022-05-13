@@ -33,17 +33,26 @@ def get_files(bundle_name, extension=None, config="DEFAULT"):
     return list(_get_bundle(bundle_name, extension, config))
 
 
-def _render_tags(iterable, attrs=""):
+def _render_tags(iterable, attrs="", suffix="", is_preload=False):
     tags = []
     for chunk in iterable:
         if chunk["name"].endswith((".js", ".js.gz")):
-            tags.append(('<script type="text/javascript" src="{}" {}></script>').format(chunk["url"], attrs))
+            tag = (
+                '<link rel="preload" as="script" href="{}" {}/>'
+                if is_preload
+                else '<script type="text/javascript" src="{}" {}></script>'
+            ).format(chunk["url"] + suffix, attrs)
         elif chunk["name"].endswith((".css", ".css.gz")):
-            tags.append(('<link type="text/css" href="{}" rel="stylesheet" {}/>').format(chunk["url"], attrs))
+            tag = ('<link type="text/css" href="{}" rel={} {}/>').format(
+                chunk["url"] + suffix, '"preload" as="style"' if is_preload else '"stylesheet"', attrs
+            )
+        else:
+            continue
+        tags.append(tag)
     return tags
 
 
-def get_as_tags(bundle_name, extension=None, config="DEFAULT", attrs=""):
+def get_as_tags(bundle_name, extension=None, config="DEFAULT", attrs="", suffix="", is_preload=False):
     """
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -55,7 +64,7 @@ def get_as_tags(bundle_name, extension=None, config="DEFAULT", attrs=""):
     :return: a list of formatted tags as strings
     """
     bundle = _get_bundle(bundle_name, extension, config)
-    return _render_tags(bundle, attrs)
+    return _render_tags(bundle, attrs, suffix=suffix, is_preload=is_preload)
 
 
 def _get_entrypoint_files(entrypoint_name, extension, config):

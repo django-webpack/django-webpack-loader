@@ -32,9 +32,15 @@ line_length = 120
 profile = "black"
 
 [tool.pylint]
+
 [tool.pylint.MASTER]
 jobs = 1
 extension-pkg-whitelist = "pydantic"
+disable = [
+  "missing-module-docstring",
+  "missing-class-docstring",
+  "missing-function-docstring",
+] # because this is just a fork
 
 [tool.pylint.REPORTS]
 output-format = "colorized"
@@ -48,6 +54,7 @@ indent-after-paren = 4
 ignore = "D107,D202,D203,D401,E203,E402,E501,W503"
 max_line_length = 120
 inline-quotes = "double"
+
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

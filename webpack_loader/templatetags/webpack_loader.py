@@ -26,7 +26,12 @@ def render_bundle(
     skip_common_chunks=False,
 ):
     tags = utils.get_as_tags(
-        bundle_name, extension=extension, config=config, suffix=suffix, attrs=attrs, is_preload=is_preload
+        bundle_name,
+        extension=extension,
+        config=config,
+        suffix=suffix,
+        attrs=attrs,
+        is_preload=is_preload,
     )
     request = context.get("request")
     if request is None:
