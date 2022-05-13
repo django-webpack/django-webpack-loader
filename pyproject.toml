@@ -43,6 +43,9 @@ disable = [
   "missing-function-docstring",
 ] # because this is just a fork
 
+[tool.pylint.BASIC]
+good-names-rgxs = "^[_a-z][_a-z0-9]?$"
+
 [tool.pylint.REPORTS]
 output-format = "colorized"
 

@@ -1,21 +1,15 @@
 from jinja2.ext import Extension
-from jinja2.runtime import Context
 from jinja2.utils import pass_context
 
-from ..templatetags.webpack_loader import *
+from ..templatetags.webpack_loader import render_bundle, render_entrypoint
 
 
-@pass_context
-def _render_bundle(context: Context, *args, **kwargs):
-    return render_bundle(context, *args, **kwargs)
-
-
-class WebpackExtension(Extension):
+class WebpackExtension(Extension):  # pylint: disable=abstract-method
     def __init__(self, environment):
         super().__init__(environment)
         environment.globals.update(
             {
-                "render_bundle": render_bundle,
-                "render_entrypoint": render_entrypoint,
+                "render_bundle": pass_context(render_bundle),
+                "render_entrypoint": pass_context(render_entrypoint),
             }
         )

@@ -5,10 +5,10 @@ from django import template
 from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
 
-from ....config import load_config
-from ....utils import get_loader, get_unique_entrypoint_files
-from ..pageassetfinder import PageAssetFinder
-from ..utils import is_first_visit
+from webpack_loader.config import load_config
+from webpack_loader.contrib.pages.pageassetfinder import PageAssetFinder
+from webpack_loader.contrib.pages.utils import is_first_visit
+from webpack_loader.utils import get_loader, get_unique_entrypoint_files
 
 register = template.Library()
 
@@ -24,29 +24,28 @@ def register_entrypoint(context, entrypoint):
 def render_css(context, config="DEFAULT"):
     """Render <style> and/or <link> tags, depending on the use of CRITICAL_CSS. Should be put in the <head>"""
     entrypoints = getattr(context, "webpack_entrypoints", [])
-    preloadTags = []
-    noscriptTags = []
+    preload_tags = []
+    noscript_tags = []
     for file in get_unique_entrypoint_files(entrypoints, "css", config):
-        preloadTags.append(
+        preload_tags.append(
             f'<link rel="preload" href="{file["url"]}" as="style" '
             f"onload=\"this.onload=null;this.rel='stylesheet'\">"
         )
-        noscriptTags.append(f'<link rel="stylesheet" href="{file["url"]}">')
+        noscript_tags.append(f'<link rel="stylesheet" href="{file["url"]}">')
     cfg = load_config(config)
     loader = get_loader(config)
     base = cfg["STATICFILE_BUNDLES_BASE"].format(locale=loader.locale)
-    criticalPath = finders.find(f"{base}{entrypoints[-1]}.critical.css")
-    if is_first_visit(context["request"]) and cfg["CRITICAL_CSS_ENABLED"] and criticalPath:
-        with open(criticalPath) as f:
-            criticalCss = f.read()
+    critical_path = finders.find(f"{base}{entrypoints[-1]}.critical.css")
+    if is_first_visit(context["request"]) and cfg["CRITICAL_CSS_ENABLED"] and critical_path:
+        with open(critical_path, encoding="utf-8") as f:
+            critical_css = f.read()
         return mark_safe(
-            f"<style>{criticalCss}</style>\n"
-            f"{''.join(preloadTags)}\n"
+            f"<style>{critical_css}</style>\n"
+            f"{''.join(preload_tags)}\n"
             f"<script>{inline_static_file(base + 'cssrelpreload.js')}</script>\n"
-            f"<noscript>{''.join(noscriptTags)}</noscript>"
+            f"<noscript>{''.join(noscript_tags)}</noscript>"
         )
-    else:
-        return mark_safe("".join(noscriptTags))
+    return mark_safe("".join(noscript_tags))
 
 
 @register.simple_tag(takes_context=True)
@@ -57,7 +56,7 @@ def render_js(context, config="DEFAULT"):
 
 @functools.lru_cache()
 def inline_static_file(path):
-    with open(finders.find(path)) as f:
+    with open(finders.find(path), encoding="utf-8") as f:  # type: ignore
         return mark_safe(f.read())
 
 
@@ -68,7 +67,7 @@ def inline_entrypoint(entrypoint, extension, config="DEFAULT"):
     loader = get_loader(config)
     base = cfg["STATICFILE_BUNDLES_BASE"].format(locale=loader.locale)
     for file in get_unique_entrypoint_files((entrypoint,), extension, config=config):
-        with open(finders.find(base + file["name"])) as f:
+        with open(finders.find(base + file["name"]), encoding="utf-8") as f:  # type: ignore
             inlined += f.read()
     return mark_safe(inlined)
 
@@ -76,7 +75,7 @@ def inline_entrypoint(entrypoint, extension, config="DEFAULT"):
 @register.simple_tag(takes_context=True)
 def asset_url(context, path, absolute=False, config="DEFAULT"):
     if absolute:
-        pagename, slash, path = path.partition("/")
+        pagename, _, path = path.partition("/")
     elif hasattr(context, "assets_pagename"):
         pagename = context.assets_pagename
     else:

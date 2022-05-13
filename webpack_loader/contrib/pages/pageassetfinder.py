@@ -33,13 +33,12 @@ class PageAssetFinder(finders.BaseFinder):
         return errors
 
     def list(self, ignore_patterns):
-        for pagename, assetstorage in self.pageassets.items():
+        for _, assetstorage in self.pageassets.items():
             if assetstorage.exists(""):
                 for path in utils.get_files(assetstorage, ignore_patterns):
                     yield path, assetstorage
 
-    # noinspection PyShadowingBuiltins
-    def find(self, path, all=False):
+    def find(self, path, all=False):  # pylint: disable=redefined-builtin
         pathelements = os.path.normpath(path).split(os.path.sep)
         if pathelements[0] == "assets":
             assets = self.pageassets.get(pathelements[1])
@@ -47,7 +46,7 @@ class PageAssetFinder(finders.BaseFinder):
                 matched_path = assets.path(os.path.join(*pathelements[2:]))
                 if matched_path and not all:
                     return matched_path
-                elif matched_path and all:
+                if matched_path and all:
                     return [matched_path]
         return []
 
