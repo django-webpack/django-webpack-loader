@@ -16,15 +16,14 @@ class WebpackLoader:
         self.config = config
 
     def load_assets(self):
-        statsFile = self.config["STATS_FILE"]
+        stats_file = self.config["STATS_FILE"]
         try:
-            with open(statsFile, encoding="utf-8") as f:
+            with open(stats_file, encoding="utf-8") as f:
                 return json.load(f)
-        except OSError:
+        except OSError as err:
             raise OSError(
-                "Error reading {}. Are you sure webpack has generated "
-                "the file and the path is correct?".format(statsFile)
-            )
+                f"Error reading {stats_file}. Are you sure webpack has generated the file and the path is correct?"
+            ) from err
 
     def get_assets(self):
         if self.config["CACHE"]:
@@ -45,13 +44,13 @@ class WebpackLoader:
                 "integrity: true in your BundleTracker configuration?"
             )
 
-        return ' integrity="{}" '.format(integrity.partition(" ")[0])
+        return f' integrity="{integrity.partition(" ")[0]}" '
 
     def filter_chunks(self, chunks):
         filtered_chunks = []
 
         for chunk in chunks:
-            ignore = any(regex.match(chunk) for regex in self.config["ignores"])
+            ignore = any(regex.match(chunk["name"]) for regex in self.config["ignores"])
             if not ignore:
                 filtered_chunks.append(chunk)
 
@@ -96,9 +95,7 @@ class WebpackLoader:
                 assets = self.get_assets()
 
             if timed_out:
-                raise WebpackLoaderTimeoutError(
-                    "Timed Out. Bundle `{}` took more than {} seconds " "to compile.".format(bundle_name, timeout)
-                )
+                raise WebpackLoaderTimeoutError(f"Timed Out. Bundle took more than {timeout} seconds to compile.")
 
         if assets.get("status") == "done":
             chunks = assets["chunks"].get(bundle_name, None)
@@ -114,19 +111,17 @@ class WebpackLoader:
 
             return self.map_chunk_files_to_url(filtered_chunks)
 
-        elif assets.get("status") == "error":
+        if assets.get("status") == "error":
             if "file" not in assets:
                 assets["file"] = ""
             if "error" not in assets:
                 assets["error"] = "Unknown Error"
             if "message" not in assets:
                 assets["message"] = ""
-            error = """
-            {error} in {file}
-            {message}
-            """.format(
-                **assets
-            )
+            error = f"""
+            {assets["error"]} in {assets["file"]}
+            {assets["message"]}
+            """
             raise WebpackError(error)
 
         raise WebpackLoaderBadStatsError(
