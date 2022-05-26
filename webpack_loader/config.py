@@ -16,6 +16,7 @@ DEFAULT_CONFIG = {
         'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
         'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
         'INTEGRITY': False,
+        'SKIP_COMMON_CHUNKS': False,
     }
 }
 

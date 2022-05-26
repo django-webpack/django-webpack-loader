@@ -28,6 +28,14 @@ def get_loader(config_name):
     return _loaders[config_name]
 
 
+def get_skip_common_chunks(config_name):
+    loader = get_loader(config_name)
+    # The global default is currently False, whenever that is changed, change
+    # this fallback value as well which is present to provide backwards
+    # compatibility.
+    return loader.config.get('SKIP_COMMON_CHUNKS', False)
+
+
 def _filter_by_extension(bundle, extension):
     '''Return only files with the given extension'''
     for chunk in bundle:

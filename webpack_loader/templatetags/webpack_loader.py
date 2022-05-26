@@ -16,7 +16,9 @@ _WARNING_MESSAGE = (
 @register.simple_tag(takes_context=True)
 def render_bundle(
         context, bundle_name, extension=None, config='DEFAULT', suffix='',
-        attrs='', is_preload=False, skip_common_chunks=False):
+        attrs='', is_preload=False, skip_common_chunks=None):
+    if skip_common_chunks is None:
+        skip_common_chunks = utils.get_skip_common_chunks(config)
     tags = utils.get_as_tags(
         bundle_name, extension=extension, config=config, suffix=suffix,
         attrs=attrs, is_preload=is_preload)
