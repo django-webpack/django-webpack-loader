@@ -527,15 +527,9 @@ class LoaderTestCase(TestCase):
         _warn_mock.assert_not_called()
         _warn_mock.reset_mock()
 
-    def test_skip_common_chunks_djangoengine(self):
-        """Test case for deduplication of modules with the django engine."""
-        self.compile_bundles('webpack.config.skipCommon.js')
-
-        django_engine = engines['django']
-        dups_template = django_engine.from_string(template_code=(
-            r'{% load render_bundle from webpack_loader %}'
-            r'{% render_bundle "app1" %}'
-            r'{% render_bundle "app2" %}'))  # type: Template
+    def _assert_common_chunks_duplicated_djangoengine(self, template=None):
+        if template is None:
+            raise TypeError('Django template is a required argument')
         request = self.factory.get(path='/')
         asset_vendor = (
             '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
@@ -546,7 +540,7 @@ class LoaderTestCase(TestCase):
         asset_app2 = (
             '<script src="/static/django_webpack_loader_bundles/app2.js" >'
             '</script>')
-        rendered_template = dups_template.render(
+        rendered_template = template.render(
             context=None, request=request)
         used_tags = getattr(request, '_webpack_loader_used_tags', None)
 
@@ -556,13 +550,20 @@ class LoaderTestCase(TestCase):
         self.assertEqual(rendered_template.count(asset_app2), 1)
         self.assertEqual(rendered_template.count(asset_vendor), 2)
 
-        nodups_template = django_engine.from_string(template_code=(
-            r'{% load render_bundle from webpack_loader %}'
-            r'{% render_bundle "app1" %}'
-            r'{% render_bundle "app2" skip_common_chunks=True %}')
-        )  # type: Template
+    def _assert_common_chunks_not_duplicated_djangoengine(self, template=None):
+        if template is None:
+            raise TypeError('Django template is a required argument')
         request = self.factory.get(path='/')
-        rendered_template = nodups_template.render(
+        asset_vendor = (
+            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '</script>')
+        asset_app1 = (
+            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '</script>')
+        asset_app2 = (
+            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '</script>')
+        rendered_template = template.render(
             context=None, request=request)
         used_tags = getattr(request, '_webpack_loader_used_tags', None)
 
@@ -572,11 +573,48 @@ class LoaderTestCase(TestCase):
         self.assertEqual(rendered_template.count(asset_app2), 1)
         self.assertEqual(rendered_template.count(asset_vendor), 1)
 
-    def test_skip_common_chunks_jinja2engine(self):
-        """Test case for deduplication of modules with the Jinja2 engine."""
-        self.compile_bundles('webpack.config.skipCommon.js')
+    def _assert_common_chunks_duplicated_jinja2engine(self, view=None):
+        if view is None:
+            raise TypeError('TemplateView is a required argument')
+        settings = {
+            'TEMPLATES': [
+                {
+                    'BACKEND': 'django_jinja.backend.Jinja2',
+                    'APP_DIRS': True,
+                    'OPTIONS': {
+                        'match_extension': '.jinja',
+                        'extensions': DEFAULT_EXTENSIONS + [_OUR_EXTENSION],
+                    }
+                },
+            ]
+        }
+        asset_vendor = (
+            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '</script>')
+        asset_app1 = (
+            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '</script>')
+        asset_app2 = (
+            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '</script>')
 
-        view = TemplateView.as_view(template_name='home-deduplicated.jinja')
+        with self.settings(**settings):
+            request = self.factory.get('/')
+            result = view(request)  # type: TemplateResponse
+            content = result.rendered_content
+        self.assertIn(asset_vendor, content)
+        self.assertIn(asset_app1, content)
+        self.assertIn(asset_app2, content)
+        self.assertEqual(content.count(asset_vendor), 4)
+        self.assertEqual(content.count(asset_app1), 2)
+        self.assertEqual(content.count(asset_app2), 2)
+        used_tags = getattr(request, '_webpack_loader_used_tags', None)
+        self.assertIsNotNone(used_tags, msg=(
+            '_webpack_loader_used_tags should be a property of request!'))
+
+    def _assert_common_chunks_not_duplicated_jinja2engine(self, view=None):
+        if view is None:
+            raise TypeError('TemplateView is a required argument')
         settings = {
             'TEMPLATES': [
                 {
@@ -612,3 +650,104 @@ class LoaderTestCase(TestCase):
         used_tags = getattr(request, '_webpack_loader_used_tags', None)
         self.assertIsNotNone(used_tags, msg=(
             '_webpack_loader_used_tags should be a property of request!'))
+
+    def test_skip_common_chunks_djangoengine(self):
+        """Test case for deduplication of modules with the django engine."""
+        self.compile_bundles('webpack.config.skipCommon.js')
+
+        django_engine = engines['django']
+        dups_template = django_engine.from_string(template_code=(
+            r'{% load render_bundle from webpack_loader %}'
+            r'{% render_bundle "app1" %}'
+            r'{% render_bundle "app2" %}'))  # type: Template
+        self._assert_common_chunks_duplicated_djangoengine(dups_template)
+
+        nodups_template = django_engine.from_string(template_code=(
+            r'{% load render_bundle from webpack_loader %}'
+            r'{% render_bundle "app1" %}'
+            r'{% render_bundle "app2" skip_common_chunks=True %}')
+        )  # type: Template
+        self._assert_common_chunks_not_duplicated_djangoengine(nodups_template)
+
+
+    def test_skip_common_chunks_jinja2engine(self):
+        """Test case for deduplication of modules with the Jinja2 engine."""
+        self.compile_bundles('webpack.config.skipCommon.js')
+
+        view = TemplateView.as_view(template_name='home-deduplicated.jinja')
+        self._assert_common_chunks_not_duplicated_jinja2engine(view)
+
+    def test_skip_common_chunks_setting_djangoengine(self):
+        """Test case for deduplication of modules with the django engine."""
+        self.compile_bundles('webpack.config.skipCommon.js')
+
+        django_engine = engines['django']
+        dups_template = django_engine.from_string(template_code=(
+            r'{% load render_bundle from webpack_loader %}'
+            r'{% render_bundle "app1" %}'
+            r'{% render_bundle "app2" %}'))  # type: Template
+        self._assert_common_chunks_duplicated_djangoengine(dups_template)
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {"SKIP_COMMON_CHUNKS": True}):
+            self._assert_common_chunks_not_duplicated_djangoengine(dups_template)
+
+    def test_skip_common_chunks_setting_jinja2engine(self):
+        """Test case for deduplication of modules with the Jinja2 engine."""
+        self.compile_bundles('webpack.config.skipCommon.js')
+
+        view = TemplateView.as_view(template_name='home-duplicated.jinja')
+        self._assert_common_chunks_duplicated_jinja2engine(view)
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {"SKIP_COMMON_CHUNKS": True}):
+            self._assert_common_chunks_not_duplicated_jinja2engine(view)
+
+    def test_skip_common_chunks_setting_can_be_overridden_djangoengine(self):
+        """Skip common chunks template tag options should take precedent over global setting."""
+        self.compile_bundles('webpack.config.skipCommon.js')
+
+        django_engine = engines['django']
+        nodups_template = django_engine.from_string(template_code=(
+            r'{% load render_bundle from webpack_loader %}'
+            r'{% render_bundle "app1" %}'
+            r'{% render_bundle "app2" skip_common_chunks=True %}')
+        )  # type: Template
+        self._assert_common_chunks_not_duplicated_djangoengine(nodups_template)
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {"SKIP_COMMON_CHUNKS": True}):
+            dups_template = django_engine.from_string(template_code=(
+                r'{% load render_bundle from webpack_loader %}'
+                r'{% render_bundle "app1" %}'
+                r'{% render_bundle "app2" skip_common_chunks=False %}'))  # type: Template
+            self._assert_common_chunks_duplicated_djangoengine(dups_template)
+
+    def test_skip_common_chunks_setting_can_be_overridden_jinja2engine(self):
+        """Test case for deduplication of modules with the Jinja2 engine."""
+        self.compile_bundles('webpack.config.skipCommon.js')
+
+        view = TemplateView.as_view(template_name='home-deduplicated.jinja')
+        self._assert_common_chunks_not_duplicated_jinja2engine(view)
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {"SKIP_COMMON_CHUNKS": True}):
+            view = TemplateView.as_view(template_name='home-duplicated-forced.jinja')
+            self._assert_common_chunks_duplicated_jinja2engine(view)
+
+    def test_skip_common_chunks_missing_config(self):
+        self.compile_bundles('webpack.config.skipCommon.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        # remove SKIP_COMMON_CHUNKS from config completely to test backward compatibility
+        skip_common_chunks = loader.config.pop('SKIP_COMMON_CHUNKS')
+
+        django_engine = engines['django']
+        dups_template = django_engine.from_string(template_code=(
+            r'{% load render_bundle from webpack_loader %}'
+            r'{% render_bundle "app1" %}'
+            r'{% render_bundle "app2" %}'))  # type: Template
+        self._assert_common_chunks_duplicated_djangoengine(dups_template)
+
+        # return removed key
+        loader.config['SKIP_COMMON_CHUNKS'] = skip_common_chunks
