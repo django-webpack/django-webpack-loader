@@ -111,6 +111,8 @@ The `STATS_FILE` parameter represents the output file produced by `webpack-bundl
 
 - `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external url, etc. For convenience, `webpack_loader.loader.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
 
+- `SKIP_COMMON_CHUNKS` is a flag which prevents already generated chunks from being included again in the same page. This should only happen if you use more than one entrypoint per Django template (multiple `render_bundle` calls). By enabling this, you can get the same default behavior of the [HtmlWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin/). The same caveats apply as when using `skip_common_chunks` on `render_bundle`, see that section below for more details.
+
 Here's a simple example of loading from an external url:
 
   ```py
@@ -239,7 +241,7 @@ The public path is based on `webpack.config.js` [output.publicPath](https://webp
 Please note that this approach will use the original asset file, and not a post-processed one from the Webpack pipeline, in case that file had gone through such flow (i.e.: You've imported an image on the React side and used it there, the file used within the React components will probably have a hash string on its name, etc. This processed file will be different than the one you'll grab with `webpack_static`).
 
 ### Use `skip_common_chunks` on `render_bundle`
-You can use the parameter `skip_common_chunks=True` to specify that you don't want an already generated chunk be included again in the same page. This should only happen if you use more than one entrypoint per Django template (multiple `render_bundle` calls). By using `skip_common_chunks=True`, you can get the same default behavior of the [HtmlWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin/).
+You can use the parameter `skip_common_chunks=True` or `skip_common_chunks=False` to override the global `SKIP_COMMON_CHUNKS` setting for a specific bundle.
 
 In order for this option to work, `django-webpack-loader` requires the `request` object to be in the context, to be able to keep track of the generated chunks.
 
