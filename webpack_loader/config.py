@@ -16,6 +16,8 @@ DEFAULT_CONFIG = {
         'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
         'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
         'INTEGRITY': False,
+        # Whenever the global setting for SKIP_COMMON_CHUNKS is changed, please
+        # update the fallback value in get_skip_common_chunks (utils.py).
         'SKIP_COMMON_CHUNKS': False,
     }
 }

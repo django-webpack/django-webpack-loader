@@ -527,9 +527,13 @@ class LoaderTestCase(TestCase):
         _warn_mock.assert_not_called()
         _warn_mock.reset_mock()
 
-    def _assert_common_chunks_duplicated_djangoengine(self, template=None):
-        if template is None:
-            raise TypeError('Django template is a required argument')
+    def _assert_common_chunks_duplicated_djangoengine(self, template):
+        """
+        Verify that any common chunks between two bundles are duplicated in
+        the HTML markup.
+
+        :param template: A Django template instance
+        """
         request = self.factory.get(path='/')
         asset_vendor = (
             '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
@@ -550,9 +554,13 @@ class LoaderTestCase(TestCase):
         self.assertEqual(rendered_template.count(asset_app2), 1)
         self.assertEqual(rendered_template.count(asset_vendor), 2)
 
-    def _assert_common_chunks_not_duplicated_djangoengine(self, template=None):
-        if template is None:
-            raise TypeError('Django template is a required argument')
+    def _assert_common_chunks_not_duplicated_djangoengine(self, template):
+        """
+        Verify that any common chunks between two bundles are not duplicated in
+        the HTML markup.
+
+        :param template: A Django template instance
+        """
         request = self.factory.get(path='/')
         asset_vendor = (
             '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
@@ -573,9 +581,13 @@ class LoaderTestCase(TestCase):
         self.assertEqual(rendered_template.count(asset_app2), 1)
         self.assertEqual(rendered_template.count(asset_vendor), 1)
 
-    def _assert_common_chunks_duplicated_jinja2engine(self, view=None):
-        if view is None:
-            raise TypeError('TemplateView is a required argument')
+    def _assert_common_chunks_duplicated_jinja2engine(self, view):
+        """
+        Verify that any common chunks between two bundles are duplicated in
+        the HTML markup.
+
+        :param view: A Django TemplateView instance
+        """
         settings = {
             'TEMPLATES': [
                 {
@@ -612,9 +624,13 @@ class LoaderTestCase(TestCase):
         self.assertIsNotNone(used_tags, msg=(
             '_webpack_loader_used_tags should be a property of request!'))
 
-    def _assert_common_chunks_not_duplicated_jinja2engine(self, view=None):
-        if view is None:
-            raise TypeError('TemplateView is a required argument')
+    def _assert_common_chunks_not_duplicated_jinja2engine(self, view):
+        """
+        Verify that any common chunks between two bundles are not duplicated in
+        the HTML markup.
+
+        :param view: A Django TemplateView instance
+        """
         settings = {
             'TEMPLATES': [
                 {
@@ -651,8 +667,8 @@ class LoaderTestCase(TestCase):
         self.assertIsNotNone(used_tags, msg=(
             '_webpack_loader_used_tags should be a property of request!'))
 
-    def test_skip_common_chunks_djangoengine(self):
-        """Test case for deduplication of modules with the django engine."""
+    def test_skip_common_chunks_templatetag_djangoengine(self):
+        """Test case for deduplication of modules with the django engine via the render_bundle template tag."""
         self.compile_bundles('webpack.config.skipCommon.js')
 
         django_engine = engines['django']
@@ -670,15 +686,15 @@ class LoaderTestCase(TestCase):
         self._assert_common_chunks_not_duplicated_djangoengine(nodups_template)
 
 
-    def test_skip_common_chunks_jinja2engine(self):
-        """Test case for deduplication of modules with the Jinja2 engine."""
+    def test_skip_common_chunks_templatetag_jinja2engine(self):
+        """Test case for deduplication of modules with the Jinja2 engine via the render_bundle template tag."""
         self.compile_bundles('webpack.config.skipCommon.js')
 
         view = TemplateView.as_view(template_name='home-deduplicated.jinja')
         self._assert_common_chunks_not_duplicated_jinja2engine(view)
 
     def test_skip_common_chunks_setting_djangoengine(self):
-        """Test case for deduplication of modules with the django engine."""
+        """The global setting should default to False and deduplicate chunks without changing the render_bundle template tag."""
         self.compile_bundles('webpack.config.skipCommon.js')
 
         django_engine = engines['django']
@@ -693,7 +709,7 @@ class LoaderTestCase(TestCase):
             self._assert_common_chunks_not_duplicated_djangoengine(dups_template)
 
     def test_skip_common_chunks_setting_jinja2engine(self):
-        """Test case for deduplication of modules with the Jinja2 engine."""
+        """The global setting should default to False and deduplicate chunks without changing the render_bundle template tag."""
         self.compile_bundles('webpack.config.skipCommon.js')
 
         view = TemplateView.as_view(template_name='home-duplicated.jinja')
@@ -704,7 +720,7 @@ class LoaderTestCase(TestCase):
             self._assert_common_chunks_not_duplicated_jinja2engine(view)
 
     def test_skip_common_chunks_setting_can_be_overridden_djangoengine(self):
-        """Skip common chunks template tag options should take precedent over global setting."""
+        """The skip common chunks template tag parameters should take precedent over the global setting."""
         self.compile_bundles('webpack.config.skipCommon.js')
 
         django_engine = engines['django']
@@ -724,7 +740,7 @@ class LoaderTestCase(TestCase):
             self._assert_common_chunks_duplicated_djangoengine(dups_template)
 
     def test_skip_common_chunks_setting_can_be_overridden_jinja2engine(self):
-        """Test case for deduplication of modules with the Jinja2 engine."""
+        """The skip common chunks template tag parameters should take precedent over the global setting."""
         self.compile_bundles('webpack.config.skipCommon.js')
 
         view = TemplateView.as_view(template_name='home-deduplicated.jinja')
@@ -736,6 +752,7 @@ class LoaderTestCase(TestCase):
             self._assert_common_chunks_duplicated_jinja2engine(view)
 
     def test_skip_common_chunks_missing_config(self):
+        """If the setting is not present we should default to allowing common chunks."""
         self.compile_bundles('webpack.config.skipCommon.js')
 
         loader = get_loader(DEFAULT_CONFIG)
