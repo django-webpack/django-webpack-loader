@@ -5,7 +5,10 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
-## [1.6.0] -- 2022-03-25
+## [1.7.0] -- 2022-11-14
+- Bump django to 3.2.15
+
+## [1.6.0] -- 2022-06-20
 - Add a setting to configure skip common chunks behaviour globally
 - Bump django from 3.2.12 to 3.2.13
 - Add support for Django 4.0
