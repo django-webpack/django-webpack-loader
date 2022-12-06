@@ -106,7 +106,10 @@ jobs:
             source venv/bin/activate
             cd tests
             coverage run --source=webpack_loader manage.py test
-            coveralls
+            if [ "$COVERALLS_REPO_TOKEN" != "" ]
+            then
+              coveralls
+            fi
           environment:
             COVERALLS_PARALLEL: 1
 
@@ -260,5 +263,8 @@ jobs:
       - run:
           name: Finish Coveralls
           command: |
-            pip install coveralls
-            coveralls --finish
+            if [ "$COVERALLS_REPO_TOKEN" != "" ]
+            then
+              pip install coveralls
+              coveralls --finish
+            fi
