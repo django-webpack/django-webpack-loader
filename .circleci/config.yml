@@ -18,12 +18,18 @@ workflows:
       - test-3.8-31
       - test-3.8-32
       - test-3.8-40
+      - test-3.8-41
 
       - test-3.9-22
       - test-3.9-30
       - test-3.9-31
       - test-3.9-32
       - test-3.9-40
+      - test-3.9-41
+
+      - test-3.10-32
+      - test-3.10-40
+      - test-3.10-41
 
       - done:
           requires:
@@ -42,12 +48,18 @@ workflows:
             - test-3.8-31
             - test-3.8-32
             - test-3.8-40
+            - test-3.8-41
 
             - test-3.9-22
             - test-3.9-30
             - test-3.9-31
             - test-3.9-32
             - test-3.9-40
+            - test-3.9-41
+
+            - test-3.10-32
+            - test-3.10-40
+            - test-3.10-41
 
 jobs:
   base: &test-template
@@ -94,7 +106,10 @@ jobs:
             source venv/bin/activate
             cd tests
             coverage run --source=webpack_loader manage.py test
-            coveralls
+            if [ "$COVERALLS_REPO_TOKEN" != "" ]
+            then
+              coveralls
+            fi
           environment:
             COVERALLS_PARALLEL: 1
 
@@ -178,6 +193,12 @@ jobs:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "40"
+  test-3.8-41:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "41"
 
   test-3.9-22:
     <<: *test-template
@@ -209,6 +230,31 @@ jobs:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "40"
+  test-3.9-41:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "41"
+
+  test-3.10-32:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.10-buster-node
+    environment:
+      DJANGO_VERSION: "32"
+  test-3.10-40:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.10-buster-node
+    environment:
+      DJANGO_VERSION: "40"
+  test-3.10-41:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.10-buster-node
+    environment:
+      DJANGO_VERSION: "41"
 
   done:
     docker:
@@ -217,5 +263,8 @@ jobs:
       - run:
           name: Finish Coveralls
           command: |
-            pip install coveralls
-            coveralls --finish
+            if [ "$COVERALLS_REPO_TOKEN" != "" ]
+            then
+              pip install coveralls
+              coveralls --finish
+            fi
