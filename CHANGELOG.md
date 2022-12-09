@@ -5,6 +5,9 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.8.0] -- 2022-12-09
+- Add compatibility for Django 4.1 and Python 3.10
+
 ## [1.7.0] -- 2022-11-14
 - Bump django to 3.2.15
 
