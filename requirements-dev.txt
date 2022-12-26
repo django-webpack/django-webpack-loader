@@ -2,4 +2,4 @@ twine==3.4.1
 Django==3.2.16
 django-jinja==2.7.0
 unittest2==1.1.0
-wheel==0.36.2
+wheel==0.38.1
