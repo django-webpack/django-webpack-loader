@@ -19,6 +19,7 @@ workflows:
       - test-3.8-32
       - test-3.8-40
       - test-3.8-41
+      - test-3.8-42
 
       - test-3.9-22
       - test-3.9-30
@@ -26,10 +27,12 @@ workflows:
       - test-3.9-32
       - test-3.9-40
       - test-3.9-41
+      - test-3.9-42
 
       - test-3.10-32
       - test-3.10-40
       - test-3.10-41
+      - test-3.10-42
 
       - done:
           requires:
@@ -49,6 +52,7 @@ workflows:
             - test-3.8-32
             - test-3.8-40
             - test-3.8-41
+            - test-3.8-42
 
             - test-3.9-22
             - test-3.9-30
@@ -56,10 +60,12 @@ workflows:
             - test-3.9-32
             - test-3.9-40
             - test-3.9-41
+            - test-3.9-42
 
             - test-3.10-32
             - test-3.10-40
             - test-3.10-41
+            - test-3.10-42
 
 jobs:
   base: &test-template
@@ -199,6 +205,12 @@ jobs:
       - image: circleci/python:3.8-buster-node
     environment:
       DJANGO_VERSION: "41"
+  test-3.8-42:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8-buster-node
+    environment:
+      DJANGO_VERSION: "42"
 
   test-3.9-22:
     <<: *test-template
@@ -236,6 +248,12 @@ jobs:
       - image: circleci/python:3.9-buster-node
     environment:
       DJANGO_VERSION: "41"
+  test-3.9-42:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9-buster-node
+    environment:
+      DJANGO_VERSION: "42"
 
   test-3.10-32:
     <<: *test-template
@@ -255,6 +273,12 @@ jobs:
       - image: circleci/python:3.10-buster-node
     environment:
       DJANGO_VERSION: "41"
+  test-3.10-42:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.10-buster-node
+    environment:
+      DJANGO_VERSION: "42"
 
   done:
     docker:
