@@ -180,11 +180,11 @@ First we build the assets and, since we have `webpack-bundle-tracker` in our fro
 However, production usage for this package is **fairly flexible**. Other approaches may include keeping the production bundles in the version control and take that responsibility from the automatic pipeline. However, you must remember to always build the frontend and generate the bundle before pushing to remote.
 
 ## Usage in tests
-There are 2 approaches for when `render_bundle` shows up in tests, since we don't have `webpack-bundle-tracker` at that point to generate the stats file.
+To run tests where `render_bundle` shows up, since we don't have `webpack-bundle-tracker` at that point to generate the stats file, the calls to render the bundle will fail. The solution is to use the `FakeWebpackLoader` in your test settings:
 
-1. The first approach is to have specific settings for them (which is how we approach on our [tests](https://github.com/django-webpack/django-webpack-loader/blob/master/tests/app/settings.py#L111-L125)), such as done [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-470055769). Please note that it's necessary to have a pre-made stats file for the tests (which in general can be empty, such as [here](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-464250721)).
-
-2. The second approach is to leverage [`LOADER_CLASS` overriding](#extra-settings) for the test settings and customize the `get_bundle` method to return the url of a stats file. Note that, using this approach, the stats file doesn't have to [exist](https://github.com/django-webpack/django-webpack-loader/issues/187#issuecomment-901449290).
+```python
+WEBPACK_LOADER['DEFAULT']['LOADER_CLASS'] = 'webpack_loader.loader.FakeWebpackLoader'
+```
 
 ## Advanced Usage
 ### Rendering by file extension

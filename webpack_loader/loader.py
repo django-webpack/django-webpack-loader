@@ -139,3 +139,19 @@ class WebpackLoader(object):
             "The stats file does not contain valid data. Make sure "
             "webpack-bundle-tracker plugin is enabled and try to run "
             "webpack again.")
+
+
+class FakeWebpackLoader(WebpackLoader):
+    """
+    A fake loader to help run Django tests.
+
+    For running tests where `render_bundle` is used but assets aren't built.
+    """
+
+    def get_bundle(self, _bundle_name):
+        return [
+            {
+                'name': 'test.bundle.js',
+                'url': 'http://localhost/static/bundles/test.bundle.js',
+            }
+        ]
