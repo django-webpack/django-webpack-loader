@@ -109,7 +109,7 @@ The `STATS_FILE` parameter represents the output file produced by `webpack-bundl
 
 - `INTEGRITY` is flag enabling [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) on rendered `<script>` and `<link>` tags.  Integrity hash is get from stats file and configuration on side of `BundleTracker`, where configuration option `integrity: true` is required.
 
-- `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external url, etc. For convenience, `webpack_loader.loader.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
+- `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external url, etc. For convenience, `webpack_loader.loaders.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
 
 - `SKIP_COMMON_CHUNKS` is a flag which prevents already generated chunks from being included again in the same page. This should only happen if you use more than one entrypoint per Django template (multiple `render_bundle` calls). By enabling this, you can get the same default behavior of the [HtmlWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin/). The same caveats apply as when using `skip_common_chunks` on `render_bundle`, see that section below for more details.
 
@@ -117,7 +117,7 @@ Here's a simple example of loading from an external url:
 
   ```py
   import requests
-  from webpack_loader.loader import WebpackLoader
+  from webpack_loader.loaders import WebpackLoader
 
   class ExternalWebpackLoader(WebpackLoader):
     def load_assets(self):
@@ -183,7 +183,7 @@ However, production usage for this package is **fairly flexible**. Other approac
 To run tests where `render_bundle` shows up, since we don't have `webpack-bundle-tracker` at that point to generate the stats file, the calls to render the bundle will fail. The solution is to use the `FakeWebpackLoader` in your test settings:
 
 ```python
-WEBPACK_LOADER['DEFAULT']['LOADER_CLASS'] = 'webpack_loader.loader.FakeWebpackLoader'
+WEBPACK_LOADER['DEFAULT']['LOADER_CLASS'] = 'webpack_loader.loaders.FakeWebpackLoader'
 ```
 
 ## Advanced Usage

@@ -14,7 +14,7 @@ DEFAULT_CONFIG = {
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
         'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
-        'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
+        'LOADER_CLASS': 'webpack_loader.loaders.WebpackLoader',
         'INTEGRITY': False,
         # Whenever the global setting for SKIP_COMMON_CHUNKS is changed, please
         # update the fallback value in get_skip_common_chunks (utils.py).

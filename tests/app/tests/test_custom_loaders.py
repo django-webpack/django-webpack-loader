@@ -1,13 +1,13 @@
 from importlib import reload
 from django.test import TestCase
-from webpack_loader import utils, config, loader
+from webpack_loader import utils, config, loaders
 
 
 DEFAULT_CONFIG = 'DEFAULT'
 LOADER_PAYLOAD = {'status': 'done', 'chunks': []}
 
 
-class ValidCustomLoader(loader.WebpackLoader):
+class ValidCustomLoader(loaders.WebpackLoader):
 
     def load_assets(self):
         return LOADER_PAYLOAD
