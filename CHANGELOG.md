@@ -7,6 +7,8 @@ Releases are added to the
 
 ## [2.0.0] -- 2023-02-24
 - Update examples to use `webpack-bundle-tracker@2.0.0` API and keep version parity with it
+- Update Django to 3.2.19
+- Add mocked `get_assets` method to `FakeWebpackLoader` for usage in tests
 
 ## [1.8.1] -- 2023-02-06
 - Add a `FakeWebpackLoader` for running tests
