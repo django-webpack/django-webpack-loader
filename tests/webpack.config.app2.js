@@ -8,7 +8,7 @@ config.entry = {
 
 config.plugins = [
   new MiniCssExtractPlugin(),
-  new BundleTracker({path: __dirname, filename: './webpack-stats-app2.json'})
+  new BundleTracker({path: __dirname, filename: 'webpack-stats-app2.json'})
 ];
 
 module.exports = config;
