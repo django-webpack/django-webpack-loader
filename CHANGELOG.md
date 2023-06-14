@@ -5,7 +5,10 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
-## [2.0.0] -- 2023-02-24
+## [2.0.1] -- 2023-06-14
+- Add support for Django 4.2
+
+## [2.0.0] -- 2023-05-22
 - Update examples to use `webpack-bundle-tracker@2.0.0` API and keep version parity with it
 - Update Django to 3.2.19
 - Add mocked `get_assets` method to `FakeWebpackLoader` for usage in tests
