@@ -16,7 +16,7 @@ A [changelog](CHANGELOG.md) is also available.
 
 ## Compatibility
 
-Test cases cover Django>=2.0 on Python>=3.5. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
+Test cases cover Django>=3.2 on Python>=3.8. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
 
 
 ## Install
