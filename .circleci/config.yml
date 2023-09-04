@@ -54,7 +54,7 @@ jobs:
             source venv/bin/activate
             rm -f requirements.txt
             pip install -r tests/requirements/common.txt
-            pip install -r django~=<<parameters.django-version>>.0
+            pip install django~=<<parameters.django-version>>.0
       - save_cache:
           paths:
             - ./cache/pip
