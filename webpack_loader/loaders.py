@@ -148,6 +148,9 @@ class FakeWebpackLoader(WebpackLoader):
     For running tests where `render_bundle` is used but assets aren't built.
     """
 
+    def get_assets(self):
+        return {}
+
     def get_bundle(self, _bundle_name):
         return [
             {

@@ -1,5 +1,5 @@
 __author__ = 'Owais Lone'
-__version__ = '1.8.1'
+__version__ = '2.0.1'
 
 import django
 

@@ -1,4 +1,4 @@
-from imp import reload
+from importlib import reload
 from django.test import TestCase
 from webpack_loader import utils, config, loaders
 
