@@ -1,0 +1,22 @@
+version: 2
+updates:
+
+  # Maintain requirements-dev.txt
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for the examples
+  - package-ecosystem: "npm"
+    directory: "/examples/code-splitting"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/examples/hot-reload"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/examples/simple"
+    schedule:
+      interval: "weekly"

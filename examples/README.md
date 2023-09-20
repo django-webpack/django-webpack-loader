@@ -12,6 +12,11 @@ pip install -r requirements.txt
 npm install
 ```
 
+Run migrations
+```bash
+./manage.py migrate
+```
+
 Run django server
 ```bash
 ./manage.py runserver

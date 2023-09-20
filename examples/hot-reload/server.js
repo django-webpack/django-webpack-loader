@@ -1,20 +1,25 @@
-const webpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
-
+const { merge } = require('webpack-merge');
+const WebpackDevServer = require('webpack-dev-server');
 const config = require('./webpack.config.js');
-const options = {
-  publicPath: config.output.publicPath,
+
+const devServerOptions = {
+  devMiddleware: {
+    publicPath: config.output.publicPath,
+  },
+  host: 'localhost',
   port: 3000,
   hot: true,
-  inline: true,
   historyApiFallback: true,
   headers: { 'Access-Control-Allow-Origin': '*' },
 };
 
-webpackDevServer.addDevServerEntrypoints(config, options);
-const compiler = webpack(config);
-const server = new webpackDevServer(compiler, options);
-
-server.listen(3000, 'localhost', () => {
-  console.log('dev server listening on port 3000');
+const mergedConfig = merge(config, {
+  mode: 'development',
+  devtool: 'eval-source-map', // Optional: Choose an appropriate devtool for your needs
 });
+
+const compiler = webpack(mergedConfig);
+const server = new WebpackDevServer(devServerOptions, compiler);
+
+server.start();
