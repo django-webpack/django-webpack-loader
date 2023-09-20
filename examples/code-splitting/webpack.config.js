@@ -9,13 +9,13 @@ module.exports = {
     'other': './assets/js/other',
   },
   output: {
-    path: path.resolve('./assets/bundles/'),
-    filename: "[name]-[hash].js",
-    chunkFilename: "[name]-[hash].js"
+    path: path.resolve(__dirname, 'assets/bundles/'),
+    filename: "[name]-[contenthash].js",
+    chunkFilename: "[name]-[contenthash].js"
   },
 
   plugins: [
-    new BundleTracker({path: __dirname, filename: 'webpack-stats.json'}),
+    new BundleTracker({ path: __dirname, filename: 'webpack-stats.json' }),
   ],
 
   module: {
@@ -24,13 +24,14 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loaders: ['babel-loader'],
+        use: {
+          loader: 'babel-loader',
+        },
       },
     ],
   },
 
   resolve: {
-    modules: ['node_modules'],
     extensions: ['.js', '.jsx']
   },
 }
