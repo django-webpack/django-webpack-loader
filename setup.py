@@ -21,6 +21,7 @@ setup(
   name = 'django-webpack-loader',
   packages = ['webpack_loader', 'webpack_loader/templatetags', 'webpack_loader/contrib'],
   version = VERSION,
+  license = "MIT License",
   description = 'Transparently use webpack with django',
   long_description=README,
   long_description_content_type="text/markdown",
