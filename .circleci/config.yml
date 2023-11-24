@@ -47,7 +47,7 @@ jobs:
 
       - run:
           name: JS deps 
-          command: cd tests && yarn
+          command: cd tests && npm ci
       - save_cache:
           paths:
             - ./npm

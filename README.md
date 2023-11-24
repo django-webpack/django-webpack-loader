@@ -111,6 +111,8 @@ The `STATS_FILE` parameter represents the output file produced by `webpack-bundl
 
 - `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external url, etc. For convenience, `webpack_loader.loaders.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
 
+- `WEBPACK_CHUNK_URL_USE_PUBLIC_PATH` (Default: `True`) is a flag that enables using the webpack's [publicPath](https://webpack.js.org/guides/public-path/) config as the chunk URL. Setting this to false may be useful if you are using both publicPath and a S3Storage with a custom domain.
+
 - `SKIP_COMMON_CHUNKS` is a flag which prevents already generated chunks from being included again in the same page. This should only happen if you use more than one entrypoint per Django template (multiple `render_bundle` calls). By enabling this, you can get the same default behavior of the [HtmlWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin/). The same caveats apply as when using `skip_common_chunks` on `render_bundle`, see that section below for more details.
 
 Here's a simple example of loading from an external url:
@@ -435,6 +437,26 @@ Then in your base jinja template, do:
 In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages, for full compatibility.
 
 This is necessary because the formatting of `webpack-stats.json` that `webpack-bundle-tracker` outputs has changed starting at version `1.0.0-alpha.1`. Starting at `django-webpack-loader==1.0.0`, this is the only formatting accepted here, meaning that other versions of that package don't output compatible files anymore, thereby breaking compatibility with older `webpack-bundle-tracker` releases.
+
+## Development
+
+This project includes a Makefile that provides several useful commands for building, installing, and publishing the project.
+
+### Available Commands
+
+- `clean`: Removes generated files and directories.
+- `build`: Cleans the project and builds the distribution packages.
+- `test`: Run the tests.
+- `install`: Installs the project's build dependencies. Will initialize a virtual environment if one does not exist.
+- `publish`: Builds the distribution packages and publishes them to the specified repository.
+- `register`: Registers the package on the specified repository.
+
+To execute a command, run `make <command>` in the project's root directory.
+
+### Virtual Environment Settings
+
+- `ENV`: The name of the virtual environment. (Default: `venv`)
+- `REPOSITORY`: The repository to publish the distribution packages to. (Default: `pypi`)
 
 ## Commercial Support
 
