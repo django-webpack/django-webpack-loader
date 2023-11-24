@@ -11,6 +11,7 @@ crypto.createHash = algorithm => crypto_orig_createHash(algorithm == "md4" ? "sh
 
 
 module.exports = {
+  mode: "none",
   context: __dirname,
   entry: './assets/js/index',
   output: {

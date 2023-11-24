@@ -1,5 +1,4 @@
 var path = require("path");
-var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -10,6 +9,7 @@ const crypto_orig_createHash = crypto.createHash;
 crypto.createHash = algorithm => crypto_orig_createHash(algorithm == "md4" ? "sha256" : algorithm);
 
 module.exports = {
+  mode: "production",
   context: __dirname,
   entry: './assets/js/index',
   output: {
