@@ -1,22 +1,32 @@
 const path = require("path");
-const BundleTracker = require('webpack-bundle-tracker');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const BundleTracker = require("webpack-bundle-tracker");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   context: __dirname,
-  entry: './assets/js/index',
+  entry: "./assets/js/index",
   output: {
-    path: path.resolve(__dirname, 'assets/bundles/'),
-    publicPath: 'http://localhost:3000/dist/',
+    path: path.resolve(__dirname, "assets/bundles/"),
+    publicPath: "http://localhost:3000/dist/",
     filename: "[name]-[contenthash].js",
-    chunkFilename: "[name]-[contenthash].js"
+    chunkFilename: "[name]-[contenthash].js",
+  },
+
+  devtool: "source-map", // Optional: Choose an appropriate devtool for your needs
+  devServer: {
+    hot: true,
+    historyApiFallback: true,
+    host: "localhost",
+    port: 3000,
+    // Allow CORS requests from the Django dev server domain:
+    headers: { "Access-Control-Allow-Origin": "*" },
   },
 
   plugins: [
-    new BundleTracker({ path: __dirname, filename: 'webpack-stats.json' }),
+    new BundleTracker({ path: __dirname, filename: "webpack-stats.json" }),
     new MiniCssExtractPlugin({
-      filename: '[name]-[contenthash].css',
-      chunkFilename: '[name]-[contenthash].css',
+      filename: "[name]-[contenthash].css",
+      chunkFilename: "[name]-[contenthash].css",
     }),
   ],
 
@@ -27,17 +37,17 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
         },
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      }
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
     ],
   },
 
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: [".js", ".jsx"],
   },
 };
