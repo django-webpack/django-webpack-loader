@@ -2,7 +2,7 @@
 
 Setup virtualenv (optional)
 
-````bash
+```bash
 python -m venv venv
 . venv/bin/activate
 ```
@@ -12,7 +12,7 @@ Install dependencies
 ```bash
 pip install -r requirements.txt
 npm install
-````
+```
 
 Run migrations
 
