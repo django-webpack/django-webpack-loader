@@ -7,6 +7,7 @@ module.exports = {
   entry: "./assets/js/index",
   output: {
     path: path.resolve(__dirname, "assets/bundles/"),
+    publicPath: "http://localhost:3000/frontend/bundles/",
     filename: "[name]-[contenthash].js",
   },
 
