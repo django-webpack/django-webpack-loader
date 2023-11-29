@@ -7,9 +7,7 @@ module.exports = {
   entry: "./assets/js/index",
   output: {
     path: path.resolve(__dirname, "assets/bundles/"),
-    publicPath: "http://localhost:3000/dist/",
     filename: "[name]-[contenthash].js",
-    chunkFilename: "[name]-[contenthash].js",
   },
 
   devtool: "source-map", // Optional: Choose an appropriate devtool for your needs
@@ -24,10 +22,7 @@ module.exports = {
 
   plugins: [
     new BundleTracker({ path: __dirname, filename: "webpack-stats.json" }),
-    new MiniCssExtractPlugin({
-      filename: "[name]-[contenthash].css",
-      chunkFilename: "[name]-[contenthash].css",
-    }),
+    new MiniCssExtractPlugin(),
   ],
 
   module: {
