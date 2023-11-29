@@ -406,9 +406,9 @@ Then in your base jinja template, do:
 
 In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages for full compatibility.
 
-## Development
+## Contributing
 
-This project includes a Makefile that provides several useful commands for building, installing, and publishing the project.
+This project includes a Makefile that provides several useful commands for building, installing, and publishing the project. Please feel free to open PRs or create issues!
 
 ### Available Commands
 
