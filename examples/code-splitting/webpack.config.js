@@ -1,21 +1,19 @@
 var path = require("path");
-var BundleTracker = require('webpack-bundle-tracker');
-
+var BundleTracker = require("webpack-bundle-tracker");
 
 module.exports = {
   context: __dirname,
   entry: {
-    'main': './assets/js/index',
-    'other': './assets/js/other',
+    main: "./assets/js/index",
+    other: "./assets/js/other",
   },
   output: {
-    path: path.resolve(__dirname, 'assets/bundles/'),
+    path: path.resolve(__dirname, "assets/bundles/"),
     filename: "[name]-[contenthash].js",
-    chunkFilename: "[name]-[contenthash].js"
   },
 
   plugins: [
-    new BundleTracker({ path: __dirname, filename: 'webpack-stats.json' }),
+    new BundleTracker({ path: __dirname, filename: "webpack-stats.json" }),
   ],
 
   module: {
@@ -25,13 +23,13 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
         },
       },
     ],
   },
 
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: [".js", ".jsx"],
   },
-}
+};
