@@ -23,7 +23,7 @@ clean:
 build: clean
 	@$(activate_venv_if_not_active)
 	@echo "Building..."
-	@pip install -U setuptools
+	@pip install -r requirements-dev.txt
 	@python setup.py sdist bdist_wheel --universal
 
 install:
@@ -35,7 +35,7 @@ install:
 test:
 	@$(activate_venv_if_not_active)
 	@echo "Running tests..."
-	@cd tests; coverage run manage.py test
+	@cd tests; coverage run --source=webpack_loader manage.py test
 
 publish: build
 	@echo "Publishing to $(REPOSITORY)..."
