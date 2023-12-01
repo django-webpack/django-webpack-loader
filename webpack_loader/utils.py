@@ -105,9 +105,8 @@ def get_static(asset_name, config='DEFAULT'):
     :param config: (optional) the name of the configuration
     :return: path to webpack asset as a string
     '''
-    return "{0}{1}".format(
-        get_loader(config).get_assets().get(
-            'publicPath', getattr(settings, 'STATIC_URL')
-        ),
-        asset_name
-    )
+    public_path = get_loader(config).get_assets().get('publicPath')
+    if not public_path or public_path == 'auto':
+        public_path = getattr(settings, 'STATIC_URL')
+
+    return '{0}{1}'.format(public_path, asset_name)
