@@ -134,7 +134,7 @@ Aditionally, hot reload is available through a specific config. Check [this sect
 
 > ⚠️ For compiling and serving the frontend assets in production, check [this section](#using-in-production).
 
-## Rendering
+## Usage
 
 In order to render the frontend code into the Django templates, we use the `render_bundle` template tag.
 
@@ -156,7 +156,7 @@ Below is the basic usage for `render_bundle` within a template:
 
 That will render the proper `<script>` and `<link>` tags needed in your template.
 
-## Usage in tests
+## Using in tests
 
 To run tests where `render_bundle` shows up, since we don't have `webpack-bundle-tracker` at that point to generate the stats file, the calls to render the bundle will fail. The solution is to use the `FakeWebpackLoader` in your test settings:
 
