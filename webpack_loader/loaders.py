@@ -14,7 +14,7 @@ from .exceptions import (
 )
 
 
-class WebpackLoader(object):
+class WebpackLoader:
     _assets = {}
 
     def __init__(self, name, config):
