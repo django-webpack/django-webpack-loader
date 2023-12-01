@@ -6,8 +6,8 @@ module.exports = {
   context: __dirname,
   entry: "./assets/js/index",
   output: {
-    path: path.resolve(__dirname, "assets/bundles/"),
-    publicPath: "http://localhost:3000/frontend/bundles/",
+    path: path.resolve(__dirname, "assets/webpack_bundles/"),
+    publicPath: "http://localhost:3000/frontend/webpack_bundles/",
     filename: "[name]-[contenthash].js",
   },
 

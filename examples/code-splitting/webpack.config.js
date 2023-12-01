@@ -8,7 +8,7 @@ module.exports = {
     other: "./assets/js/other",
   },
   output: {
-    path: path.resolve(__dirname, "assets/bundles/"),
+    path: path.resolve(__dirname, "assets/webpack_bundles/"),
     filename: "[name]-[contenthash].js",
   },
 
