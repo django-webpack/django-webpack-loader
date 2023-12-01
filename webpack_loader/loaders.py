@@ -91,26 +91,48 @@ class WebpackLoader:
         )
         return staticfiles_storage.url(relpath)
 
-    def get_bundle(self, bundle_name):
+    def wait_for_assets(self):
         assets = self.get_assets()
 
         # poll when debugging and block request until bundle is compiled
         # or the build times out
         if settings.DEBUG:
             timeout = self.config["TIMEOUT"] or 0
-            timed_out = False
             start = time.time()
-            while assets["status"] == "compile" and not timed_out:
+            while assets["status"] == "compile":
                 time.sleep(self.config["POLL_INTERVAL"])
                 if timeout and (time.time() - timeout > start):
-                    timed_out = True
+                    raise WebpackLoaderTimeoutError(
+                        "Timed Out. Webpack took more than {0} "
+                        "seconds to compile.".format(self.config["TIMEOUT"] or 0)
+                    )
+
                 assets = self.get_assets()
 
-            if timed_out:
-                raise WebpackLoaderTimeoutError(
-                    "Timed Out. Bundle `{0}` took more than {1} seconds "
-                    "to compile.".format(bundle_name, timeout)
-                )
+        return assets
+
+    def _process_assets_error(self, assets):
+        if assets.get("status") == "error":
+            if "file" not in assets:
+                assets["file"] = ""
+            if "error" not in assets:
+                assets["error"] = "Unknown Error"
+            if "message" not in assets:
+                assets["message"] = ""
+            error = """
+            {error} in {file}
+            {message}
+            """.format(**assets)
+            raise WebpackError(error)
+
+        raise WebpackLoaderBadStatsError(
+            "The stats file does not contain valid data. Make sure "
+            "webpack-bundle-tracker plugin is enabled and try to run "
+            "webpack again."
+        )
+
+    def get_bundle(self, bundle_name):
+        assets = self.wait_for_assets()
 
         if assets.get("status") == "done":
             chunks = assets["chunks"].get(bundle_name, None)
@@ -130,24 +152,17 @@ class WebpackLoader:
 
             return self.map_chunk_files_to_url(filtered_chunks)
 
-        elif assets.get("status") == "error":
-            if "file" not in assets:
-                assets["file"] = ""
-            if "error" not in assets:
-                assets["error"] = "Unknown Error"
-            if "message" not in assets:
-                assets["message"] = ""
-            error = """
-            {error} in {file}
-            {message}
-            """.format(**assets)
-            raise WebpackError(error)
+        self._process_assets_error(assets)
 
-        raise WebpackLoaderBadStatsError(
-            "The stats file does not contain valid data. Make sure "
-            "webpack-bundle-tracker plugin is enabled and try to run "
-            "webpack again."
-        )
+    def get_asset_url(self, asset_name):
+        assets = self.wait_for_assets()
+        try:
+            asset_file = assets["assets"][asset_name]
+        except KeyError:
+            raise WebpackBundleLookupError(
+                "Cannot resolve asset {0}.".format(asset_name)
+            )
+        return self.get_chunk_url(asset_file)
 
 
 class FakeWebpackLoader(WebpackLoader):
