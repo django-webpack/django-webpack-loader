@@ -82,7 +82,7 @@ class WebpackLoader(object):
 
     def get_chunk_url(self, chunk_file):
         public_path = chunk_file.get("publicPath")
-        if public_path:
+        if public_path and public_path != "auto":
             return public_path
 
         # Use os.path.normpath for Windows paths
