@@ -5,6 +5,29 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [1.3.0] -- 2021-08-30
+
+- Add option for rel="preload" in JS/CSS tags #203
+- Add option for extension appending in the url files #135
+- Fixes RemovedInDjango41Warning #290
+- Applies IGNORE setting before checking assets #286
+- Removed type from link and script tags per #152
+
+NOTE: Skipped version 1.2.0 to match `webpack-bundle-tracker` version
+
+
+## [1.1.0] -- 2021-06-18
+
+- Added compatibility with `webpack-bundle-tracker@1.1.0`
+- Removes bower references in project
+- Fix jinja configuration example in README.md
+
+## [1.0.0] -- 2021-05-12
+
+- Added support for custom loader classes
+- Added compatibility with `webpack-bundle-tracker@1.0.0-alpha.1`
+- Updated and corrected examples
+- Updated Python and Django supported versions on tests
 ## [0.6.0] -- 2018-02-22
 
 - Added support for 'Access-Control-Allow-Origin' header

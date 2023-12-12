@@ -1,8 +1,11 @@
-# django-webpack-loader
+# django-webpack-loader for gzip
 
-[![Join the chat at https://gitter.im/owais/django-webpack-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/owais/django-webpack-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://circleci.com/gh/owais/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/owais/django-webpack-loader/tree/master)
-[![Coverage Status](https://coveralls.io/repos/owais/django-webpack-loader/badge.svg?branch=master&service=github)](https://coveralls.io/github/owais/django-webpack-loader?branch=master)
+Different from the original repository, it appends an extension in the creation of the tags (as .gzip). The append is also dynamic, and can be done for css or js
+
+[![Build Status](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master.svg?style=svg)](https://circleci.com/gh/django-webpack/django-webpack-loader/tree/master)
+[![Coverage Status](https://coveralls.io/repos/github/django-webpack/django-webpack-loader/badge.svg?branch=master)](https://coveralls.io/github/django-webpack/django-webpack-loader?branch=master)
+![pyversions](https://img.shields.io/pypi/pyversions/django-webpack-loader)
+![djversions](https://img.shields.io/pypi/djversions/django-webpack-loader)
 
 <br>
 
@@ -19,7 +22,7 @@ A [changelog](CHANGELOG.md) is also available.
 
 ## Compatibility
 
-Test cases cover Django>=1.6 on Python 2.7 and Python>=3.4. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
+Test cases cover Django>=2.0 on Python>=3.5. 100% code coverage is the target so we can be sure everything works anytime. It should probably work on older version of django as well but the package does not ship any test cases for them.
 
 
 ## Install
@@ -29,6 +32,14 @@ npm install --save-dev webpack-bundle-tracker
 
 pip install django-webpack-loader
 ```
+
+<br>
+
+## Migrating from version < 1.0.0
+
+In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages, for full compatibility.
+
+This is necessary because the formatting of `webpack-stats.json` that `webpack-bundle-tracker` outputs has changed starting at version `1.0.0-alpha.1`. Starting at `django-webpack-loader==1.0.0`, this is the only formatting accepted here, meaning that other versions of that package don't output compatible files anymore, thereby breaking compatibility with older `webpack-bundle-tracker` releases.
 
 <br>
 
@@ -124,7 +135,7 @@ WEBPACK_LOADER = {
 If the bundle generates a file called `main-cf4b5fab6e00a404e0c7.js` and your STATIC_URL is `/static/`, then the `<script>` tag will look like this
 
 ```html
-<script type="text/javascript" src="/static/output/bundles/main-cf4b5fab6e00a404e0c7.js"/>
+<script src="/static/output/bundles/main-cf4b5fab6e00a404e0c7.js"/>
 ```
 
 **NOTE:** If your webpack config outputs the bundles at the root of your `staticfiles` dir, then `BUNDLE_DIR_NAME` should be an empty string `''`, not `'/'`. 
@@ -157,7 +168,7 @@ and your webpack config is located at `/home/src/webpack.config.js`, then the va
 
 #### POLL_INTERVAL
 
-`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 100 miliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
+`POLL_INTERVAL` is the number of seconds webpack_loader should wait between polling the stats file. The stats file is polled every 100 milliseconds by default and any requests to are blocked while webpack compiles the bundles. You can reduce this if your bundles take shorter to compile.
 
 **NOTE:** Stats file is not polled when in production (DEBUG=False).
 
@@ -249,7 +260,48 @@ INSTALLED_APPS = (
 </head>
 ```
 
-<br>
+### Preload
+
+The `is_preload=True` option in the `render_bundle` template tag can be used to add `rel="preload"` link tags.
+
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+
+<html>
+  <head>
+    {% render_bundle 'main' 'css' is_preload=True %}
+    {% render_bundle 'main' 'js' is_preload=True %}
+
+    {% render_bundle 'main' 'css' %}
+  </head>
+
+  <body>
+    {% render_bundle 'main' 'js' %}
+  </body>
+</html>
+```
+
+### Appending file extensions
+
+The `suffix` option can be used to append a string at the end of the file URL. For instance, it can be used if your webpack configuration emits compressed `.gz` files.
+
+qwe
+```HTML+Django
+{% load render_bundle from webpack_loader %}
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    {% render_bundle 'main' 'css' %}
+  </head>
+
+  <body>
+    {% render_bundle 'main' 'js' suffix='.gz' %}
+  </body>
+</html>
+```
+
 
 
 ### Multiple webpack projects
@@ -319,7 +371,7 @@ CKEDITOR.config.contentsCss = '{{ editor_css_files.0.publicPath }}';
 in django templates. It is like django's built in `static` tag but for webpack assets instead.
 
 
-In the below example, `logo.png` can be any static asset shipped with any npm or bower package.
+In the below example, `logo.png` can be any static asset shipped with any npm package.
 
 ```HTML+Django
 {% load webpack_static from webpack_loader %}
@@ -341,8 +393,8 @@ the function in the `webpack_loader.utils` module.
 [{'url': '/static/bundles/main.js', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/main.js', u'name': u'main.js'},
  {'url': '/static/bundles/styles.css', u'path': u'/home/mike/root/projects/django-webpack-loader/tests/assets/bundles/styles.css', u'name': u'styles.css'}]
 >>> utils.get_as_tags('main')
-['<script type="text/javascript" src="/static/bundles/main.js" ></script>',
- '<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />']
+['<script src="/static/bundles/main.js" ></script>',
+ '<link href="/static/bundles/styles.css" rel="stylesheet" />']
 ```
 
 ## How to use in Production
@@ -389,12 +441,12 @@ If you need to output your assets in a jinja template we provide a Jinja2 extens
 To install the extension add it to the django_jinja `TEMPLATES` configuration in the `["OPTIONS"]["extension"]` list.
 
 ```python
+from django_jinja.builtins import DEFAULT_EXTENSIONS
 TEMPLATES = [
     {
         "BACKEND": "django_jinja.backend.Jinja2",
         "OPTIONS": {
-            "extensions": [
-                "django_jinja.builtins.extensions.DjangoFiltersExtension",
+            "extensions": DEFAULT_EXTENSIONS + [
                 "webpack_loader.contrib.jinja2ext.WebpackExtension",
             ],
         }
@@ -413,3 +465,14 @@ Then in your base jinja template:
 
 
 Enjoy your webpack with django :)
+
+# Alternatives to Django-Webpack-Loader
+
+_Below are known projects that attempt to solve the same problem:_
+
+Note that these projects have not been vetted or reviewed in any way by me.
+These are not recommendation.
+Anyone can add their project to this by sending a PR.
+
+* [Django Manifest Loader](https://github.com/shonin/django-manifest-loader)
+* [Python Webpack Boilerplate](https://github.com/AccordBox/python-webpack-boilerplate)

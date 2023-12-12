@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from shutil import rmtree
 from subprocess import call
 from threading import Thread
 
@@ -19,13 +20,17 @@ from webpack_loader.exceptions import (
 from webpack_loader.utils import get_loader
 
 
-BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/bundles/')
+BUNDLE_PATH = os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 
 
 class LoaderTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.cleanup_bundles_folder()
+
+    def cleanup_bundles_folder(self):
+        rmtree('./assets/django_webpack_loader_bundles', ignore_errors=True)
 
     def compile_bundles(self, config, wait=None):
         if wait:
@@ -39,7 +44,7 @@ class LoaderTestCase(TestCase):
         from webpack_loader.errors import BAD_CONFIG_ERROR
 
         with self.settings(WEBPACK_LOADER={
-                                'BUNDLE_DIR_NAME': 'bundles/',
+                                'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
                                 'STATS_FILE': 'webpack-stats.json',
                            }):
             errors = webpack_cfg_check(None)
@@ -63,9 +68,21 @@ class LoaderTestCase(TestCase):
         self.assertIn('main', chunks)
         self.assertEqual(len(chunks), 1)
 
-        main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
-        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+        files = assets['assets']
+        self.assertEqual(files['main.css']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.css'))
+        self.assertEqual(files['main.js']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.js'))
+
+    def test_default_ignore_config_ignores_map_files(self):
+        self.compile_bundles('webpack.config.sourcemaps.js')
+        chunks = get_loader('NO_IGNORE_APP').get_bundle('main')
+        has_map_files_chunks = any([".map" in chunk["name"] for chunk in chunks])
+
+        self.assertTrue(has_map_files_chunks)
+
+        chunks = get_loader(DEFAULT_CONFIG).get_bundle('main')
+        has_map_files_chunks = any([".map" in chunk["name"] for chunk in chunks])
+
+        self.assertFalse(has_map_files_chunks)
 
     def test_js_gzip_extract(self):
         self.compile_bundles('webpack.config.gzipTest.js')
@@ -77,9 +94,9 @@ class LoaderTestCase(TestCase):
         self.assertIn('main', chunks)
         self.assertEqual(len(chunks), 1)
 
-        main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js.gz'))
-        self.assertEqual(main[1]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/styles.css'))
+        files = assets['assets']
+        self.assertEqual(files['main.css']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.css'))
+        self.assertEqual(files['main.js.gz']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.js.gz'))
 
     def test_static_url(self):
         self.compile_bundles('webpack.config.publicPath.js')
@@ -95,13 +112,11 @@ class LoaderTestCase(TestCase):
 
         chunks = assets['chunks']
         self.assertIn('main', chunks)
-        self.assertEquals(len(chunks), 2)
+        self.assertEquals(len(chunks), 1)
 
-        main = chunks['main']
-        self.assertEqual(main[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/main.js'))
-
-        vendor = chunks['vendor']
-        self.assertEqual(vendor[0]['path'], os.path.join(settings.BASE_DIR, 'assets/bundles/vendor.js'))
+        files = assets['assets']
+        self.assertEqual(files['main.js']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/main.js'))
+        self.assertEqual(files['vendors.js']['path'], os.path.join(settings.BASE_DIR, 'assets/django_webpack_loader_bundles/vendors.js'))
 
     def test_templatetags(self):
         self.compile_bundles('webpack.config.simple.js')
@@ -109,23 +124,45 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
-        self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+        self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
-        self.assertIn('<link type="text/css" href="/static/bundles/styles-app2.css" rel="stylesheet" />', result.rendered_content)
-        self.assertIn('<script type="text/javascript" src="/static/bundles/app2.js" ></script>', result.rendered_content)
+        self.assertIn('<link href="/static/django_webpack_loader_bundles/app2.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script src="/static/django_webpack_loader_bundles/app2.js" ></script>', result.rendered_content)
         self.assertIn('<img src="/static/my-image.png"/>', result.rendered_content)
 
         view = TemplateView.as_view(template_name='only_files.html')
         result = view(request)
-        self.assertIn("var contentCss = '/static/bundles/styles.css'", result.rendered_content)
-        self.assertIn("var contentJS = '/static/bundles/main.js'", result.rendered_content)
+        self.assertIn("var contentCss = '/static/django_webpack_loader_bundles/main.css'", result.rendered_content)
+        self.assertIn("var contentJS = '/static/django_webpack_loader_bundles/main.js'", result.rendered_content)
 
         self.compile_bundles('webpack.config.publicPath.js')
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
         self.assertIn('<img src="http://custom-static-host.com/my-image.png"/>', result.rendered_content)
+
+    def test_preload(self):
+        self.compile_bundles('webpack.config.simple.js')
+        view = TemplateView.as_view(template_name='preload.html')
+        request = self.factory.get('/')
+        result = view(request)
+
+        # Preload
+        self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="preload" as="style" />', result.rendered_content)
+        self.assertIn('<link rel="preload" as="script" href="/static/django_webpack_loader_bundles/main.js" />', result.rendered_content)
+
+        # Resources
+        self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', result.rendered_content)
+        self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js" ></script>', result.rendered_content)
+
+    def test_append_extensions(self):
+        self.compile_bundles('webpack.config.gzipTest.js')
+        view = TemplateView.as_view(template_name='append_extensions.html')
+        request = self.factory.get('/')
+        result = view(request)
+
+        self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js.gz" ></script>', result.rendered_content)
 
     def test_jinja2(self):
         self.compile_bundles('webpack.config.simple.js')
@@ -158,15 +195,15 @@ class LoaderTestCase(TestCase):
         with self.settings(**settings):
             request = self.factory.get('/')
             result = view(request)
-            self.assertIn('<link type="text/css" href="/static/bundles/styles.css" rel="stylesheet" />', result.rendered_content)
-            self.assertIn('<script type="text/javascript" src="/static/bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
+            self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />', result.rendered_content)
+            self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js" async charset="UTF-8"></script>', result.rendered_content)
 
     def test_reporting_errors(self):
         self.compile_bundles('webpack.config.error.js')
         try:
             get_loader(DEFAULT_CONFIG).get_bundle('main')
         except WebpackError as e:
-            self.assertIn("Cannot resolve module 'the-library-that-did-not-exist'", str(e))
+            self.assertIn("Can't resolve 'the-library-that-did-not-exist'", str(e))
 
     def test_missing_bundle(self):
         missing_bundle_name = 'missing_bundle'
@@ -194,7 +231,7 @@ class LoaderTestCase(TestCase):
             with open(
                 settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w'
             ) as stats_file:
-                stats_file.write(json.dumps({'status': 'compiling'}))
+                stats_file.write(json.dumps({'status': 'compile'}))
             loader = get_loader(DEFAULT_CONFIG)
             loader.config['TIMEOUT'] = 0.1
             with self.assertRaises(WebpackLoaderTimeoutError):
@@ -216,14 +253,14 @@ class LoaderTestCase(TestCase):
             ), str(e))
 
     def test_request_blocking(self):
-        # FIXME: This will work 99% time but there is no garauntee with the
+        # FIXME: This will work 99% time but there is no guarantee with the
         # 4 second thing. Need a better way to detect if request was blocked on
         # not.
-        wait_for = 3
+        wait_for = 4
         view = TemplateView.as_view(template_name='home.html')
 
         with self.settings(DEBUG=True):
-            open(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w').write(json.dumps({'status': 'compiling'}))
+            open(settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE'], 'w').write(json.dumps({'status': 'compile'}))
             then = time.time()
             request = self.factory.get('/')
             result = view(request)

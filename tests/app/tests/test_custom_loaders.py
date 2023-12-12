@@ -32,7 +32,7 @@ class CustomLoadersTestCase(TestCase):
         with self.settings(WEBPACK_LOADER={
             'DEFAULT': {
                 'CACHE': False,
-                'BUNDLE_DIR_NAME': 'bundles/',
+                'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
                 'LOADER_CLASS': loader_class
             }
         }):
@@ -54,7 +54,7 @@ class CustomLoadersTestCase(TestCase):
         with self.settings(WEBPACK_LOADER={
             'DEFAULT': {
                 'CACHE': False,
-                'BUNDLE_DIR_NAME': 'bundles/',
+                'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
                 'LOADER_CLASS': loader_class,
             }
         }):

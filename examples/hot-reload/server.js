@@ -1,17 +1,20 @@
-var webpack = require('webpack');
-var WebpackDevServer = require('webpack-dev-server');
-var config = require('./webpack.config');
+const webpackDevServer = require('webpack-dev-server');
+const webpack = require('webpack');
 
-new WebpackDevServer(webpack(config), {
+const config = require('./webpack.config.js');
+const options = {
   publicPath: config.output.publicPath,
+  port: 3000,
   hot: true,
   inline: true,
   historyApiFallback: true,
-  headers: { 'Access-Control-Allow-Origin': '*' }
-}).listen(3000, '0.0.0.0', function (err, result) {
-  if (err) {
-    console.log(err);
-  }
+  headers: { 'Access-Control-Allow-Origin': '*' },
+};
 
-  console.log('Listening at 0.0.0.0:3000');
+webpackDevServer.addDevServerEntrypoints(config, options);
+const compiler = webpack(config);
+const server = new webpackDevServer(compiler, options);
+
+server.listen(3000, 'localhost', () => {
+  console.log('dev server listening on port 3000');
 });
