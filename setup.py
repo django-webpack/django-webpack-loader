@@ -16,7 +16,7 @@ with open(rel("webpack_loader", "__init__.py")) as handler:
     INIT_PY = handler.read()
 
 
-VERSION = re.findall("__version__ = '([^']+)'", INIT_PY)[0]
+VERSION = re.findall(r"__version__ = \"([^\"]+)\"", INIT_PY)[0]
 
 setup(
     name="django-webpack-loader",
