@@ -53,6 +53,7 @@ module.exports = {
   entry: "./assets/js/index",
   output: {
     path: path.resolve(__dirname, "assets/webpack_bundles/"),
+    publicPath: "auto", // necessary for CDNs/S3/blob storages
     filename: "[name]-[contenthash].js",
   },
   plugins: [
@@ -178,6 +179,7 @@ module.exports = {
   output: {
     // Emit bundle files at "assets/webpack_bundles/":
     path: path.resolve(__dirname, "assets/webpack_bundles/"),
+    publicPath: "auto", // necessary for CDNs/S3/blob storages
     filename: "[name]-[contenthash].js",
   },
   plugins: [
@@ -227,11 +229,11 @@ However, production usage for this package is **fairly flexible**, as the entire
 
 ### Hot reload
 
-[Hot reload (Hot Module Replacement)](https://webpack.js.org/guides/hot-module-replacement/) is critical for a improving the development workflow. In case you wish to enable for your project, please check out [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/hot-reload), in particular how [webpack.config.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/webpack.config.js) is configured. The key is to set the `devServer`.
+[Hot reload (Hot Module Replacement)](https://webpack.js.org/guides/hot-module-replacement/) is critical for a improving the development workflow. In case you wish to enable for your project, please check out [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/hot-reload), in particular how [webpack.config.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/hot-reload/webpack.config.js) is configured. The key is to set the `publicPath` and `devServer`.
 
 ### Dynamic Imports
 
-In case you wish to use [Dynamic Imports](https://webpack.js.org/guides/code-splitting/#dynamic-imports), please check out [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/dynamic-imports), in particular how [webpack.config.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/dynamic-imports/webpack.config.js) is configured. The key is to set the `publicPath`.
+In case you wish to use [Dynamic Imports](https://webpack.js.org/guides/code-splitting/#dynamic-imports), please check out [this example](https://github.com/django-webpack/django-webpack-loader/tree/master/examples/dynamic-imports), in particular how [webpack.config.js](https://github.com/django-webpack/django-webpack-loader/blob/master/examples/dynamic-imports/webpack.config.js) is configured.
 
 ### Extra options for `webpack-bundle-tracker`
 
@@ -469,8 +471,12 @@ To execute a command, run `make <command>` in the project's root directory.
 - `ENV`: The name of the virtual environment. (Default: `venv`)
 - `REPOSITORY`: The repository to publish the distribution packages to. (Default: `pypi`)
 
+### Special Thanks
+
+Django Webpack Loader was originally created by [Owais Lone](https://github.com/owais) and received contributions from more than 50 developers since its inception, as well as many others who assisted with issues, comments, articles, talks, etc. Thanks for everyone who's been part of Django Webpack Loader community!
+
 ## Commercial Support
 
 [![alt text](https://avatars2.githubusercontent.com/u/5529080?s=80&v=4 "Vinta Logo")](https://www.vinta.com.br/)
 
-This project is maintained by [Vinta Software](https://www.vinta.com.br/) and is used in products of Vinta's clients. We are always looking for exciting work, so if you need any commercial support, feel free to get in touch: contact@vinta.com.br
+This project is currently maintained by [Vinta Software](https://www.vinta.com.br/) and is used in products of Vinta's clients. We are always looking for exciting work, so if you need any commercial support, feel free to get in touch: contact@vinta.com.br

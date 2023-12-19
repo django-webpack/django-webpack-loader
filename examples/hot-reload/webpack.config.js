@@ -7,6 +7,8 @@ module.exports = {
   entry: "./assets/js/index",
   output: {
     path: path.resolve(__dirname, "assets/webpack_bundles/"),
+    // Cannot use publicPath: "auto" here because we need to specify the full URL,
+    // since we're serving the files with the Webpack devServer:
     publicPath: "http://localhost:3000/frontend/webpack_bundles/",
     filename: "[name]-[contenthash].js",
   },

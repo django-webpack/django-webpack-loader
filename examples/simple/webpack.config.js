@@ -7,6 +7,7 @@ module.exports = {
   entry: "./assets/js/index",
   output: {
     path: path.resolve(__dirname, "assets/webpack_bundles/"),
+    publicPath: "auto",
     filename: "[name]-[contenthash].js",
   },
 

@@ -5,6 +5,12 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [3.0.0] -- 2023-12-19
+
+- Fix support for `publicPath: auto` in Webpack config, check updated examples at https://github.com/django-webpack/django-webpack-loader/tree/master/examples
+- Add support for Python 3.12
+- Add support for Django 5.0
+
 ## [2.0.1] -- 2023-06-14
 - Add support for Django 4.2
 
