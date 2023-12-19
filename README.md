@@ -37,7 +37,7 @@ pip install django-webpack-loader
 
 ## Configuration
 
-For kick-starting a full example project with opinionated development and production settings, you can check the [`django-react-boilerplate`](https://github.com/vintasoftware/django-react-boilerplate/blob/main/package.json). For a more flexible configuration, keep reading.
+For kick-starting a full example project with opinionated development and production settings, you can check the [`django-react-boilerplate`](https://github.com/vintasoftware/django-react-boilerplate/). For a more flexible configuration, keep reading.
 
 ### Configuring `webpack-bundle-tracker`
 
