@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from importlib import import_module
 from django.conf import settings
 from .config import load_config
@@ -69,32 +70,32 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
 
     loader = get_loader(config)
     bundle = _get_bundle(loader, bundle_name, extension)
-    tags = []
+    result = OrderedDict()
 
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
             if is_preload:
-                tags.append((
+                result[chunk['url']] = (
                     '<link rel="preload" as="script" href="{0}" {1}/>'
-                ).format(''.join([chunk['url'], suffix]), attrs))
+                ).format(''.join([chunk['url'], suffix]), attrs)
             else:
-                tags.append((
+                result[chunk['url']] = (
                     '<script src="{0}"{2}{1}></script>'
                 ).format(
                     ''.join([chunk['url'], suffix]),
                     attrs,
                     loader.get_integrity_attr(chunk),
-                ))
+                )
         elif chunk['name'].endswith(('.css', '.css.gz')):
-            tags.append((
+            result[chunk['url']] = (
                 '<link href="{0}" rel={2}{3}{1}/>'
             ).format(
                 ''.join([chunk['url'], suffix]),
                 attrs,
                 '"stylesheet"' if not is_preload else '"preload" as="style"',
                 loader.get_integrity_attr(chunk),
-            ))
-    return tags
+            )
+    return result
 
 
 def get_static(asset_name, config='DEFAULT'):
