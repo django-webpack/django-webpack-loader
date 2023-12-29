@@ -443,9 +443,9 @@ class LoaderTestCase(TestCase):
         )  # type: Template
         request = self.factory.get(path='/')
         output = nodups_template.render(context=Context({'request': request}))
-        used_tags = getattr(request, '_webpack_loader_used_tags', None)
-        self.assertIsNotNone(used_tags, msg=(
-            '_webpack_loader_used_tags should be a property of request!'))
+        used_urls = getattr(request, '_webpack_loader_used_urls', None)
+        self.assertIsNotNone(used_urls, msg=(
+            '_webpack_loader_used_urls should be a property of request!'))
         self.assertEqual(output.count(asset_app1), 1)
         self.assertEqual(output.count(asset_app2), 1)
         self.assertEqual(output.count(asset_vendor), 1)
@@ -518,9 +518,9 @@ class LoaderTestCase(TestCase):
                 template_name='home-deduplicated.jinja'
             )  # type: Jinja2Template
             output = nodups_template.render(request=request)
-        used_tags = getattr(request, '_webpack_loader_used_tags', None)
-        self.assertIsNotNone(used_tags, msg=(
-            '_webpack_loader_used_tags should be a property of request!'))
+        used_urls = getattr(request, '_webpack_loader_used_urls', None)
+        self.assertIsNotNone(used_urls, msg=(
+            '_webpack_loader_used_urls should be a property of request!'))
         self.assertEqual(output.count(asset_app1), 1)
         self.assertEqual(output.count(asset_app2), 1)
         self.assertEqual(output.count(asset_vendor), 1)
@@ -546,10 +546,10 @@ class LoaderTestCase(TestCase):
             '</script>')
         rendered_template = template.render(
             context=None, request=request)
-        used_tags = getattr(request, '_webpack_loader_used_tags', None)
+        used_urls = getattr(request, '_webpack_loader_used_urls', None)
 
-        self.assertIsNotNone(used_tags, msg=(
-            '_webpack_loader_used_tags should be a property of request!'))
+        self.assertIsNotNone(used_urls, msg=(
+            '_webpack_loader_used_urls should be a property of request!'))
         self.assertEqual(rendered_template.count(asset_app1), 1)
         self.assertEqual(rendered_template.count(asset_app2), 1)
         self.assertEqual(rendered_template.count(asset_vendor), 2)
@@ -573,10 +573,10 @@ class LoaderTestCase(TestCase):
             '</script>')
         rendered_template = template.render(
             context=None, request=request)
-        used_tags = getattr(request, '_webpack_loader_used_tags', None)
+        used_urls = getattr(request, '_webpack_loader_used_urls', None)
 
-        self.assertIsNotNone(used_tags, msg=(
-            '_webpack_loader_used_tags should be a property of request!'))
+        self.assertIsNotNone(used_urls, msg=(
+            '_webpack_loader_used_urls should be a property of request!'))
         self.assertEqual(rendered_template.count(asset_app1), 1)
         self.assertEqual(rendered_template.count(asset_app2), 1)
         self.assertEqual(rendered_template.count(asset_vendor), 1)
@@ -620,9 +620,9 @@ class LoaderTestCase(TestCase):
         self.assertEqual(content.count(asset_vendor), 4)
         self.assertEqual(content.count(asset_app1), 2)
         self.assertEqual(content.count(asset_app2), 2)
-        used_tags = getattr(request, '_webpack_loader_used_tags', None)
-        self.assertIsNotNone(used_tags, msg=(
-            '_webpack_loader_used_tags should be a property of request!'))
+        used_urls = getattr(request, '_webpack_loader_used_urls', None)
+        self.assertIsNotNone(used_urls, msg=(
+            '_webpack_loader_used_urls should be a property of request!'))
 
     def _assert_common_chunks_not_duplicated_jinja2engine(self, view):
         """
@@ -663,9 +663,9 @@ class LoaderTestCase(TestCase):
         self.assertEqual(content.count(asset_vendor), 1)
         self.assertEqual(content.count(asset_app1), 1)
         self.assertEqual(content.count(asset_app2), 1)
-        used_tags = getattr(request, '_webpack_loader_used_tags', None)
-        self.assertIsNotNone(used_tags, msg=(
-            '_webpack_loader_used_tags should be a property of request!'))
+        used_urls = getattr(request, '_webpack_loader_used_urls', None)
+        self.assertIsNotNone(used_urls, msg=(
+            '_webpack_loader_used_urls should be a property of request!'))
 
     def test_skip_common_chunks_templatetag_djangoengine(self):
         """Test case for deduplication of modules with the django engine via the render_bundle template tag."""
