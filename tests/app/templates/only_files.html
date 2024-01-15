@@ -2,7 +2,7 @@
 <script>
 
   {% get_files 'main' 'css' as main_css_files %}
-  {% get_files 'main' 'js' as main_js_files %}
+  {% get_files 'main' 'js' skip_common_chunks=True as main_js_files %}
 
   var contentCss = '{{ main_css_files.0.url }}';
 

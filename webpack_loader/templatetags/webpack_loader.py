@@ -19,21 +19,24 @@ def render_bundle(
         attrs='', is_preload=False, skip_common_chunks=None):
     if skip_common_chunks is None:
         skip_common_chunks = utils.get_skip_common_chunks(config)
-    tags = utils.get_as_tags(
+
+    url_to_tag_dict = utils.get_as_url_to_tag_dict(
         bundle_name, extension=extension, config=config, suffix=suffix,
         attrs=attrs, is_preload=is_preload)
+
     request = context.get('request')
     if request is None:
         if skip_common_chunks:
             warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
-        return mark_safe('\n'.join(tags.values()))
+        return mark_safe('\n'.join(url_to_tag_dict.values()))
+
     used_urls = getattr(request, '_webpack_loader_used_urls', None)
     if not used_urls:
         used_urls = request._webpack_loader_used_urls = set()
     if skip_common_chunks:
-        tags = {url: tag for url, tag in tags.items() if url not in used_urls}
-    used_urls.update(tags)
-    return mark_safe('\n'.join(tags.values()))
+        url_to_tag_dict = {url: tag for url, tag in url_to_tag_dict.items() if url not in used_urls}
+    used_urls.update(url_to_tag_dict.keys())
+    return mark_safe('\n'.join(url_to_tag_dict.values()))
 
 
 @register.simple_tag
@@ -61,16 +64,18 @@ def get_files(
     """
     if skip_common_chunks is None:
         skip_common_chunks = utils.get_skip_common_chunks(config)
-    if not skip_common_chunks:
-        return utils.get_files(bundle_name, extension=extension, config=config)
-    request = context.get('request')
+
     result = utils.get_files(bundle_name, extension=extension, config=config)
-    if not skip_common_chunks:
-        return result
+
+    request = context.get('request')
     if request is None:
-        warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
+        if skip_common_chunks:
+            warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
         return result
+
     used_urls = getattr(request, '_webpack_loader_used_urls', None)
     if not used_urls:
-        used_urls = request._webpack_loader_used_urls = set()
-    return [x for x in result if x['url'] not in used_urls]
+        used_urls = set()
+    if skip_common_chunks:
+        result = [chunk for chunk in result if chunk['url'] not in used_urls]
+    return result

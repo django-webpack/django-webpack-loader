@@ -57,15 +57,15 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(loader, bundle_name, extension))
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+def get_as_url_to_tag_dict(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
     '''
-    Get a list of formatted <script> & <link> tags for the assets in the
+    Get a dict of URLs to formatted <script> & <link> tags for the assets in the
     named bundle.
 
     :param bundle_name: The name of the bundle
     :param extension: (optional) filter by extension, eg. 'js' or 'css'
     :param config: (optional) the name of the configuration
-    :return: a list of formatted tags as strings
+    :return: a dict of URLs to formatted tags as strings
     '''
 
     loader = get_loader(config)
@@ -96,6 +96,19 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
                 loader.get_integrity_attr(chunk),
             )
     return result
+
+
+def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+    '''
+    Get a list of formatted <script> & <link> tags for the assets in the
+    named bundle.
+
+    :param bundle_name: The name of the bundle
+    :param extension: (optional) filter by extension, eg. 'js' or 'css'
+    :param config: (optional) the name of the configuration
+    :return: a list of formatted tags as strings
+    '''
+    return get_as_url_to_tag_dict(bundle_name, extension, config, suffix, attrs, is_preload).values()
 
 
 def get_static(asset_name, config='DEFAULT'):

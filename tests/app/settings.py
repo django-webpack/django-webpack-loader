@@ -119,6 +119,11 @@ WEBPACK_LOADER = {
         'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-app2.json'),
     },
+    'GET_FILES': {
+        'CACHE': False,
+        'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-getFiles.json'),
+    },
     'NO_IGNORE_APP': {
         'IGNORE': [],
     },

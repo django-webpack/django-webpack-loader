@@ -1,4 +1,4 @@
-{% load render_bundle webpack_static from webpack_loader %}
+{% load render_bundle webpack_static get_files from webpack_loader %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -11,8 +11,18 @@
   <body>
     <img src="{% webpack_static 'my-image.png' %}"/>
     <img src="{% webpack_static 'my-image.png' 'APP2'%}"/>
+    
     <div id="react-app"></div>
+    
     {% render_bundle 'main' 'js' attrs='async charset="UTF-8"'%}
     {% render_bundle 'app2' 'js' config='APP2' %}
+
+    {% render_bundle 'getFiles' 'css' config='GET_FILES' %}
+    {% get_files 'getFiles' 'css' config='GET_FILES' skip_common_chunks=True as other_files %}
+    {% for css_file in other_files %}
+      <li>{{ css_file.url }}</li>
+    {% empty %}
+      <li>All from getFiles already rendered</li>
+    {% endfor %}
   </body>
 </html>
