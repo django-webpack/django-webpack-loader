@@ -378,17 +378,23 @@ class LoaderTestCase(TestCase):
             t2 = Thread(
                 target=self.compile_bundles,
                 args=('webpack.config.app2.js', wait_for))
+            t3 = Thread(
+                target=self.compile_bundles,
+                args=('webpack.config.getFiles.js', wait_for))
             t.start()
             t2.start()
+            t3.start()
             result.rendered_content
             elapsed = time.time() - then
             t.join()
             t2.join()
+            t3.join()
             self.assertTrue(elapsed >= wait_for)
 
         with self.settings(DEBUG=False):
             self.compile_bundles('webpack.config.simple.js')
             self.compile_bundles('webpack.config.app2.js')
+            self.compile_bundles('webpack.config.getFiles.js')
             then = time.time()
             request = self.factory.get('/')
             result = view(request)
