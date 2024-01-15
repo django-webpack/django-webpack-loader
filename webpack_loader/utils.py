@@ -108,7 +108,7 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
     :param config: (optional) the name of the configuration
     :return: a list of formatted tags as strings
     '''
-    return get_as_url_to_tag_dict(bundle_name, extension, config, suffix, attrs, is_preload).values()
+    return list(get_as_url_to_tag_dict(bundle_name, extension, config, suffix, attrs, is_preload).values())
 
 
 def get_static(asset_name, config='DEFAULT'):

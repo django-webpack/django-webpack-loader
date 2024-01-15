@@ -447,6 +447,8 @@ Then in your base jinja template, do:
 {{ render_bundle('main') }}
 ```
 
+Note: `get_files` in Jinja2 is called `webpack_get_files`.
+
 ## Migrating from version < 1.0.0
 
 In order to use `django-webpack-loader>=1.0.0`, you must ensure that `webpack-bundle-tracker@1.0.0` is being used on the JavaScript side. It's recommended that you always keep at least minor version parity across both packages for full compatibility.

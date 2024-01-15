@@ -12,7 +12,7 @@ def _render_bundle(context: Context, *args, **kwargs):
 
 @pass_context
 def _get_files(context: Context, *args, **kwargs):
-    return get_files(context=context, *args, **kwargs)
+    return get_files(context, *args, **kwargs)
 
 
 class WebpackExtension(Extension):
