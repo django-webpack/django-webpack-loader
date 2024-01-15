@@ -22,14 +22,12 @@ from webpack_loader.exceptions import (WebpackBundleLookupError, WebpackError,
                                        WebpackLoaderBadStatsError,
                                        WebpackLoaderTimeoutError)
 from webpack_loader.templatetags.webpack_loader import _WARNING_MESSAGE
-from webpack_loader.utils import get_loader
+from webpack_loader.utils import get_as_tags, get_loader
 
 BUNDLE_PATH = os.path.join(
     settings.BASE_DIR, 'assets/django_webpack_loader_bundles/')
 DEFAULT_CONFIG = 'DEFAULT'
 _OUR_EXTENSION = 'webpack_loader.contrib.jinja2ext.WebpackExtension'
-
-_warn_mock = Mock()
 
 
 class LoaderTestCase(TestCase):
@@ -402,10 +400,8 @@ class LoaderTestCase(TestCase):
             elapsed = time.time() - then
             self.assertTrue(elapsed < wait_for)
 
-    @patch(
-        target='webpack_loader.templatetags.webpack_loader.warn',
-        new=_warn_mock)
-    def test_emits_warning_on_no_request_in_djangoengine(self):
+    @patch(target='webpack_loader.templatetags.webpack_loader.warn')
+    def test_emits_warning_on_no_request_in_djangoengine(self, warn_mock):
         """
         Should emit warnings on having no request in context (django
         template).
@@ -427,7 +423,7 @@ class LoaderTestCase(TestCase):
             r'{% render_bundle "app1" %}'
             r'{% render_bundle "app2" %}'))  # type: Template
         output = dups_template.render(context=Context())
-        _warn_mock.assert_not_called()
+        warn_mock.assert_not_called()
         self.assertEqual(output.count(asset_app1), 1)
         self.assertEqual(output.count(asset_app2), 1)
         self.assertEqual(output.count(asset_vendor), 2)
@@ -442,11 +438,11 @@ class LoaderTestCase(TestCase):
         self.assertEqual(output.count(asset_app1), 1)
         self.assertEqual(output.count(asset_app2), 1)
         self.assertEqual(output.count(asset_vendor), 2)
-        _warn_mock.assert_called_once_with(
+        warn_mock.assert_called_once_with(
             message=_WARNING_MESSAGE, category=RuntimeWarning)
 
         # Should NOT call `warn()` here
-        _warn_mock.reset_mock()
+        warn_mock.reset_mock()
         nodups_template = Template(template_string=(
             r'{% load render_bundle from webpack_loader %}'
             r'{% render_bundle "app1" %}'
@@ -460,13 +456,11 @@ class LoaderTestCase(TestCase):
         self.assertEqual(output.count(asset_app1), 1)
         self.assertEqual(output.count(asset_app2), 1)
         self.assertEqual(output.count(asset_vendor), 1)
-        _warn_mock.assert_not_called()
-        _warn_mock.reset_mock()
+        warn_mock.assert_not_called()
+        warn_mock.reset_mock()
 
-    @patch(
-        target='webpack_loader.templatetags.webpack_loader.warn',
-        new=_warn_mock)
-    def test_emits_warning_on_no_request_in_jinja2engine(self):
+    @patch(target='webpack_loader.templatetags.webpack_loader.warn')
+    def test_emits_warning_on_no_request_in_jinja2engine(self, warn_mock):
         'Should emit warnings on having no request in context (Jinja2).'
         self.compile_bundles('webpack.config.skipCommon.js')
         settings = {
@@ -500,7 +494,7 @@ class LoaderTestCase(TestCase):
             dups_template = jinja2_engine.get_template(
                 template_name='home-duplicated.jinja')  # type: Jinja2Template
             output = dups_template.render()
-        _warn_mock.assert_not_called()
+        warn_mock.assert_not_called()
         self.assertEqual(output.count(asset_app1), 2)
         self.assertEqual(output.count(asset_app2), 2)
         self.assertEqual(output.count(asset_vendor), 4)
@@ -515,13 +509,13 @@ class LoaderTestCase(TestCase):
         self.assertEqual(output.count(asset_app1), 2)
         self.assertEqual(output.count(asset_app2), 2)
         self.assertEqual(output.count(asset_vendor), 4)
-        self.assertEqual(_warn_mock.call_count, 3)
+        self.assertEqual(warn_mock.call_count, 3)
         self.assertListEqual(
-            _warn_mock.call_args_list,
+            warn_mock.call_args_list,
             [warning_call, warning_call, warning_call])
 
         # Should NOT call `warn()` here
-        _warn_mock.reset_mock()
+        warn_mock.reset_mock()
         request = self.factory.get(path='/')
         with self.settings(**settings):
             jinja2_engine = engines['jinja2']  # type: Jinja2
@@ -535,17 +529,15 @@ class LoaderTestCase(TestCase):
         self.assertEqual(output.count(asset_app1), 1)
         self.assertEqual(output.count(asset_app2), 1)
         self.assertEqual(output.count(asset_vendor), 1)
-        _warn_mock.assert_not_called()
-        _warn_mock.reset_mock()
+        warn_mock.assert_not_called()
+        warn_mock.reset_mock()
 
-    @patch(
-        target='webpack_loader.templatetags.webpack_loader.warn',
-        new=_warn_mock)
-    def test_get_files_emits_warning_on_no_request(self):
+    @patch(target='webpack_loader.templatetags.webpack_loader.warn')
+    def test_get_files_emits_warning_on_no_request_in_djangoengine(self, warn_mock):
         self.compile_bundles('webpack.config.skipCommon.js')
-        asset_vendor = '"/static/django_webpack_loader_bundles/vendors.js"'
-        asset_app1 = '"/static/django_webpack_loader_bundles/app1.js"'
-        asset_app2 = '"/static/django_webpack_loader_bundles/app2.js"'
+        asset_vendor = '/static/django_webpack_loader_bundles/vendors.js'
+        asset_app1 = '/static/django_webpack_loader_bundles/app1.js'
+        asset_app2 = '/static/django_webpack_loader_bundles/app2.js'
 
         template = Template(template_string=(
             '{% load render_bundle get_files from webpack_loader %}'
@@ -559,7 +551,43 @@ class LoaderTestCase(TestCase):
         self.assertEqual(output.count(asset_app1), 1)
         self.assertEqual(output.count(asset_app2), 1)
         self.assertEqual(output.count(asset_vendor), 2)
-        _warn_mock.assert_called_once_with(
+        warn_mock.assert_called_once_with(
+            message=_WARNING_MESSAGE, category=RuntimeWarning)
+
+    @patch(target='webpack_loader.templatetags.webpack_loader.warn')
+    def test_get_files_emits_warning_on_no_request_in_jinja2engine(self, warn_mock):
+        self.compile_bundles('webpack.config.skipCommon.js')
+        asset_vendor = '/static/django_webpack_loader_bundles/vendors.js'
+        asset_app1 = '/static/django_webpack_loader_bundles/app1.js'
+        asset_app2 = '/static/django_webpack_loader_bundles/app2.js'
+        settings = {
+            'TEMPLATES': [
+                {
+                    'NAME': 'jinja2',
+                    'BACKEND': 'django_jinja.backend.Jinja2',
+                    'APP_DIRS': True,
+                    'OPTIONS': {
+                        'match_extension': '.jinja',
+                        'extensions': DEFAULT_EXTENSIONS + [_OUR_EXTENSION],
+                    }
+                },
+            ]
+        }
+
+        with self.settings(**settings):
+            jinja2_engine = engines['jinja2']  # type: Jinja2
+            template = jinja2_engine.from_string(
+                "{{ render_bundle('app1', 'js') }}"
+                "{% set app2_files = webpack_get_files('app2', skip_common_chunks=True) %}"
+                "{% for f in app2_files %}"
+                "    <link rel='prefetch' href='{{ f.url }}' />"
+                "{% endfor %}"
+            )
+            output = template.render(context=Context())
+        self.assertEqual(output.count(asset_app1), 1)
+        self.assertEqual(output.count(asset_app2), 1)
+        self.assertEqual(output.count(asset_vendor), 2)
+        warn_mock.assert_called_once_with(
             message=_WARNING_MESSAGE, category=RuntimeWarning)
 
     def _assert_common_chunks_duplicated_djangoengine(self, template):
@@ -803,3 +831,22 @@ class LoaderTestCase(TestCase):
 
         # return removed key
         loader.config['SKIP_COMMON_CHUNKS'] = skip_common_chunks
+
+    def test_get_as_tags_direct_usage(self):
+        self.compile_bundles('webpack.config.skipCommon.js')
+        
+        asset_vendor = (
+            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '</script>')
+        asset_app1 = (
+            '<link href="/static/django_webpack_loader_bundles/app1.css" rel="stylesheet" />')
+        asset_app2 = (
+            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '</script>')
+        
+        tags = get_as_tags('app1')
+        
+        self.assertEqual(len(tags), 3)
+        self.assertEqual(tags[0], asset_vendor)
+        self.assertEqual(tags[1], asset_app1)
+        self.assertEqual(tags[2], asset_app2)
