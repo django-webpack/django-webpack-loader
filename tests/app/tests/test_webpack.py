@@ -149,6 +149,7 @@ class LoaderTestCase(TestCase):
     def test_templatetags(self):
         self.compile_bundles('webpack.config.simple.js')
         self.compile_bundles('webpack.config.app2.js')
+        self.compile_bundles('webpack.config.getFiles.js')
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
@@ -169,6 +170,9 @@ class LoaderTestCase(TestCase):
         self.assertIn(
             '<img src="/static/my-image.png"/>', result.rendered_content)
 
+        self.assertIn('<li>All from getFiles already rendered</li>', result.rendered_content)
+
+        request = self.factory.get('/')
         view = TemplateView.as_view(template_name='only_files.html')
         result = view(request)
         self.assertIn((
@@ -180,6 +184,7 @@ class LoaderTestCase(TestCase):
             result.rendered_content)
 
         self.compile_bundles('webpack.config.publicPath.js')
+        request = self.factory.get('/')
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
@@ -526,6 +531,30 @@ class LoaderTestCase(TestCase):
         self.assertEqual(output.count(asset_vendor), 1)
         _warn_mock.assert_not_called()
         _warn_mock.reset_mock()
+
+    @patch(
+        target='webpack_loader.templatetags.webpack_loader.warn',
+        new=_warn_mock)
+    def test_get_files_emits_warning_on_no_request(self):
+        self.compile_bundles('webpack.config.skipCommon.js')
+        asset_vendor = '"/static/django_webpack_loader_bundles/vendors.js"'
+        asset_app1 = '"/static/django_webpack_loader_bundles/app1.js"'
+        asset_app2 = '"/static/django_webpack_loader_bundles/app2.js"'
+
+        template = Template(template_string=(
+            '{% load render_bundle get_files from webpack_loader %}'
+            '{% render_bundle "app1" %}'
+            '{% get_files "app2" skip_common_chunks=True as app2_files %}'
+            '{% for f in app2_files %}'
+            '    <link rel="prefetch" href="{{ f.url }}" />'
+            '{% endfor %}'),
+        )  # type: Template
+        output = template.render(context=Context())
+        self.assertEqual(output.count(asset_app1), 1)
+        self.assertEqual(output.count(asset_app2), 1)
+        self.assertEqual(output.count(asset_vendor), 2)
+        _warn_mock.assert_called_once_with(
+            message=_WARNING_MESSAGE, category=RuntimeWarning)
 
     def _assert_common_chunks_duplicated_djangoengine(self, template):
         """
