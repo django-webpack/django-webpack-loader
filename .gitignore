@@ -84,6 +84,7 @@ tests/assets/webpack_bundles/
 tests/assets/django_webpack_loader_bundles/
 tests/webpack-stats.json
 tests/webpack-stats-app2.json
+tests/webpack-stats-getFiles.json
 
 # PyCharm IDE
 .idea
