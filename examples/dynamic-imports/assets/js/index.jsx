@@ -1,11 +1,11 @@
 function getComponent() {
     return import("lodash")
         .then(({ default: _ }) => {
-        const element = document.createElement("div");
+            const element = document.createElement("div");
 
-        element.innerHTML = _.join(["Hello", "webpack"], " ");
+            element.innerHTML = _.join(["Hello", "webpack"], " ");
 
-        return element;
+            return element;
         })
         .catch((error) => "An error occurred while loading the component");
 }

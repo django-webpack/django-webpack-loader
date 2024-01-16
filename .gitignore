@@ -65,14 +65,26 @@ target/
 # Editors and IDEs
 .ropeproject/
 
+# PyCharm IDE
+.idea
+.vscode
+
+# pyenv
 .python-version
 
+# General
+.direnv
+.envrc
+.tool-versions
+
+# Project-specific
 examples/**/ve/
 examples/**/venv/
 examples/**/node_modules/
 examples/**/assets/bundles/
 examples/**/assets/webpack_bundles/
 examples/**/webpack-stats.json
+examples/**/package-lock.json
 
 tests/ve/
 tests/ve3/
@@ -85,12 +97,3 @@ tests/assets/django_webpack_loader_bundles/
 tests/webpack-stats.json
 tests/webpack-stats-app2.json
 tests/webpack-stats-getFiles.json
-
-# PyCharm IDE
-.idea
-.vscode
-
-# General
-.direnv
-.envrc
-.tool-versions
