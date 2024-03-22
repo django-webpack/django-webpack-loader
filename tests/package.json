@@ -17,6 +17,6 @@
     "compression-webpack-plugin": "^6.1.1",
     "webpack-bundle-tracker": "3.0.1",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.0.0"
+    "webpack-dev-server": "^5.0.4"
   }
 }
