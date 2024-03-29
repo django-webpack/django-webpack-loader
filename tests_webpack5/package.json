@@ -1,0 +1,12 @@
+{
+  "name": "example",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^5.91.0",
+    "webpack-bundle-tracker": "github:hostnfly/webpack-bundle-tracker#assets-source-filenames",
+    "webpack-cli": "^5.1.4"
+  }
+}

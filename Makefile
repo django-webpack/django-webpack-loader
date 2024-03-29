@@ -36,6 +36,7 @@ test:
 	@$(activate_venv_if_not_active)
 	@echo "Running tests..."
 	@cd tests; coverage run --source=webpack_loader manage.py test
+	@cd tests_webpack5; coverage run --source=webpack_loader manage.py test
 
 publish: build
 	@echo "Publishing to $(REPOSITORY)..."

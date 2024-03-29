@@ -1,0 +1,12 @@
+{% load webpack_asset from webpack_loader %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+  </head>
+
+  <body>
+    <a href="{% webpack_asset 'assets/js/resource.txt' %}">Download resource</a>
+  </body>
+</html>

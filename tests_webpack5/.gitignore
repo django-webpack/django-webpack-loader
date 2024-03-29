@@ -1,0 +1,3 @@
+node_modules/
+django_webpack_loader_bundles/
+webpack-stats.json

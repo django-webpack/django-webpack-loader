@@ -38,6 +38,10 @@ class WebpackLoader:
             return self._assets[self.name]
         return self.load_assets()
 
+    def get_asset_by_source_filename(self, name):
+        files = self.get_assets()["assets"].values()
+        return next((x for x in files if x.get("sourceFilename") == name), None)
+
     def get_integrity_attr(self, chunk):
         if not self.config.get("INTEGRITY"):
             return " "
