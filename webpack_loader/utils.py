@@ -124,3 +124,18 @@ def get_static(asset_name, config='DEFAULT'):
         public_path = getattr(settings, 'STATIC_URL')
 
     return '{0}{1}'.format(public_path, asset_name)
+
+def get_asset(source_filename, config='DEFAULT'):
+    '''
+    Equivalent to Django's 'static' look up but for webpack assets, given its original filename.
+    Allow handling files whose path has been modified by Webpack processing, such as including content hash to filename.
+
+    :param source_filename: the source filename of the asset
+    :param config: (optional) the name of the configuration
+    :return: path to webpack asset as a string
+    '''
+    loader = get_loader(config)
+    asset = loader.get_asset_by_source_filename(source_filename)
+    if not asset: return None
+
+    return get_static(asset['name'], config)

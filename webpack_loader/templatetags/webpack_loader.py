@@ -43,6 +43,9 @@ def render_bundle(
 def webpack_static(asset_name, config='DEFAULT'):
     return utils.get_static(asset_name, config=config)
 
+@register.simple_tag
+def webpack_asset(asset_name, config='DEFAULT'):
+    return utils.get_asset(asset_name, config=config)
 
 @register.simple_tag(takes_context=True)
 def get_files(
