@@ -5,7 +5,11 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
-## [3.0.1] -- 2023-12-29
+## [3.1.0] -- 2024-04-04
+
+Handle transformed assets URL.
+
+## [3.0.1] -- 2024-01-16
 
 Added `skip_common_chunks` option to the `get_files()` template tag.
 
