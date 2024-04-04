@@ -7,7 +7,7 @@ Releases are added to the
 
 ## [3.1.0] -- 2024-04-04
 
-Handle transformed assets URL.
+Support `webpack_asset` template tag to render transformed assets URL: `{% webpack_asset 'path/to/original/file' %} == "/static/assets/resource-3c9e4020d3e3c7a09c68.txt"`
 
 ## [3.0.1] -- 2024-01-16
 
