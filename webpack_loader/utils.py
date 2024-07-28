@@ -1,9 +1,8 @@
 from collections import OrderedDict
+from functools import lru_cache
 from importlib import import_module
 from django.conf import settings
 from .config import load_config
-
-_loaders = {}
 
 
 def import_string(dotted_path):
@@ -21,12 +20,11 @@ def import_string(dotted_path):
         raise ImportError('%s doesn\'t look like a valid module path' % dotted_path)
 
 
+@lru_cache(maxsize=None)
 def get_loader(config_name):
-    if config_name not in _loaders:
-        config = load_config(config_name)
-        loader_class = import_string(config['LOADER_CLASS'])
-        _loaders[config_name] = loader_class(config_name, config)
-    return _loaders[config_name]
+    config = load_config(config_name)
+    loader_class = import_string(config['LOADER_CLASS'])
+    return loader_class(config_name, config)
 
 
 def get_skip_common_chunks(config_name):
@@ -73,6 +71,7 @@ def get_as_url_to_tag_dict(
     loader = get_loader(config)
     bundle = _get_bundle(loader, bundle_name, extension)
     result = OrderedDict()
+    attrs_l = attrs.lower()
 
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
@@ -82,20 +81,22 @@ def get_as_url_to_tag_dict(
                 ).format(''.join([chunk['url'], suffix]), attrs)
             else:
                 result[chunk['url']] = (
-                    '<script src="{0}"{2}{1}></script>'
+                    '<script src="{0}"{2}{3}{1}></script>'
                 ).format(
                     ''.join([chunk['url'], suffix]),
                     attrs,
-                    loader.get_integrity_attr(chunk, request, attrs),
+                    loader.get_integrity_attr(chunk, request, attrs_l),
+                    loader.get_nonce_attr(chunk, request, attrs_l),
                 )
         elif chunk['name'].endswith(('.css', '.css.gz')):
             result[chunk['url']] = (
-                '<link href="{0}" rel={2}{3}{1}/>'
+                '<link href="{0}" rel={2}{3}{4}{1}/>'
             ).format(
                 ''.join([chunk['url'], suffix]),
                 attrs,
                 '"stylesheet"' if not is_preload else '"preload" as="style"',
-                loader.get_integrity_attr(chunk, request, attrs),
+                loader.get_integrity_attr(chunk, request, attrs_l),
+                loader.get_nonce_attr(chunk, request, attrs_l),
             )
     return result
 
