@@ -1,10 +1,15 @@
 import json
-import time
 import os
+import time
+from functools import lru_cache
 from io import open
+from typing import Dict, Optional
+from urllib.parse import urlparse
+from warnings import warn
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.http import HttpRequest
 
 from .exceptions import (
     WebpackError,
@@ -12,6 +17,21 @@ from .exceptions import (
     WebpackLoaderTimeoutError,
     WebpackBundleLookupError,
 )
+
+_CROSSORIGIN_NO_REQUEST = (
+    'The crossorigin attribute might be necessary but you did not pass a '
+    'request object. django_webpack_loader needs a request object to be able '
+    'to know when to emit the crossorigin attribute on link and script tags.')
+_CROSSORIGIN_NO_HOST = (
+    'You have passed the request object but it does not have a "HTTP_HOST", '
+    'thus django_webpack_loader can\'t know if the crossorigin header will '
+    'be necessary or not.')
+
+
+@lru_cache(maxsize=100)
+def _get_netloc(url: str) -> str:
+    'Return a cached netloc (host:port) for the passed `url`.'
+    return urlparse(url=url).netloc
 
 
 class WebpackLoader:
@@ -42,19 +62,46 @@ class WebpackLoader:
         files = self.get_assets()["assets"].values()
         return next((x for x in files if x.get("sourceFilename") == name), None)
 
-    def get_integrity_attr(self, chunk):
-        if not self.config.get("INTEGRITY"):
-            return " "
+    def _add_crossorigin(
+            self, request: Optional[HttpRequest], chunk_url: str,
+            integrity: str, attrs: str) -> str:
+        'Return an added `crossorigin` attribute if necessary.'
+        def_value = f' integrity="{integrity}" '
+        cfgval: str = self.config.get('CROSSORIGIN')
+        if not request:
+            warn(message=_CROSSORIGIN_NO_REQUEST, category=RuntimeWarning)
+            return def_value
+        if 'crossorigin' in attrs.lower():
+            return def_value
+        host: Optional[str] = request.META.get('HTTP_HOST')
+        if not host:
+            warn(message=_CROSSORIGIN_NO_HOST, category=RuntimeWarning)
+            return def_value
+        netloc = _get_netloc(url=chunk_url)
+        if netloc == '' or netloc == host:
+            # Crossorigin not necessary
+            return def_value
+        if cfgval == '':
+            return f'{def_value}crossorigin '
+        return f'{def_value}crossorigin="{cfgval}" '
 
-        integrity = chunk.get("integrity")
+    def get_integrity_attr(
+            self, chunk: Dict[str, str], request: Optional[HttpRequest],
+            attrs: str):
+        if not self.config.get('INTEGRITY'):
+            # Crossorigin only necessary when integrity is used
+            return ' '
+
+        integrity = chunk.get('integrity')
         if not integrity:
             raise WebpackLoaderBadStatsError(
-                "The stats file does not contain valid data: INTEGRITY is set to True, "
-                'but chunk does not contain "integrity" key. Maybe you forgot to add '
-                "integrity: true in your BundleTracker configuration?"
-            )
-
-        return ' integrity="{}" '.format(integrity.partition(" ")[0])
+                'The stats file does not contain valid data: INTEGRITY is set '
+                'to True, but chunk does not contain "integrity" key. Maybe '
+                'you forgot to add integrity: true in your '
+                'BundleTrackerPlugin configuration?')
+        return self._add_crossorigin(
+            request=request, chunk_url=chunk['url'], integrity=integrity,
+            attrs=attrs)
 
     def filter_chunks(self, chunks):
         filtered_chunks = []

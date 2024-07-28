@@ -224,11 +224,18 @@ class LoaderTestCase(TestCase):
 
             self.assertIn((
                 '<script src="/static/django_webpack_loader_bundles/main.js" '
-                'integrity="sha256-1wgFMxcDlOWYV727qRvWNoPHdnOGFNVMLuKd25cjR+o=" >'
+                'integrity="sha256-1wgFMxcDlOWYV727qRvWNoPHdnOGFNVMLuKd25cjR+'
+                'o= sha384-3RnsU3Z2OODW6qaMAPVpNC5lBb4M5I1+joXv37ACuLvCO6gQ7o'
+                'OD7IC1zN1uAakD sha512-9nLlV4v2pWvgeavHop1wXxdP34CfYv/xUZHwVB'
+                'N+1p+pAvHDmBw4XkvvciSGW4zQlWhaUiIi7P6nXmsLE+8Fsw==" >'
                 '</script>'), result.rendered_content)
             self.assertIn((
-                '<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" '
-                'integrity="sha256-cYWwRvS04/VsttQYx4BalKYrBDuw5t8vKFhWB/LKX30=" />'),
+                '<link href="/static/django_webpack_loader_bundles/main.css" '
+                'rel="stylesheet" integrity="sha256-cYWwRvS04/VsttQYx4BalKYrB'
+                'Duw5t8vKFhWB/LKX30= sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI'
+                '01UR8wKIFkIr6vEaT5YRaeLMfLcAQvS sha512-aigPxglXDA33t9s5i0vRa'
+                'p5b7dFwyp7cSN6x8rOXrPpCTMubOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBH'
+                'KLQPw==" />'),
                 result.rendered_content
             )
 
