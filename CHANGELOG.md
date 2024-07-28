@@ -9,6 +9,7 @@ Releases are added to the
 
 - Remove support for Django 3.x (LTS is EOL)
 - Automatically add `crossorigin` attributes to tags with `integrity` attributes when necessary (and enabled)
+- Use `request.csp_nonce` from [django-csp](https://github.com/mozilla/django-csp) if available and configured
 
 ## [3.1.0] -- 2024-04-04
 

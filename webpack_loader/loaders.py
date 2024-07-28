@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from io import open
 from typing import Dict, Optional
 from urllib.parse import urlparse
@@ -21,11 +21,20 @@ from .exceptions import (
 _CROSSORIGIN_NO_REQUEST = (
     'The crossorigin attribute might be necessary but you did not pass a '
     'request object. django_webpack_loader needs a request object to be able '
-    'to know when to emit the crossorigin attribute on link and script tags.')
+    'to know when to emit the crossorigin attribute on link and script tags. '
+    'Bundle name: {chunk_name}')
 _CROSSORIGIN_NO_HOST = (
     'You have passed the request object but it does not have a "HTTP_HOST", '
     'thus django_webpack_loader can\'t know if the crossorigin header will '
-    'be necessary or not.')
+    'be necessary or not. Bundle name: {chunk_name}')
+_NONCE_NO_REQUEST = (
+    'You have enabled the adding of nonce attributes to generated tags via '
+    'django_webpack_loader, but haven\'t passed a request. '
+    'Bundle name: {chunk_name}')
+_NONCE_NO_CSPNONCE = (
+    'django_webpack_loader can\'t generate a nonce tag for a bundle, '
+    'because the passed request doesn\'t contain a "csp_nonce". '
+    'Bundle name: {chunk_name}')
 
 
 @lru_cache(maxsize=100)
@@ -63,31 +72,33 @@ class WebpackLoader:
         return next((x for x in files if x.get("sourceFilename") == name), None)
 
     def _add_crossorigin(
-            self, request: Optional[HttpRequest], chunk_url: str,
-            integrity: str, attrs: str) -> str:
+            self, request: Optional[HttpRequest], chunk: Dict[str, str],
+            integrity: str, attrs_l: str) -> str:
         'Return an added `crossorigin` attribute if necessary.'
         def_value = f' integrity="{integrity}" '
-        cfgval: str = self.config.get('CROSSORIGIN')
         if not request:
-            warn(message=_CROSSORIGIN_NO_REQUEST, category=RuntimeWarning)
+            message = _CROSSORIGIN_NO_REQUEST.format(chunk_name=chunk['name'])
+            warn(message=message, category=RuntimeWarning)
             return def_value
-        if 'crossorigin' in attrs.lower():
+        if 'crossorigin' in attrs_l:
             return def_value
         host: Optional[str] = request.META.get('HTTP_HOST')
         if not host:
-            warn(message=_CROSSORIGIN_NO_HOST, category=RuntimeWarning)
+            message = _CROSSORIGIN_NO_HOST.format(chunk_name=chunk['name'])
+            warn(message=message, category=RuntimeWarning)
             return def_value
-        netloc = _get_netloc(url=chunk_url)
+        netloc = _get_netloc(url=chunk['url'])
         if netloc == '' or netloc == host:
             # Crossorigin not necessary
             return def_value
+        cfgval: str = self.config.get('CROSSORIGIN')
         if cfgval == '':
             return f'{def_value}crossorigin '
         return f'{def_value}crossorigin="{cfgval}" '
 
     def get_integrity_attr(
             self, chunk: Dict[str, str], request: Optional[HttpRequest],
-            attrs: str):
+            attrs_l: str) -> str:
         if not self.config.get('INTEGRITY'):
             # Crossorigin only necessary when integrity is used
             return ' '
@@ -100,8 +111,27 @@ class WebpackLoader:
                 'you forgot to add integrity: true in your '
                 'BundleTrackerPlugin configuration?')
         return self._add_crossorigin(
-            request=request, chunk_url=chunk['url'], integrity=integrity,
-            attrs=attrs)
+            request=request, chunk=chunk, integrity=integrity,
+            attrs_l=attrs_l)
+
+    def get_nonce_attr(
+            self, chunk: Dict[str, str], request: Optional[HttpRequest],
+            attrs: str) -> str:
+        'Return an added nonce for CSP when available.'
+        if not self.config.get('CSP_NONCE'):
+            return ''
+        if request is None:
+            message = _NONCE_NO_REQUEST.format(chunk_name=chunk['name'])
+            warn(message=message, category=RuntimeWarning)
+            return ''
+        nonce = getattr(request, 'csp_nonce', None)
+        if nonce is None:
+            message = _NONCE_NO_CSPNONCE.format(chunk_name=chunk['name'])
+            warn(message=message, category=RuntimeWarning)
+            return ''
+        if 'nonce=' in attrs.lower():
+            return ''
+        return f'nonce="{nonce}" '
 
     def filter_chunks(self, chunks):
         filtered_chunks = []

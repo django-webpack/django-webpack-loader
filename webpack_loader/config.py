@@ -23,6 +23,8 @@ DEFAULT_CONFIG = {
         # Whenever the global setting for SKIP_COMMON_CHUNKS is changed, please
         # update the fallback value in get_skip_common_chunks (utils.py).
         'SKIP_COMMON_CHUNKS': False,
+        # Use nonces from django-csp when available
+        'CSP_NONCE': False
     }
 }
 

@@ -256,6 +256,8 @@ WEBPACK_LOADER = {
 
 - `CROSSORIGIN`: If you use the `integrity` attribute in your tags and you load your webpack generated assets from another origin (that is not the same `host:port` as the one you load the webpage from), you can configure the `CROSSORIGIN` configuration option. The default value is `''` (empty string), where an empty `crossorigin` attribute will be emitted when necessary. Valid values are: `''` (empty string), `'anonymous'` (functionally same as the empty string) and `use-credentials`. For an explanation, see https://shubhamjain.co/2018/09/08/subresource-integrity-crossorigin/. A typical case for this scenario is when you develop locally and your webpack-dev-server runs with hot-reload on a local host/port other than that of django's `runserver`.
 
+- `CSP_NONCE`: Automatically generate nonces for rendered bundles from [django-csp](https://github.com/mozilla/django-csp). Default `False`. Set this to `True` if you use `django-csp` and and `'strict-dynamic'` [CSP mode](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src#strict-dynamic).
+
 - `LOADER_CLASS` is the fully qualified name of a python class as a string that holds the custom Webpack loader. This is where behavior can be customized as to how the stats file is loaded. Examples include loading the stats file from a database, cache, external URL, etc. For convenience, `webpack_loader.loaders.WebpackLoader` can be extended. The `load_assets` method is likely where custom behavior will be added. This should return the stats file as an object.
 
 Here's a simple example of loading from an external URL:
