@@ -7,7 +7,7 @@ Releases are added to the
 
 ## --- INSERT VERSION HERE ---
 
-- Automatically add `crossorigin` attributes to tags with `integrity` attributes when necessary (and enabled)
+- Automatically add `crossorigin` attributes to tags with `integrity` attributes when necessary
 - Use `request.csp_nonce` from [django-csp](https://github.com/mozilla/django-csp) if available and configured
 
 ## [3.1.1] -- 2024-08-30
