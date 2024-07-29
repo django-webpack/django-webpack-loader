@@ -1,5 +1,7 @@
+from typing import Optional
 from warnings import warn
 
+from django.http.request import HttpRequest
 from django.template import Library
 from django.utils.safestring import mark_safe
 
@@ -20,23 +22,24 @@ def render_bundle(
     if skip_common_chunks is None:
         skip_common_chunks = utils.get_skip_common_chunks(config)
 
-    request = context.get('request')
-    url_to_tag_dict = utils.get_as_url_to_tag_dict(
+    request: Optional[HttpRequest] = context.get('request')
+    tags = utils.get_as_url_to_tag_dict(
         bundle_name, request=request, extension=extension, config=config,
         suffix=suffix, attrs=attrs, is_preload=is_preload)
 
     if request is None:
         if skip_common_chunks:
             warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
-        return mark_safe('\n'.join(url_to_tag_dict.values()))
+        return mark_safe('\n'.join(tags.values()))
 
     used_urls = getattr(request, '_webpack_loader_used_urls', None)
-    if not used_urls:
-        used_urls = request._webpack_loader_used_urls = set()
+    if used_urls is None:
+        used_urls = set()
+        setattr(request, '_webpack_loader_used_urls', used_urls)
     if skip_common_chunks:
-        url_to_tag_dict = {url: tag for url, tag in url_to_tag_dict.items() if url not in used_urls}
-    used_urls.update(url_to_tag_dict)
-    return mark_safe('\n'.join(url_to_tag_dict.values()))
+        tags = {url: tag for url, tag in tags.items() if url not in used_urls}
+    used_urls.update(tags)
+    return mark_safe('\n'.join(tags.values()))
 
 
 @register.simple_tag
