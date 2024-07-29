@@ -1,8 +1,12 @@
-from collections import OrderedDict
 from functools import lru_cache
 from importlib import import_module
+from typing import Optional, OrderedDict
+
 from django.conf import settings
+from django.http.request import HttpRequest
+
 from .config import load_config
+from .loaders import WebpackLoader
 
 
 def import_string(dotted_path):
@@ -21,7 +25,7 @@ def import_string(dotted_path):
 
 
 @lru_cache(maxsize=None)
-def get_loader(config_name):
+def get_loader(config_name) -> WebpackLoader:
     config = load_config(config_name)
     loader_class = import_string(config['LOADER_CLASS'])
     return loader_class(config_name, config)
@@ -56,8 +60,9 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
 
 
 def get_as_url_to_tag_dict(
-        bundle_name, request=None, extension=None, config='DEFAULT', suffix='',
-        attrs='', is_preload=False):
+    bundle_name, request: Optional[HttpRequest] = None, extension=None,
+    config='DEFAULT', suffix='', attrs='', is_preload=False
+) -> OrderedDict[str, str]:
     '''
     Get a dict of URLs to formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -70,7 +75,7 @@ def get_as_url_to_tag_dict(
 
     loader = get_loader(config)
     bundle = _get_bundle(loader, bundle_name, extension)
-    result = OrderedDict()
+    result = OrderedDict[str, str]()
     attrs_l = attrs.lower()
 
     for chunk in bundle:
@@ -130,6 +135,7 @@ def get_static(asset_name, config='DEFAULT'):
 
     return '{0}{1}'.format(public_path, asset_name)
 
+
 def get_asset(source_filename, config='DEFAULT'):
     '''
     Equivalent to Django's 'static' look up but for webpack assets, given its original filename.
@@ -141,6 +147,7 @@ def get_asset(source_filename, config='DEFAULT'):
     '''
     loader = get_loader(config)
     asset = loader.get_asset_by_source_filename(source_filename)
-    if not asset: return None
+    if not asset:
+        return None
 
     return get_static(asset['name'], config)

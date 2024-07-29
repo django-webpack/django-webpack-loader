@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from functools import cached_property, lru_cache
+from functools import lru_cache
 from io import open
 from typing import Dict, Optional
 from urllib.parse import urlparse
@@ -9,7 +9,7 @@ from warnings import warn
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.http import HttpRequest
+from django.http.request import HttpRequest
 
 from .exceptions import (
     WebpackError,
@@ -22,19 +22,19 @@ _CROSSORIGIN_NO_REQUEST = (
     'The crossorigin attribute might be necessary but you did not pass a '
     'request object. django_webpack_loader needs a request object to be able '
     'to know when to emit the crossorigin attribute on link and script tags. '
-    'Bundle name: {chunk_name}')
+    'Chunk name: {chunk_name}')
 _CROSSORIGIN_NO_HOST = (
     'You have passed the request object but it does not have a "HTTP_HOST", '
     'thus django_webpack_loader can\'t know if the crossorigin header will '
-    'be necessary or not. Bundle name: {chunk_name}')
+    'be necessary or not. Chunk name: {chunk_name}')
 _NONCE_NO_REQUEST = (
     'You have enabled the adding of nonce attributes to generated tags via '
     'django_webpack_loader, but haven\'t passed a request. '
-    'Bundle name: {chunk_name}')
+    'Chunk name: {chunk_name}')
 _NONCE_NO_CSPNONCE = (
     'django_webpack_loader can\'t generate a nonce tag for a bundle, '
     'because the passed request doesn\'t contain a "csp_nonce". '
-    'Bundle name: {chunk_name}')
+    'Chunk name: {chunk_name}')
 
 
 @lru_cache(maxsize=100)
