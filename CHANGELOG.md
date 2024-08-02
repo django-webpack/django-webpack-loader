@@ -5,6 +5,12 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [3.2.0] -- 2024-07-28
+
+- Remove support for Django 3.x (LTS is EOL)
+- Automatically add `crossorigin` attributes to tags with `integrity` attributes when necessary
+- Use `request.csp_nonce` from [django-csp](https://github.com/mozilla/django-csp) if available and configured
+
 ## [3.1.0] -- 2024-04-04
 
 Support `webpack_asset` template tag to render transformed assets URL: `{% webpack_asset 'path/to/original/file' %} == "/static/assets/resource-3c9e4020d3e3c7a09c68.txt"`

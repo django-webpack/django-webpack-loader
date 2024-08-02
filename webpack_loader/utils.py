@@ -1,9 +1,12 @@
-from collections import OrderedDict
+from functools import lru_cache
 from importlib import import_module
-from django.conf import settings
-from .config import load_config
+from typing import Optional, OrderedDict
 
-_loaders = {}
+from django.conf import settings
+from django.http.request import HttpRequest
+
+from .config import load_config
+from .loaders import WebpackLoader
 
 
 def import_string(dotted_path):
@@ -21,12 +24,11 @@ def import_string(dotted_path):
         raise ImportError('%s doesn\'t look like a valid module path' % dotted_path)
 
 
-def get_loader(config_name):
-    if config_name not in _loaders:
-        config = load_config(config_name)
-        loader_class = import_string(config['LOADER_CLASS'])
-        _loaders[config_name] = loader_class(config_name, config)
-    return _loaders[config_name]
+@lru_cache(maxsize=None)
+def get_loader(config_name) -> WebpackLoader:
+    config = load_config(config_name)
+    loader_class = import_string(config['LOADER_CLASS'])
+    return loader_class(config_name, config)
 
 
 def get_skip_common_chunks(config_name):
@@ -57,7 +59,10 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(loader, bundle_name, extension))
 
 
-def get_as_url_to_tag_dict(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+def get_as_url_to_tag_dict(
+    bundle_name, request: Optional[HttpRequest] = None, extension=None,
+    config='DEFAULT', suffix='', attrs='', is_preload=False
+) -> OrderedDict[str, str]:
     '''
     Get a dict of URLs to formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -70,7 +75,8 @@ def get_as_url_to_tag_dict(bundle_name, extension=None, config='DEFAULT', suffix
 
     loader = get_loader(config)
     bundle = _get_bundle(loader, bundle_name, extension)
-    result = OrderedDict()
+    result = OrderedDict[str, str]()
+    attrs_l = attrs.lower()
 
     for chunk in bundle:
         if chunk['name'].endswith(('.js', '.js.gz')):
@@ -80,25 +86,29 @@ def get_as_url_to_tag_dict(bundle_name, extension=None, config='DEFAULT', suffix
                 ).format(''.join([chunk['url'], suffix]), attrs)
             else:
                 result[chunk['url']] = (
-                    '<script src="{0}"{2}{1}></script>'
+                    '<script src="{0}"{2}{3}{1}></script>'
                 ).format(
                     ''.join([chunk['url'], suffix]),
                     attrs,
-                    loader.get_integrity_attr(chunk),
+                    loader.get_integrity_attr(chunk, request, attrs_l),
+                    loader.get_nonce_attr(chunk, request, attrs_l),
                 )
         elif chunk['name'].endswith(('.css', '.css.gz')):
             result[chunk['url']] = (
-                '<link href="{0}" rel={2}{3}{1}/>'
+                '<link href="{0}" rel={2}{3}{4}{1}/>'
             ).format(
                 ''.join([chunk['url'], suffix]),
                 attrs,
                 '"stylesheet"' if not is_preload else '"preload" as="style"',
-                loader.get_integrity_attr(chunk),
+                loader.get_integrity_attr(chunk, request, attrs_l),
+                loader.get_nonce_attr(chunk, request, attrs_l),
             )
     return result
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+def get_as_tags(
+        bundle_name, request=None, extension=None, config='DEFAULT', suffix='',
+        attrs='', is_preload=False):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -108,7 +118,7 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
     :param config: (optional) the name of the configuration
     :return: a list of formatted tags as strings
     '''
-    return list(get_as_url_to_tag_dict(bundle_name, extension, config, suffix, attrs, is_preload).values())
+    return list(get_as_url_to_tag_dict(bundle_name, request, extension, config, suffix, attrs, is_preload).values())
 
 
 def get_static(asset_name, config='DEFAULT'):
@@ -125,6 +135,7 @@ def get_static(asset_name, config='DEFAULT'):
 
     return '{0}{1}'.format(public_path, asset_name)
 
+
 def get_asset(source_filename, config='DEFAULT'):
     '''
     Equivalent to Django's 'static' look up but for webpack assets, given its original filename.
@@ -136,6 +147,7 @@ def get_asset(source_filename, config='DEFAULT'):
     '''
     loader = get_loader(config)
     asset = loader.get_asset_by_source_filename(source_filename)
-    if not asset: return None
+    if not asset:
+        return None
 
     return get_static(asset['name'], config)
