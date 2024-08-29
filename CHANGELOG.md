@@ -5,6 +5,10 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## Unreleased
+
+- Add support for Django 5.1
+
 ## [3.1.0] -- 2024-04-04
 
 Support `webpack_asset` template tag to render transformed assets URL: `{% webpack_asset 'path/to/original/file' %} == "/static/assets/resource-3c9e4020d3e3c7a09c68.txt"`
