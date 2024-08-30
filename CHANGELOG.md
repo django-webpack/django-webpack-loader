@@ -5,7 +5,7 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
-## Unreleased
+## [3.1.1] -- 2024-08-30
 
 - Add support for Django 5.1
 
