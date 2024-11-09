@@ -16,6 +16,10 @@ DEFAULT_CONFIG = {
         'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
         'LOADER_CLASS': 'webpack_loader.loaders.WebpackLoader',
         'INTEGRITY': False,
+        # See https://shubhamjain.co/2018/09/08/subresource-integrity-crossorigin/
+        # See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin
+        # type is Literal['anonymous', 'use-credentials', '']
+        'CROSSORIGIN': '',
         # Whenever the global setting for SKIP_COMMON_CHUNKS is changed, please
         # update the fallback value in get_skip_common_chunks (utils.py).
         'SKIP_COMMON_CHUNKS': False,

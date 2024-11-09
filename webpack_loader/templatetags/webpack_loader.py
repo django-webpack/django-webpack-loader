@@ -20,11 +20,11 @@ def render_bundle(
     if skip_common_chunks is None:
         skip_common_chunks = utils.get_skip_common_chunks(config)
 
-    url_to_tag_dict = utils.get_as_url_to_tag_dict(
-        bundle_name, extension=extension, config=config, suffix=suffix,
-        attrs=attrs, is_preload=is_preload)
-
     request = context.get('request')
+    url_to_tag_dict = utils.get_as_url_to_tag_dict(
+        bundle_name, request=request, extension=extension, config=config,
+        suffix=suffix, attrs=attrs, is_preload=is_preload)
+
     if request is None:
         if skip_common_chunks:
             warn(message=_WARNING_MESSAGE, category=RuntimeWarning)
@@ -35,7 +35,7 @@ def render_bundle(
         used_urls = request._webpack_loader_used_urls = set()
     if skip_common_chunks:
         url_to_tag_dict = {url: tag for url, tag in url_to_tag_dict.items() if url not in used_urls}
-    used_urls.update(url_to_tag_dict.keys())
+    used_urls.update(url_to_tag_dict)
     return mark_safe('\n'.join(url_to_tag_dict.values()))
 
 
@@ -43,9 +43,11 @@ def render_bundle(
 def webpack_static(asset_name, config='DEFAULT'):
     return utils.get_static(asset_name, config=config)
 
+
 @register.simple_tag
 def webpack_asset(asset_name, config='DEFAULT'):
     return utils.get_asset(asset_name, config=config)
+
 
 @register.simple_tag(takes_context=True)
 def get_files(
