@@ -57,7 +57,9 @@ def get_files(bundle_name, extension=None, config='DEFAULT'):
     return list(_get_bundle(loader, bundle_name, extension))
 
 
-def get_as_url_to_tag_dict(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+def get_as_url_to_tag_dict(
+        bundle_name, request=None, extension=None, config='DEFAULT', suffix='',
+        attrs='', is_preload=False):
     '''
     Get a dict of URLs to formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -84,7 +86,7 @@ def get_as_url_to_tag_dict(bundle_name, extension=None, config='DEFAULT', suffix
                 ).format(
                     ''.join([chunk['url'], suffix]),
                     attrs,
-                    loader.get_integrity_attr(chunk),
+                    loader.get_integrity_attr(chunk, request, attrs),
                 )
         elif chunk['name'].endswith(('.css', '.css.gz')):
             result[chunk['url']] = (
@@ -93,12 +95,14 @@ def get_as_url_to_tag_dict(bundle_name, extension=None, config='DEFAULT', suffix
                 ''.join([chunk['url'], suffix]),
                 attrs,
                 '"stylesheet"' if not is_preload else '"preload" as="style"',
-                loader.get_integrity_attr(chunk),
+                loader.get_integrity_attr(chunk, request, attrs),
             )
     return result
 
 
-def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs='', is_preload=False):
+def get_as_tags(
+        bundle_name, request=None, extension=None, config='DEFAULT', suffix='',
+        attrs='', is_preload=False):
     '''
     Get a list of formatted <script> & <link> tags for the assets in the
     named bundle.
@@ -108,7 +112,7 @@ def get_as_tags(bundle_name, extension=None, config='DEFAULT', suffix='', attrs=
     :param config: (optional) the name of the configuration
     :return: a list of formatted tags as strings
     '''
-    return list(get_as_url_to_tag_dict(bundle_name, extension, config, suffix, attrs, is_preload).values())
+    return list(get_as_url_to_tag_dict(bundle_name, request, extension, config, suffix, attrs, is_preload).values())
 
 
 def get_static(asset_name, config='DEFAULT'):
