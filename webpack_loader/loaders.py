@@ -171,3 +171,6 @@ class FakeWebpackLoader(WebpackLoader):
                 "url": "http://localhost/static/webpack_bundles/test.bundle.js",
             }
         ]
+
+    def get_asset_by_source_filename(self, name):
+        return None
