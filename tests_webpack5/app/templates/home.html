@@ -1,4 +1,4 @@
-{% load webpack_asset from webpack_loader %}
+{% load render_bundle webpack_asset from webpack_loader %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,6 +7,8 @@
   </head>
 
   <body>
+    <div id="react-app"></div>
     <a href="{% webpack_asset 'assets/js/resource.txt' %}">Download resource</a>
+    {% render_bundle 'resources' 'js' %}
   </body>
 </html>
