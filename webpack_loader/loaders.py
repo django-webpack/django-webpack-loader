@@ -109,14 +109,16 @@ class WebpackLoader:
                 'The stats file does not contain valid data: INTEGRITY is set '
                 'to True, but chunk does not contain "integrity" key. Maybe '
                 'you forgot to add integrity: true in your '
-                'BundleTrackerPlugin configuration?')
+                'BundleTrackerPlugin configuration?'
+            )
         return self._add_crossorigin(
-            request=request, chunk=chunk, integrity=integrity,
-            attrs_l=attrs_l)
+            request=request,
+            chunk=chunk,
+            integrity=integrity,
+            attrs_l=attrs_l,
+        )
 
-    def get_nonce_attr(
-            self, chunk: Dict[str, str], request: Optional[HttpRequest],
-            attrs: str) -> str:
+    def get_nonce_attr(self, chunk: Dict[str, str], request: Optional[HttpRequest], attrs: str) -> str:
         'Return an added nonce for CSP when available.'
         if not self.config.get('CSP_NONCE'):
             return ''

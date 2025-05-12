@@ -4,7 +4,7 @@ import time
 from shutil import rmtree
 from subprocess import call
 from threading import Thread
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from unittest.mock import call as MockCall
 
 from django.conf import settings
@@ -24,7 +24,7 @@ from webpack_loader.exceptions import (
     WebpackLoaderTimeoutError,
 )
 from webpack_loader.templatetags.webpack_loader import _WARNING_MESSAGE
-from webpack_loader.utils import get_as_tags, get_loader
+from webpack_loader.utils import get_as_tags, get_loader, get_as_url_to_tag_dict
 
 BUNDLE_PATH = os.path.join(
     settings.BASE_DIR, 'assets/django_webpack_loader_bundles/')
@@ -219,20 +219,20 @@ class LoaderTestCase(TestCase):
         self.compile_bundles('webpack.config.integrity.js')
 
         loader = get_loader(DEFAULT_CONFIG)
-        with patch.dict(loader.config, {'INTEGRITY': True}):
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CACHE': False}):
             view = TemplateView.as_view(template_name='single.html')
             request = self.factory.get('/')
             result = view(request)
 
             self.assertIn((
-                '<script src="/static/django_webpack_loader_bundles/main.js" '
-                'integrity="sha256-1wgFMxcDlOWYV727qRvWNoPHdnOGFNVMLuKd25cjR+'
-                'o= sha384-3RnsU3Z2OODW6qaMAPVpNC5lBb4M5I1+joXv37ACuLvCO6gQ7o'
-                'OD7IC1zN1uAakD sha512-9nLlV4v2pWvgeavHop1wXxdP34CfYv/xUZHwVB'
-                'N+1p+pAvHDmBw4XkvvciSGW4zQlWhaUiIi7P6nXmsLE+8Fsw==" >'
+                '<script src="http://custom-static-host.com/main.js" '
+                'integrity="sha256-Yk6uAc7SoE41LSNc9zTBxij8YhVqBIIuRpLCaTyqrl'
+                'Q= sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLu'
+                'DtQFm8g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5X'
+                'Pp35WlFR7ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" >'
                 '</script>'), result.rendered_content)
             self.assertIn((
-                '<link href="/static/django_webpack_loader_bundles/main.css" '
+                '<link href="http://custom-static-host.com/main.css" '
                 'rel="stylesheet" integrity="sha256-cYWwRvS04/VsttQYx4BalKYrB'
                 'Duw5t8vKFhWB/LKX30= sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI'
                 '01UR8wKIFkIr6vEaT5YRaeLMfLcAQvS sha512-aigPxglXDA33t9s5i0vRa'
@@ -241,14 +241,14 @@ class LoaderTestCase(TestCase):
                 result.rendered_content
             )
 
-    def test_integrity_with_crosorigin_empty(self):
+    def test_integrity_with_crossorigin_empty(self):
         self.compile_bundles('webpack.config.integrity.js')
 
         loader = get_loader(DEFAULT_CONFIG)
-        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': ''}):
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': '', 'CACHE': False}):
             view = TemplateView.as_view(template_name='single.html')
             request = self.factory.get('/')
-            request.META['HTTP_HOST'] = 'crossorigen-custom-static-host.com'
+            request.META['HTTP_HOST'] = 'crossorigin-custom-static-host.com'
             result = view(request)
 
             self.assertIn((
@@ -270,14 +270,14 @@ class LoaderTestCase(TestCase):
                 result.rendered_content
             )
 
-    def test_integrity_with_crosorigin_anonymous(self):
+    def test_integrity_with_crossorigin_anonymous(self):
         self.compile_bundles('webpack.config.integrity.js')
 
         loader = get_loader(DEFAULT_CONFIG)
-        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': 'anonymous'}):
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': 'anonymous', 'CACHE': False}):
             view = TemplateView.as_view(template_name='single.html')
             request = self.factory.get('/')
-            request.META['HTTP_HOST'] = 'crossorigen-custom-static-host.com'
+            request.META['HTTP_HOST'] = 'crossorigin-custom-static-host.com'
             result = view(request)
 
             self.assertIn((
@@ -299,14 +299,14 @@ class LoaderTestCase(TestCase):
                 result.rendered_content
             )
 
-    def test_integrity_with_crosorigin_use_credentials(self):
+    def test_integrity_with_crossorigin_use_credentials(self):
         self.compile_bundles('webpack.config.integrity.js')
 
         loader = get_loader(DEFAULT_CONFIG)
-        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': 'use-credentials'}):
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': 'use-credentials', 'CACHE': False}):
             view = TemplateView.as_view(template_name='single.html')
             request = self.factory.get('/')
-            request.META['HTTP_HOST'] = 'crossorigen-custom-static-host.com'
+            request.META['HTTP_HOST'] = 'crossorigin-custom-static-host.com'
             result = view(request)
 
             self.assertIn((
@@ -340,11 +340,11 @@ class LoaderTestCase(TestCase):
         result = view(request)
 
         self.assertIn((
-            '<script src="/static/django_webpack_loader_bundles/main.js" >'
+            '<script src="http://custom-static-host.com/main.js" >'
             '</script>'), result.rendered_content
         )
         self.assertIn((
-            '<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet" />'),
+            '<link href="http://custom-static-host.com/main.css" rel="stylesheet" />'),
             result.rendered_content
         )
 
@@ -946,90 +946,76 @@ class LoaderTestCase(TestCase):
         self.assertEqual(tags[0], asset_vendor)
         self.assertEqual(tags[1], asset_app1)
         self.assertEqual(tags[2], asset_app2)
-        
+
     def test_get_url_to_tag_dict_with_nonce(self):
         """Test the get_as_url_to_tag_dict function with nonce attribute handling."""
-        # Setup FakeWebpackLoader with CSP_NONCE enabled
 
-        with self.settings(
-            WEBPACK_LOADER={
-                "DEFAULT": {
-                    "CSP_NONCE": True,
-                },
-            }
-        ):
-            from webpack_loader.utils import get_as_url_to_tag_dict, get_loader
+        self.compile_bundles('webpack.config.simple.js')
 
-            self.compile_bundles('webpack.config.simple.js')
-
-            # Use default config but enable CSP_NONCE
-            loader = get_loader(DEFAULT_CONFIG)
-            original_config = loader.config.copy()
-            try:
-                # Test with CSP_NONCE enabled
-                loader.config['CSP_NONCE'] = True
-                
-                # Create a request with csp_nonce
-                request = self.factory.get('/')
-                request.csp_nonce = "test-nonce-123"
-                
-                # Get tag dict with nonce enabled
-                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
-                
-                # Verify nonce is in the tag
-                self.assertIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.js'])
-                
-                # Test with existing nonce in attrs - should not duplicate
-                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='nonce="existing-nonce"', request=request)
-                self.assertIn('nonce="existing-nonce"', tag_dict['/static/webpack_bundles/main.js'])
-                self.assertNotIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.js'])
-                
-                # Test without request - should not have nonce and should emit warning
-                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=None)
-                self.assertNotIn('nonce=', tag_dict['/static/webpack_bundles/main.js'])
-                
-                # Test with request but no csp_nonce attribute - should not have nonce and should emit warning
-                request_without_nonce = self.factory.get('/')
-                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request_without_nonce)
-                self.assertNotIn('nonce=', tag_dict['/static/webpack_bundles/main.js'])
-                
-                # Test with CSP_NONCE disabled - should not have nonce
-                loader.config['CSP_NONCE'] = False
-                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
-                self.assertNotIn('nonce=', tag_dict['/static/webpack_bundles/main.js'])
-                
-            finally:
-                # Restore original config
-                loader.config = original_config
-    
-    def test_get_url_to_tag_dict_with_different_extensions(self):
-        """Test the get_as_url_to_tag_dict function with different file extensions."""
-
-
-        with self.settings(
-            WEBPACK_LOADER={
-                "DEFAULT": {
-                    "CSP_NONCE": True,
-                },
-            }
-        ):
-            from webpack_loader.utils import get_as_url_to_tag_dict
-            self.compile_bundles('webpack.config.simple.js')
-    
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {"CSP_NONCE": True, 'CACHE': False}):
             # Create a request with csp_nonce
             request = self.factory.get('/')
             request.csp_nonce = "test-nonce-123"
-            
-            # Test with different extensions
-            
+
+            # Get tag dict with nonce enabled
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
+            # Verify nonce is in the tag
+            self.assertIn('nonce="test-nonce-123"', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+
+            # Test with existing nonce in attrs - should not duplicate
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='nonce="existing-nonce"', request=request)
+            self.assertIn('nonce="existing-nonce"', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+            self.assertNotIn('nonce="test-nonce-123"', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+
+            # Test without request - should not have nonce
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=None)
+            self.assertNotIn('nonce=', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+
+            # Test with request but no csp_nonce attribute - should not have nonce
+            request_without_nonce = self.factory.get('/')
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request_without_nonce)
+            self.assertNotIn('nonce=', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+
+    def test_get_url_to_tag_dict_with_nonce_disabled(self):
+        self.compile_bundles('webpack.config.simple.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {"CSP_NONCE": False, 'CACHE': False}):
+            # Create a request without csp_nonce
+            request = self.factory.get('/')
+
+            # should not have nonce
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
+            self.assertNotIn('nonce=', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+
+            # Create a request with csp_nonce
+            request_with_nonce = self.factory.get('/')
+            request_with_nonce.csp_nonce = "test-nonce-123"
+
+            # Test with CSP_NONCE disabled - should not have nonce
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request_with_nonce)
+            self.assertNotIn('nonce=', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+
+    def test_get_url_to_tag_dict_with_different_extensions(self):
+        """Test the get_as_url_to_tag_dict function with different file extensions."""
+
+        self.compile_bundles('webpack.config.simple.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {"CSP_NONCE": True, 'CACHE': False}):
+            # Create a request with csp_nonce
+            request = self.factory.get('/')
+            request.csp_nonce = "test-nonce-123"
+
             # JavaScript file
             tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
-            self.assertIn('<script src="/static/webpack_bundles/main.js"', 
-                        tag_dict['/static/webpack_bundles/main.js'])
-            self.assertIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.js'])
-            
+            self.assertIn('<script src="/static/django_webpack_loader_bundles/main.js"', 
+                        tag_dict['/static/django_webpack_loader_bundles/main.js'])
+            self.assertIn('nonce="test-nonce-123"', tag_dict['/static/django_webpack_loader_bundles/main.js'])
+
             # CSS file
             tag_dict = get_as_url_to_tag_dict('main', extension='css', attrs='', request=request)
-            self.assertIn('<link href="/static/webpack_bundles/main.css" rel="stylesheet"', 
-                        tag_dict['/static/webpack_bundles/main.css'])
-            self.assertIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.css'])
+            self.assertIn('<link href="/static/django_webpack_loader_bundles/main.css" rel="stylesheet"', 
+                        tag_dict['/static/django_webpack_loader_bundles/main.css'])
+            self.assertIn('nonce="test-nonce-123"', tag_dict['/static/django_webpack_loader_bundles/main.css'])
