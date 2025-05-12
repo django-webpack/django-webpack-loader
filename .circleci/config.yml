@@ -6,8 +6,8 @@ workflows:
       - base-test:
           matrix:
             parameters:
-              python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-              django-version: ["4.2", "5.0"]
+              python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+              django-version: ["4.2", "5.0", "5.1", "5.2"]
             exclude:
               - python-version: "3.8"
                 django-version: "5.0"
@@ -17,6 +17,10 @@ workflows:
                 django-version: "5.1"
               - python-version: "3.9"
                 django-version: "5.1"
+              - python-version: "3.8"
+                django-version: "5.2"
+              - python-version: "3.9"
+                django-version: "5.2"
       - coverall:
           requires:
             - base-test

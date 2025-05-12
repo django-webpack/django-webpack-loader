@@ -12,10 +12,10 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.http.request import HttpRequest
 
 from .exceptions import (
+    WebpackBundleLookupError,
     WebpackError,
     WebpackLoaderBadStatsError,
     WebpackLoaderTimeoutError,
-    WebpackBundleLookupError,
 )
 
 _CROSSORIGIN_NO_REQUEST = (

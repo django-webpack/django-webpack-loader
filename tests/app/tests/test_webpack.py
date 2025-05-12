@@ -4,9 +4,8 @@ import time
 from shutil import rmtree
 from subprocess import call
 from threading import Thread
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from unittest.mock import call as MockCall
-from unittest.mock import patch
 
 from django.conf import settings
 from django.template import Context, Template, engines
@@ -18,9 +17,12 @@ from django_jinja.backend import Jinja2
 from django_jinja.backend import Template as Jinja2Template
 from django_jinja.builtins import DEFAULT_EXTENSIONS
 
-from webpack_loader.exceptions import (WebpackBundleLookupError, WebpackError,
-                                       WebpackLoaderBadStatsError,
-                                       WebpackLoaderTimeoutError)
+from webpack_loader.exceptions import (
+    WebpackBundleLookupError,
+    WebpackError,
+    WebpackLoaderBadStatsError,
+    WebpackLoaderTimeoutError,
+)
 from webpack_loader.templatetags.webpack_loader import _WARNING_MESSAGE
 from webpack_loader.utils import get_as_tags, get_loader
 
@@ -236,6 +238,93 @@ class LoaderTestCase(TestCase):
                 '01UR8wKIFkIr6vEaT5YRaeLMfLcAQvS sha512-aigPxglXDA33t9s5i0vRa'
                 'p5b7dFwyp7cSN6x8rOXrPpCTMubOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBH'
                 'KLQPw==" />'),
+                result.rendered_content
+            )
+
+    def test_integrity_with_crosorigin_empty(self):
+        self.compile_bundles('webpack.config.integrity.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': ''}):
+            view = TemplateView.as_view(template_name='single.html')
+            request = self.factory.get('/')
+            request.META['HTTP_HOST'] = 'crossorigen-custom-static-host.com'
+            result = view(request)
+
+            self.assertIn((
+                '<script src="http://custom-static-host.com/main.js" '
+                'integrity="sha256-Yk6uAc7SoE41LSNc9zTBxij8YhVqBIIuRpLCaTyqrlQ= '
+                'sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLuDtQFm8'
+                'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
+                'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
+                'crossorigin ></script>'
+            ), result.rendered_content)
+            self.assertIn((
+                '<link href="http://custom-static-host.com/main.css" '
+                'rel="stylesheet" '
+                'integrity="sha256-cYWwRvS04/VsttQYx4BalKYrBDuw5t8vKFhWB/LKX30= '
+                'sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI01UR8wKIFkIr6vEaT5YRaeL'
+                'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
+                'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
+                'crossorigin />'),
+                result.rendered_content
+            )
+
+    def test_integrity_with_crosorigin_anonymous(self):
+        self.compile_bundles('webpack.config.integrity.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': 'anonymous'}):
+            view = TemplateView.as_view(template_name='single.html')
+            request = self.factory.get('/')
+            request.META['HTTP_HOST'] = 'crossorigen-custom-static-host.com'
+            result = view(request)
+
+            self.assertIn((
+                '<script src="http://custom-static-host.com/main.js" '
+                'integrity="sha256-Yk6uAc7SoE41LSNc9zTBxij8YhVqBIIuRpLCaTyqrlQ= '
+                'sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLuDtQFm8'
+                'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
+                'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
+                'crossorigin="anonymous" ></script>'
+            ), result.rendered_content)
+            self.assertIn((
+                '<link href="http://custom-static-host.com/main.css" '
+                'rel="stylesheet" '
+                'integrity="sha256-cYWwRvS04/VsttQYx4BalKYrBDuw5t8vKFhWB/LKX30= '
+                'sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI01UR8wKIFkIr6vEaT5YRaeL'
+                'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
+                'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
+                'crossorigin="anonymous" />'),
+                result.rendered_content
+            )
+
+    def test_integrity_with_crosorigin_use_credentials(self):
+        self.compile_bundles('webpack.config.integrity.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CROSSORIGIN': 'use-credentials'}):
+            view = TemplateView.as_view(template_name='single.html')
+            request = self.factory.get('/')
+            request.META['HTTP_HOST'] = 'crossorigen-custom-static-host.com'
+            result = view(request)
+
+            self.assertIn((
+                '<script src="http://custom-static-host.com/main.js" '
+                'integrity="sha256-Yk6uAc7SoE41LSNc9zTBxij8YhVqBIIuRpLCaTyqrlQ= '
+                'sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLuDtQFm8'
+                'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
+                'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
+                'crossorigin="use-credentials" ></script>'
+            ), result.rendered_content)
+            self.assertIn((
+                '<link href="http://custom-static-host.com/main.css" '
+                'rel="stylesheet" '
+                'integrity="sha256-cYWwRvS04/VsttQYx4BalKYrBDuw5t8vKFhWB/LKX30= '
+                'sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI01UR8wKIFkIr6vEaT5YRaeL'
+                'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
+                'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
+                'crossorigin="use-credentials" />'),
                 result.rendered_content
             )
 
@@ -857,3 +946,90 @@ class LoaderTestCase(TestCase):
         self.assertEqual(tags[0], asset_vendor)
         self.assertEqual(tags[1], asset_app1)
         self.assertEqual(tags[2], asset_app2)
+        
+    def test_get_url_to_tag_dict_with_nonce(self):
+        """Test the get_as_url_to_tag_dict function with nonce attribute handling."""
+        # Setup FakeWebpackLoader with CSP_NONCE enabled
+
+        with self.settings(
+            WEBPACK_LOADER={
+                "DEFAULT": {
+                    "CSP_NONCE": True,
+                },
+            }
+        ):
+            from webpack_loader.utils import get_as_url_to_tag_dict, get_loader
+
+            self.compile_bundles('webpack.config.simple.js')
+
+            # Use default config but enable CSP_NONCE
+            loader = get_loader(DEFAULT_CONFIG)
+            original_config = loader.config.copy()
+            try:
+                # Test with CSP_NONCE enabled
+                loader.config['CSP_NONCE'] = True
+                
+                # Create a request with csp_nonce
+                request = self.factory.get('/')
+                request.csp_nonce = "test-nonce-123"
+                
+                # Get tag dict with nonce enabled
+                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
+                
+                # Verify nonce is in the tag
+                self.assertIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.js'])
+                
+                # Test with existing nonce in attrs - should not duplicate
+                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='nonce="existing-nonce"', request=request)
+                self.assertIn('nonce="existing-nonce"', tag_dict['/static/webpack_bundles/main.js'])
+                self.assertNotIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.js'])
+                
+                # Test without request - should not have nonce and should emit warning
+                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=None)
+                self.assertNotIn('nonce=', tag_dict['/static/webpack_bundles/main.js'])
+                
+                # Test with request but no csp_nonce attribute - should not have nonce and should emit warning
+                request_without_nonce = self.factory.get('/')
+                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request_without_nonce)
+                self.assertNotIn('nonce=', tag_dict['/static/webpack_bundles/main.js'])
+                
+                # Test with CSP_NONCE disabled - should not have nonce
+                loader.config['CSP_NONCE'] = False
+                tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
+                self.assertNotIn('nonce=', tag_dict['/static/webpack_bundles/main.js'])
+                
+            finally:
+                # Restore original config
+                loader.config = original_config
+    
+    def test_get_url_to_tag_dict_with_different_extensions(self):
+        """Test the get_as_url_to_tag_dict function with different file extensions."""
+
+
+        with self.settings(
+            WEBPACK_LOADER={
+                "DEFAULT": {
+                    "CSP_NONCE": True,
+                },
+            }
+        ):
+            from webpack_loader.utils import get_as_url_to_tag_dict
+            self.compile_bundles('webpack.config.simple.js')
+    
+            # Create a request with csp_nonce
+            request = self.factory.get('/')
+            request.csp_nonce = "test-nonce-123"
+            
+            # Test with different extensions
+            
+            # JavaScript file
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request)
+            self.assertIn('<script src="/static/webpack_bundles/main.js"', 
+                        tag_dict['/static/webpack_bundles/main.js'])
+            self.assertIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.js'])
+            
+            # CSS file
+            tag_dict = get_as_url_to_tag_dict('main', extension='css', attrs='', request=request)
+            self.assertIn('<link href="/static/webpack_bundles/main.css" rel="stylesheet"', 
+                        tag_dict['/static/webpack_bundles/main.css'])
+            self.assertIn('nonce="test-nonce-123"', tag_dict['/static/webpack_bundles/main.css'])
