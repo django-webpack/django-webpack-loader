@@ -5,18 +5,15 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
-## --- INSERT VERSION HERE ---
+## [3.2.0] -- 2025-05-19
 
 - Automatically add `crossorigin` attributes to tags with `integrity` attributes when necessary
 - Use `request.csp_nonce` from [django-csp](https://github.com/mozilla/django-csp) if available and configured
+- Remove support for Django 3.x (LTS is EOL)
 
 ## [3.1.1] -- 2024-08-30
 
 - Add support for Django 5.1
-
-## [3.2.0] -- 2024-07-28
-
-- Remove support for Django 3.x (LTS is EOL)
 
 ## [3.1.0] -- 2024-04-04
 
