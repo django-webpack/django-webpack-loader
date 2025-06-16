@@ -6,7 +6,7 @@
   "license": "MIT",
   "devDependencies": {
     "webpack": "^5.92.0",
-    "webpack-bundle-tracker": "3.2.0",
+    "webpack-bundle-tracker": "3.2.1",
     "webpack-cli": "^5.1.4"
   }
 }
