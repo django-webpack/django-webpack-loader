@@ -1,6 +1,6 @@
 coverage==5.5
 twine==3.4.2
-Django==5.2.1
+Django==5.2.7
 django-jinja==2.10.2
 unittest2==1.1.0
 wheel==0.38.1
