@@ -8,7 +8,7 @@ Releases are added to the
 ## [3.2.2] -- 2025-10-30
 
 - Ensure parity with `webpack-bundle-tracker`
-- Update example dependencies
+- Update examples to always perform integrity calculation
 
 ## [3.2.1] -- 2025-06-16
 
