@@ -35,7 +35,11 @@ _NONCE_NO_CSPNONCE = (
     'django_webpack_loader can\'t generate a nonce tag for a bundle, '
     'because the passed request doesn\'t contain a "csp_nonce". '
     'Chunk name: {chunk_name}')
-
+_LOADER_POSSIBLE_LIMBO = (
+    'You are using django_webpack_loader with default timeout "None" '
+    'which can cause request to hang indefinitely. '
+    'Validate status of webpack-stats.json file if you experience infinite loading.'
+)
 
 @lru_cache(maxsize=100)
 def _get_netloc(url: str) -> str:
@@ -187,6 +191,10 @@ class WebpackLoader:
                 time.sleep(self.config["POLL_INTERVAL"])
                 if timeout and (time.time() - timeout > start):
                     timed_out = True
+                if not timeout:
+                    warn(
+                        message=_LOADER_POSSIBLE_LIMBO, category=RuntimeWarning
+                    )
                 assets = self.get_assets()
 
             if timed_out:
