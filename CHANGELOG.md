@@ -5,6 +5,10 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [3.2.3] -- 2025-12-09
+
+- Add warning for default timeout usage
+
 ## [3.2.2] -- 2025-10-30
 
 - Ensure parity with `webpack-bundle-tracker`
