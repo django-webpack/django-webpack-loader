@@ -11,7 +11,7 @@ def webpack_cfg_check(*args, **kwargs):
     user_config = getattr(settings, 'WEBPACK_LOADER', {})
     try:
         user_config = [dict({}, **cfg) for cfg in user_config.values()]
-    except TypeError:
+    except (TypeError, AttributeError):
         check_failed = True
 
     errors = []
