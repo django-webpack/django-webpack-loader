@@ -64,6 +64,11 @@ class LoaderTestCase(TestCase):
             expected_errors = []
             self.assertEqual(errors, expected_errors)
 
+        with self.settings(WEBPACK_LOADER='__WRONG__'):
+            errors = webpack_cfg_check(None)
+            expected_errors = [BAD_CONFIG_ERROR]
+            self.assertEqual(errors, expected_errors)
+
     def test_simple_and_css_extract(self):
         self.compile_bundles('webpack.config.simple.js')
         assets = get_loader(DEFAULT_CONFIG).get_assets()
