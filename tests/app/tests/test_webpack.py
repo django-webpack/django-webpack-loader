@@ -462,6 +462,86 @@ class LoaderTestCase(TestCase):
         }])
         self.assertEqual(loader.load_assets_calls, 1)
 
+    def test_cached_compile_status_is_reloaded_while_debug_polling(self):
+        class CompilingThenDoneLoader(WebpackLoader):
+            def __init__(self, name, config):
+                super().__init__(name, config)
+                self.load_assets_calls = 0
+                self.assets_snapshots = [
+                    {'status': 'compile'},
+                    {
+                        'status': 'done',
+                        'chunks': {'main': ['main.js']},
+                        'assets': {'main.js': {'name': 'main.js'}},
+                    },
+                ]
+
+            def load_assets(self):
+                snapshot_index = min(
+                    self.load_assets_calls, len(self.assets_snapshots) - 1)
+                self.load_assets_calls += 1
+                return self.assets_snapshots[snapshot_index]
+
+        loader = CompilingThenDoneLoader('COMPILE_CACHE_DEBUG', {
+            'CACHE': True,
+            'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
+            'TIMEOUT': 1,
+            'POLL_INTERVAL': 0,
+            'ignores': [],
+            'INTEGRITY': False,
+        })
+
+        with self.settings(DEBUG=True):
+            bundle = loader.get_bundle('main')
+
+        self.assertEqual(list(bundle), [{
+            'name': 'main.js',
+            'url': '/static/django_webpack_loader_bundles/main.js',
+        }])
+        self.assertEqual(loader.load_assets_calls, 2)
+        self.assertEqual(loader._assets[loader.name]['status'], 'done')
+
+    def test_cached_compile_status_is_reloaded_after_bad_stats(self):
+        class CompilingThenDoneLoader(WebpackLoader):
+            def __init__(self, name, config):
+                super().__init__(name, config)
+                self.load_assets_calls = 0
+                self.assets_snapshots = [
+                    {'status': 'compile'},
+                    {
+                        'status': 'done',
+                        'chunks': {'main': ['main.js']},
+                        'assets': {'main.js': {'name': 'main.js'}},
+                    },
+                ]
+
+            def load_assets(self):
+                snapshot_index = min(
+                    self.load_assets_calls, len(self.assets_snapshots) - 1)
+                self.load_assets_calls += 1
+                return self.assets_snapshots[snapshot_index]
+
+        loader = CompilingThenDoneLoader('COMPILE_CACHE_PRODUCTION', {
+            'CACHE': True,
+            'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
+            'TIMEOUT': None,
+            'POLL_INTERVAL': 0.1,
+            'ignores': [],
+            'INTEGRITY': False,
+        })
+
+        with self.settings(DEBUG=False):
+            with self.assertRaises(WebpackLoaderBadStatsError):
+                loader.get_bundle('main')
+            bundle = loader.get_bundle('main')
+
+        self.assertEqual(list(bundle), [{
+            'name': 'main.js',
+            'url': '/static/django_webpack_loader_bundles/main.js',
+        }])
+        self.assertEqual(loader.load_assets_calls, 2)
+        self.assertEqual(loader._assets[loader.name]['status'], 'done')
+
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
         if os.path.exists(stats_file):

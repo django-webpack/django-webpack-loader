@@ -66,9 +66,12 @@ class WebpackLoader:
 
     def get_assets(self):
         if self.config["CACHE"]:
-            if self.name not in self._assets:
-                self._assets[self.name] = self.load_assets()
-            return self._assets[self.name]
+            assets = self._assets.get(self.name)
+            if not assets or assets.get("status") == "compile":
+                assets = self.load_assets()
+                if assets.get("status") != "compile":
+                    self._assets[self.name] = assets
+            return assets
         return self.load_assets()
 
     def get_asset_by_source_filename(self, name):
