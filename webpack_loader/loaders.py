@@ -149,20 +149,21 @@ class WebpackLoader:
 
         return filtered_chunks
 
-    def map_chunk_files_to_url(self, chunks):
-        assets = self.get_assets()
+    def map_chunk_files_to_url(self, chunks, assets=None):
+        assets = assets or self.get_assets()
         files = assets["assets"]
 
         add_integrity = self.config.get("INTEGRITY")
 
         for chunk in chunks:
-            url = self.get_chunk_url(files[chunk])
+            asset = files[chunk]
+            url = self.get_chunk_url(asset)
 
             if add_integrity:
                 yield {
                     "name": chunk,
                     "url": url,
-                    "integrity": files[chunk].get("integrity"),
+                    "integrity": asset.get("integrity"),
                 }
             else:
                 yield {"name": chunk, "url": url}
@@ -219,7 +220,7 @@ class WebpackLoader:
                         "Cannot resolve asset {0}.".format(chunk)
                     )
 
-            return self.map_chunk_files_to_url(filtered_chunks)
+            return self.map_chunk_files_to_url(filtered_chunks, assets=assets)
 
         elif assets.get("status") == "error":
             if "file" not in assets:
