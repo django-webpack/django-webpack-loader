@@ -2,7 +2,7 @@ venv/
 *.sqlite3
 
 # auto generated
-README.rst
+README.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
