@@ -9,7 +9,7 @@ def rel(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *parts))
 
 
-with open("README.md", "r") as handler:
+with open(rel("README.md"), "r", encoding="utf-8") as handler:
     README = handler.read()
 
 with open(rel("webpack_loader", "__init__.py")) as handler:
@@ -22,8 +22,8 @@ setup(
     name="django-webpack-loader",
     packages=[
         "webpack_loader",
-        "webpack_loader/templatetags",
-        "webpack_loader/contrib",
+        "webpack_loader.templatetags",
+        "webpack_loader.contrib",
     ],
     version=VERSION,
     license="MIT License",
