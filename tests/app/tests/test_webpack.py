@@ -23,6 +23,7 @@ from webpack_loader.exceptions import (
     WebpackLoaderBadStatsError,
     WebpackLoaderTimeoutError,
 )
+from webpack_loader.loaders import WebpackLoader
 from webpack_loader.templatetags.webpack_loader import _WARNING_MESSAGE
 from webpack_loader.utils import get_as_tags, get_loader, get_as_url_to_tag_dict
 
@@ -419,6 +420,47 @@ class LoaderTestCase(TestCase):
             self.assertIn(
                 'Cannot resolve bundle {0}'.format(missing_bundle_name),
                 str(e))
+
+    def test_get_bundle_uses_same_assets_snapshot_when_iterated(self):
+        class ChangingAssetsLoader(WebpackLoader):
+            def __init__(self, name, config):
+                super().__init__(name, config)
+                self.load_assets_calls = 0
+                self.assets_snapshots = [
+                    {
+                        'status': 'done',
+                        'chunks': {'main': ['old.js']},
+                        'assets': {'old.js': {'name': 'old.js'}},
+                    },
+                    {
+                        'status': 'done',
+                        'chunks': {'main': ['new.js']},
+                        'assets': {'new.js': {'name': 'new.js'}},
+                    },
+                ]
+
+            def load_assets(self):
+                snapshot_index = min(
+                    self.load_assets_calls, len(self.assets_snapshots) - 1)
+                self.load_assets_calls += 1
+                return self.assets_snapshots[snapshot_index]
+
+        loader = ChangingAssetsLoader(DEFAULT_CONFIG, {
+            'CACHE': False,
+            'BUNDLE_DIR_NAME': 'django_webpack_loader_bundles/',
+            'TIMEOUT': None,
+            'POLL_INTERVAL': 0.1,
+            'ignores': [],
+            'INTEGRITY': False,
+        })
+
+        bundle = loader.get_bundle('main')
+
+        self.assertEqual(list(bundle), [{
+            'name': 'old.js',
+            'url': '/static/django_webpack_loader_bundles/old.js',
+        }])
+        self.assertEqual(loader.load_assets_calls, 1)
 
     def test_missing_stats_file(self):
         stats_file = settings.WEBPACK_LOADER[DEFAULT_CONFIG]['STATS_FILE']
