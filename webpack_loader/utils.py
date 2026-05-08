@@ -82,8 +82,13 @@ def get_as_url_to_tag_dict(
         if chunk['name'].endswith(('.js', '.js.gz')):
             if is_preload:
                 result[chunk['url']] = (
-                    '<link rel="preload" as="script" href="{0}" {1}/>'
-                ).format(''.join([chunk['url'], suffix]), attrs)
+                    '<link rel="preload" as="script" href="{0}"{2}{3}{1}/>'
+                ).format(
+                    ''.join([chunk['url'], suffix]),
+                    attrs,
+                    loader.get_integrity_attr(chunk, request, attrs_l),
+                    loader.get_nonce_attr(chunk, request, attrs_l),
+                )
             else:
                 result[chunk['url']] = (
                     '<script src="{0}"{2}{3}{1}></script>'
