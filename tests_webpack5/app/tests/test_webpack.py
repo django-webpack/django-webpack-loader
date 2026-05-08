@@ -46,7 +46,7 @@ class LoaderTestCase(TestCase):
                 'integrity="sha256-tq+bx/AOKBO9HvojLMT+nwLvdzX5q9s5hGI8sJr'
                 'V+6Q= sha384-MQ3aER73Wrl5JjMLWVotKhBZk4e9/67+xrO8/qqACm7a'
                 '695zI9sgQKa6bC54TMvb sha512-dKT17sF4HfpJC+UMIjQch07waKpAt'
-                'Tvv9GM2s/eGomGDbCKpKHGp29+6SRrQSrT2+6IF3YGu3BaoQAoAS4opOQ==" '
+                'Tvv9GM2s/eGomGDbCKpKHGp29+6SRrQSrT2+6IF3YGu3BaoQAoAS4opOQ=="'
                 '></script>'), result.rendered_content)
 
     def test_integrity_with_crossorigin_empty(self):
@@ -65,7 +65,7 @@ class LoaderTestCase(TestCase):
                 'V+6Q= sha384-MQ3aER73Wrl5JjMLWVotKhBZk4e9/67+xrO8/qqACm7a'
                 '695zI9sgQKa6bC54TMvb sha512-dKT17sF4HfpJC+UMIjQch07waKpAt'
                 'Tvv9GM2s/eGomGDbCKpKHGp29+6SRrQSrT2+6IF3YGu3BaoQAoAS4opOQ==" '
-                'crossorigin ></script>'
+                'crossorigin></script>'
             ), result.rendered_content)
 
     def test_integrity_with_crossorigin_anonymous(self):
@@ -84,7 +84,7 @@ class LoaderTestCase(TestCase):
                 'V+6Q= sha384-MQ3aER73Wrl5JjMLWVotKhBZk4e9/67+xrO8/qqACm7a'
                 '695zI9sgQKa6bC54TMvb sha512-dKT17sF4HfpJC+UMIjQch07waKpAt'
                 'Tvv9GM2s/eGomGDbCKpKHGp29+6SRrQSrT2+6IF3YGu3BaoQAoAS4opOQ==" '
-                'crossorigin="anonymous" ></script>'
+                'crossorigin="anonymous"></script>'
             ), result.rendered_content)
 
     def test_integrity_with_crossorigin_use_credentials(self):
@@ -103,7 +103,7 @@ class LoaderTestCase(TestCase):
                 'V+6Q= sha384-MQ3aER73Wrl5JjMLWVotKhBZk4e9/67+xrO8/qqACm7a'
                 '695zI9sgQKa6bC54TMvb sha512-dKT17sF4HfpJC+UMIjQch07waKpAt'
                 'Tvv9GM2s/eGomGDbCKpKHGp29+6SRrQSrT2+6IF3YGu3BaoQAoAS4opOQ==" '
-                'crossorigin="use-credentials" ></script>'
+                'crossorigin="use-credentials"></script>'
             ), result.rendered_content)
 
     def test_get_url_to_tag_dict_with_nonce(self):

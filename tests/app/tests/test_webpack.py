@@ -162,7 +162,7 @@ class LoaderTestCase(TestCase):
         rendered_content = result.rendered_content
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/main.css" '
-            'rel="stylesheet" />'),
+            'rel="stylesheet"/>'),
             rendered_content)
         self.assertIn((
             '<script src="/static/django_webpack_loader_bundles/main.js" '
@@ -170,9 +170,9 @@ class LoaderTestCase(TestCase):
 
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/app2.css" '
-            'rel="stylesheet" />'), rendered_content)
+            'rel="stylesheet"/>'), rendered_content)
         self.assertIn((
-            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app2.js">'
             '</script>'), rendered_content)
         self.assertIn(
             '<img src="/static/my-image.png"/>', rendered_content)
@@ -210,18 +210,18 @@ class LoaderTestCase(TestCase):
         # Preload
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/main.css" '
-            'rel="preload" as="style" />'), rendered_content)
+            'rel="preload" as="style"/>'), rendered_content)
         self.assertIn((
             '<link rel="preload" as="script" href="/static/'
-            'django_webpack_loader_bundles/main.js" />'),
+            'django_webpack_loader_bundles/main.js"/>'),
             rendered_content)
 
         # Resources
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/main.css" '
-            'rel="stylesheet" />'), rendered_content)
+            'rel="stylesheet"/>'), rendered_content)
         self.assertIn((
-            '<script src="/static/django_webpack_loader_bundles/main.js" >'
+            '<script src="/static/django_webpack_loader_bundles/main.js">'
             '</script>'), rendered_content)
 
     def test_integrity(self):
@@ -239,7 +239,7 @@ class LoaderTestCase(TestCase):
                 'integrity="sha256-Yk6uAc7SoE41LSNc9zTBxij8YhVqBIIuRpLCaTyqrl'
                 'Q= sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLu'
                 'DtQFm8g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5X'
-                'Pp35WlFR7ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" >'
+                'Pp35WlFR7ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==">'
                 '</script>'), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
@@ -247,7 +247,7 @@ class LoaderTestCase(TestCase):
                 'Duw5t8vKFhWB/LKX30= sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI'
                 '01UR8wKIFkIr6vEaT5YRaeLMfLcAQvS sha512-aigPxglXDA33t9s5i0vRa'
                 'p5b7dFwyp7cSN6x8rOXrPpCTMubOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBH'
-                'KLQPw==" />'),
+                'KLQPw=="/>'),
                 rendered_content
             )
 
@@ -268,7 +268,7 @@ class LoaderTestCase(TestCase):
                 'sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLuDtQFm8'
                 'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
                 'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
-                'crossorigin ></script>'
+                'crossorigin></script>'
             ), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
@@ -277,7 +277,7 @@ class LoaderTestCase(TestCase):
                 'sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI01UR8wKIFkIr6vEaT5YRaeL'
                 'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
                 'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
-                'crossorigin />'),
+                'crossorigin/>'),
                 rendered_content
             )
 
@@ -298,7 +298,7 @@ class LoaderTestCase(TestCase):
                 'sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLuDtQFm8'
                 'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
                 'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
-                'crossorigin="anonymous" ></script>'
+                'crossorigin="anonymous"></script>'
             ), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
@@ -307,7 +307,7 @@ class LoaderTestCase(TestCase):
                 'sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI01UR8wKIFkIr6vEaT5YRaeL'
                 'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
                 'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
-                'crossorigin="anonymous" />'),
+                'crossorigin="anonymous"/>'),
                 rendered_content
             )
 
@@ -328,7 +328,7 @@ class LoaderTestCase(TestCase):
                 'sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLuDtQFm8'
                 'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
                 'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
-                'crossorigin="use-credentials" ></script>'
+                'crossorigin="use-credentials"></script>'
             ), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
@@ -337,7 +337,7 @@ class LoaderTestCase(TestCase):
                 'sha384-V/UxbrsEy8BK5nd+sBlN31Emmq/WdDDdI01UR8wKIFkIr6vEaT5YRaeL'
                 'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
                 'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
-                'crossorigin="use-credentials" />'),
+                'crossorigin="use-credentials"/>'),
                 rendered_content
             )
 
@@ -354,11 +354,11 @@ class LoaderTestCase(TestCase):
         rendered_content = result.rendered_content
 
         self.assertIn((
-            '<script src="http://custom-static-host.com/main.js" >'
+            '<script src="http://custom-static-host.com/main.js">'
             '</script>'), rendered_content
         )
         self.assertIn((
-            '<link href="http://custom-static-host.com/main.css" rel="stylesheet" />'),
+            '<link href="http://custom-static-host.com/main.css" rel="stylesheet"/>'),
             rendered_content
         )
 
@@ -381,7 +381,7 @@ class LoaderTestCase(TestCase):
         result = view(request)
 
         self.assertIn((
-            '<script src="/static/django_webpack_loader_bundles/main.js.gz" >'
+            '<script src="/static/django_webpack_loader_bundles/main.js.gz">'
             '</script>'), result.rendered_content)
 
     def test_jinja2(self):
@@ -408,7 +408,7 @@ class LoaderTestCase(TestCase):
 
             self.assertIn((
                 '<link href="/static/django_webpack_loader_bundles'
-                '/main.css" rel="stylesheet" />'), rendered_content)
+                '/main.css" rel="stylesheet"/>'), rendered_content)
             self.assertIn((
                 '<script src="/static/django_webpack_loader_bundles/main.js" '
                 'async charset="UTF-8"></script>'), rendered_content)
@@ -641,13 +641,13 @@ class LoaderTestCase(TestCase):
         """
         self.compile_bundles('webpack.config.skipCommon.js')
         asset_vendor = (
-            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '<script src="/static/django_webpack_loader_bundles/vendors.js">'
             '</script>')
         asset_app1 = (
-            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app1.js">'
             '</script>')
         asset_app2 = (
-            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app2.js">'
             '</script>')
 
         # Shouldn't call any `warn()` here
@@ -710,13 +710,13 @@ class LoaderTestCase(TestCase):
             ]
         }
         asset_vendor = (
-            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '<script src="/static/django_webpack_loader_bundles/vendors.js">'
             '</script>')
         asset_app1 = (
-            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app1.js">'
             '</script>')
         asset_app2 = (
-            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app2.js">'
             '</script>')
         warning_call = MockCall(
             message=_WARNING_MESSAGE, category=RuntimeWarning)
@@ -777,7 +777,7 @@ class LoaderTestCase(TestCase):
             '{% render_bundle "app1" %}'
             '{% get_files "app2" skip_common_chunks=True as app2_files %}'
             '{% for f in app2_files %}'
-            '    <link rel="prefetch" href="{{ f.url }}" />'
+            '    <link rel="prefetch" href="{{ f.url }}"/>'
             '{% endfor %}'),
         )  # type: Template
         output = template.render(context=Context())
@@ -832,13 +832,13 @@ class LoaderTestCase(TestCase):
         """
         request = self.factory.get(path='/')
         asset_vendor = (
-            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '<script src="/static/django_webpack_loader_bundles/vendors.js">'
             '</script>')
         asset_app1 = (
-            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app1.js">'
             '</script>')
         asset_app2 = (
-            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app2.js">'
             '</script>')
         rendered_template = template.render(
             context=None, request=request)
@@ -859,13 +859,13 @@ class LoaderTestCase(TestCase):
         """
         request = self.factory.get(path='/')
         asset_vendor = (
-            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '<script src="/static/django_webpack_loader_bundles/vendors.js">'
             '</script>')
         asset_app1 = (
-            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app1.js">'
             '</script>')
         asset_app2 = (
-            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app2.js">'
             '</script>')
         rendered_template = template.render(
             context=None, request=request)
@@ -897,13 +897,13 @@ class LoaderTestCase(TestCase):
             ]
         }
         asset_vendor = (
-            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '<script src="/static/django_webpack_loader_bundles/vendors.js">'
             '</script>')
         asset_app1 = (
-            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app1.js">'
             '</script>')
         asset_app2 = (
-            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app2.js">'
             '</script>')
 
         with self.settings(**settings):
@@ -940,13 +940,13 @@ class LoaderTestCase(TestCase):
             ]
         }
         asset_vendor = (
-            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '<script src="/static/django_webpack_loader_bundles/vendors.js">'
             '</script>')
         asset_app1 = (
-            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app1.js">'
             '</script>')
         asset_app2 = (
-            '<script src="/static/django_webpack_loader_bundles/app2.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app2.js">'
             '</script>')
 
         with self.settings(**settings):
@@ -1073,9 +1073,9 @@ class LoaderTestCase(TestCase):
         template = Template(template_string=(
             '{% load render_bundle get_files from webpack_loader %}'
             '{% get_files "app1" skip_common_chunks=True as app1_files %}'
-            '{% for f in app1_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+            '{% for f in app1_files %}<link rel="prefetch" href="{{ f.url }}"/>{% endfor %}'
             '{% get_files "app2" skip_common_chunks=True as app2_files %}'
-            '{% for f in app2_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+            '{% for f in app2_files %}<link rel="prefetch" href="{{ f.url }}"/>{% endfor %}'
         ))
         request = self.factory.get(path='/')
         output = template.render(context=Context({'request': request}))
@@ -1091,7 +1091,7 @@ class LoaderTestCase(TestCase):
         template = Template(template_string=(
             '{% load render_bundle get_files from webpack_loader %}'
             '{% get_files "app1" skip_common_chunks=True as app1_files %}'
-            '{% for f in app1_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+            '{% for f in app1_files %}<link rel="prefetch" href="{{ f.url }}"/>{% endfor %}'
             '{% render_bundle "app2" skip_common_chunks=True %}'
         ))
         request = self.factory.get(path='/')
@@ -1109,7 +1109,7 @@ class LoaderTestCase(TestCase):
             '{% load render_bundle get_files from webpack_loader %}'
             '{% render_bundle "app1" skip_common_chunks=True %}'
             '{% get_files "app2" skip_common_chunks=True as app2_files %}'
-            '{% for f in app2_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+            '{% for f in app2_files %}<link rel="prefetch" href="{{ f.url }}"/>{% endfor %}'
         ))
         request = self.factory.get(path='/')
         output = template.render(context=Context({'request': request}))
@@ -1121,12 +1121,12 @@ class LoaderTestCase(TestCase):
         self.compile_bundles('webpack.config.skipCommon.js')
         
         asset_vendor = (
-            '<script src="/static/django_webpack_loader_bundles/vendors.js" >'
+            '<script src="/static/django_webpack_loader_bundles/vendors.js">'
             '</script>')
         asset_app1 = (
-            '<link href="/static/django_webpack_loader_bundles/app1.css" rel="stylesheet" />')
+            '<link href="/static/django_webpack_loader_bundles/app1.css" rel="stylesheet"/>')
         asset_app2 = (
-            '<script src="/static/django_webpack_loader_bundles/app1.js" >'
+            '<script src="/static/django_webpack_loader_bundles/app1.js">'
             '</script>')
         
         tags = get_as_tags('app1')
