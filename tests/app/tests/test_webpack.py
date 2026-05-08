@@ -159,35 +159,37 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='home.html')
         request = self.factory.get('/')
         result = view(request)
+        rendered_content = result.rendered_content
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/main.css" '
             'rel="stylesheet" />'),
-            result.rendered_content)
+            rendered_content)
         self.assertIn((
             '<script src="/static/django_webpack_loader_bundles/main.js" '
-            'async charset="UTF-8"></script>'), result.rendered_content)
+            'async charset="UTF-8"></script>'), rendered_content)
 
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/app2.css" '
-            'rel="stylesheet" />'), result.rendered_content)
+            'rel="stylesheet" />'), rendered_content)
         self.assertIn((
             '<script src="/static/django_webpack_loader_bundles/app2.js" >'
-            '</script>'), result.rendered_content)
+            '</script>'), rendered_content)
         self.assertIn(
-            '<img src="/static/my-image.png"/>', result.rendered_content)
+            '<img src="/static/my-image.png"/>', rendered_content)
 
-        self.assertIn('<li>All from getFiles already rendered</li>', result.rendered_content)
+        self.assertIn('<li>All from getFiles already rendered</li>', rendered_content)
 
         request = self.factory.get('/')
         view = TemplateView.as_view(template_name='only_files.html')
         result = view(request)
+        rendered_content = result.rendered_content
         self.assertIn((
             "var contentCss = "
             "'/static/django_webpack_loader_bundles/main.css'"),
-            result.rendered_content)
+            rendered_content)
         self.assertIn(
             "var contentJS = '/static/django_webpack_loader_bundles/main.js'",
-            result.rendered_content)
+            rendered_content)
 
         self.compile_bundles('webpack.config.publicPath.js')
         request = self.factory.get('/')
@@ -203,23 +205,24 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='preload.html')
         request = self.factory.get('/')
         result = view(request)
+        rendered_content = result.rendered_content
 
         # Preload
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/main.css" '
-            'rel="preload" as="style" />'), result.rendered_content)
+            'rel="preload" as="style" />'), rendered_content)
         self.assertIn((
             '<link rel="preload" as="script" href="/static/'
             'django_webpack_loader_bundles/main.js" />'),
-            result.rendered_content)
+            rendered_content)
 
         # Resources
         self.assertIn((
             '<link href="/static/django_webpack_loader_bundles/main.css" '
-            'rel="stylesheet" />'), result.rendered_content)
+            'rel="stylesheet" />'), rendered_content)
         self.assertIn((
             '<script src="/static/django_webpack_loader_bundles/main.js" >'
-            '</script>'), result.rendered_content)
+            '</script>'), rendered_content)
 
     def test_integrity(self):
         self.compile_bundles('webpack.config.integrity.js')
@@ -229,6 +232,7 @@ class LoaderTestCase(TestCase):
             view = TemplateView.as_view(template_name='single.html')
             request = self.factory.get('/')
             result = view(request)
+            rendered_content = result.rendered_content
 
             self.assertIn((
                 '<script src="http://custom-static-host.com/main.js" '
@@ -236,7 +240,7 @@ class LoaderTestCase(TestCase):
                 'Q= sha384-cwtz5c2CaEK8Q8ZeraWgf3qo7eO5jUDE8XMo00QTUCcbmF/fLu'
                 'DtQFm8g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5X'
                 'Pp35WlFR7ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" >'
-                '</script>'), result.rendered_content)
+                '</script>'), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
                 'rel="stylesheet" integrity="sha256-cYWwRvS04/VsttQYx4BalKYrB'
@@ -244,7 +248,7 @@ class LoaderTestCase(TestCase):
                 '01UR8wKIFkIr6vEaT5YRaeLMfLcAQvS sha512-aigPxglXDA33t9s5i0vRa'
                 'p5b7dFwyp7cSN6x8rOXrPpCTMubOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBH'
                 'KLQPw==" />'),
-                result.rendered_content
+                rendered_content
             )
 
     def test_integrity_with_crossorigin_empty(self):
@@ -256,6 +260,7 @@ class LoaderTestCase(TestCase):
             request = self.factory.get('/')
             request.META['HTTP_HOST'] = 'crossorigin-custom-static-host.com'
             result = view(request)
+            rendered_content = result.rendered_content
 
             self.assertIn((
                 '<script src="http://custom-static-host.com/main.js" '
@@ -264,7 +269,7 @@ class LoaderTestCase(TestCase):
                 'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
                 'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
                 'crossorigin ></script>'
-            ), result.rendered_content)
+            ), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
                 'rel="stylesheet" '
@@ -273,7 +278,7 @@ class LoaderTestCase(TestCase):
                 'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
                 'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
                 'crossorigin />'),
-                result.rendered_content
+                rendered_content
             )
 
     def test_integrity_with_crossorigin_anonymous(self):
@@ -285,6 +290,7 @@ class LoaderTestCase(TestCase):
             request = self.factory.get('/')
             request.META['HTTP_HOST'] = 'crossorigin-custom-static-host.com'
             result = view(request)
+            rendered_content = result.rendered_content
 
             self.assertIn((
                 '<script src="http://custom-static-host.com/main.js" '
@@ -293,7 +299,7 @@ class LoaderTestCase(TestCase):
                 'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
                 'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
                 'crossorigin="anonymous" ></script>'
-            ), result.rendered_content)
+            ), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
                 'rel="stylesheet" '
@@ -302,7 +308,7 @@ class LoaderTestCase(TestCase):
                 'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
                 'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
                 'crossorigin="anonymous" />'),
-                result.rendered_content
+                rendered_content
             )
 
     def test_integrity_with_crossorigin_use_credentials(self):
@@ -314,6 +320,7 @@ class LoaderTestCase(TestCase):
             request = self.factory.get('/')
             request.META['HTTP_HOST'] = 'crossorigin-custom-static-host.com'
             result = view(request)
+            rendered_content = result.rendered_content
 
             self.assertIn((
                 '<script src="http://custom-static-host.com/main.js" '
@@ -322,7 +329,7 @@ class LoaderTestCase(TestCase):
                 'g4Jh9R5D sha512-s9uhbJTCZv4WfH/F81fgS6B6XNhOuH21Xouv5XPp35WlFR7'
                 'ykkIafUG8cma4vbEfheH1NVbjsON5BHm8U13I4g==" '
                 'crossorigin="use-credentials" ></script>'
-            ), result.rendered_content)
+            ), rendered_content)
             self.assertIn((
                 '<link href="http://custom-static-host.com/main.css" '
                 'rel="stylesheet" '
@@ -331,7 +338,7 @@ class LoaderTestCase(TestCase):
                 'MfLcAQvS sha512-aigPxglXDA33t9s5i0vRap5b7dFwyp7cSN6x8rOXrPpCTMu'
                 'bOR7qTFpmTIa8z9B0wtXxbSheBPNCEURBHKLQPw==" '
                 'crossorigin="use-credentials" />'),
-                result.rendered_content
+                rendered_content
             )
 
     def test_integrity_missing_config(self):
@@ -344,14 +351,15 @@ class LoaderTestCase(TestCase):
         view = TemplateView.as_view(template_name='single.html')
         request = self.factory.get('/')
         result = view(request)
+        rendered_content = result.rendered_content
 
         self.assertIn((
             '<script src="http://custom-static-host.com/main.js" >'
-            '</script>'), result.rendered_content
+            '</script>'), rendered_content
         )
         self.assertIn((
             '<link href="http://custom-static-host.com/main.css" rel="stylesheet" />'),
-            result.rendered_content
+            rendered_content
         )
 
         # return removed key
@@ -396,12 +404,14 @@ class LoaderTestCase(TestCase):
         with self.settings(**settings):
             request = self.factory.get('/')
             result = view(request)
+            rendered_content = result.rendered_content
+
             self.assertIn((
                 '<link href="/static/django_webpack_loader_bundles'
-                '/main.css" rel="stylesheet" />'), result.rendered_content)
+                '/main.css" rel="stylesheet" />'), rendered_content)
             self.assertIn((
                 '<script src="/static/django_webpack_loader_bundles/main.js" '
-                'async charset="UTF-8"></script>'), result.rendered_content)
+                'async charset="UTF-8"></script>'), rendered_content)
 
     def test_reporting_errors(self):
         self.compile_bundles('webpack.config.error.js')
@@ -1054,6 +1064,58 @@ class LoaderTestCase(TestCase):
 
         # return removed key
         loader.config['SKIP_COMMON_CHUNKS'] = skip_common_chunks
+
+    def test_skip_common_chunks_get_files_then_get_files(self):
+        self.compile_bundles('webpack.config.skipCommon.js')
+        asset_vendor = '/static/django_webpack_loader_bundles/vendors.js'
+        asset_app2 = '/static/django_webpack_loader_bundles/app2.js'
+
+        template = Template(template_string=(
+            '{% load render_bundle get_files from webpack_loader %}'
+            '{% get_files "app1" skip_common_chunks=True as app1_files %}'
+            '{% for f in app1_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+            '{% get_files "app2" skip_common_chunks=True as app2_files %}'
+            '{% for f in app2_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+        ))
+        request = self.factory.get(path='/')
+        output = template.render(context=Context({'request': request}))
+
+        self.assertEqual(output.count(asset_vendor), 1)
+        self.assertIn(asset_app2, output)
+
+    def test_skip_common_chunks_get_files_then_render_bundle(self):
+        self.compile_bundles('webpack.config.skipCommon.js')
+        asset_vendor = '/static/django_webpack_loader_bundles/vendors.js'
+        asset_app2 = '/static/django_webpack_loader_bundles/app2.js'
+
+        template = Template(template_string=(
+            '{% load render_bundle get_files from webpack_loader %}'
+            '{% get_files "app1" skip_common_chunks=True as app1_files %}'
+            '{% for f in app1_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+            '{% render_bundle "app2" skip_common_chunks=True %}'
+        ))
+        request = self.factory.get(path='/')
+        output = template.render(context=Context({'request': request}))
+
+        self.assertEqual(output.count(asset_vendor), 1)
+        self.assertIn(asset_app2, output)
+
+    def test_skip_common_chunks_render_bundle_then_get_files(self):
+        self.compile_bundles('webpack.config.skipCommon.js')
+        asset_vendor = '/static/django_webpack_loader_bundles/vendors.js'
+        asset_app2 = '/static/django_webpack_loader_bundles/app2.js'
+
+        template = Template(template_string=(
+            '{% load render_bundle get_files from webpack_loader %}'
+            '{% render_bundle "app1" skip_common_chunks=True %}'
+            '{% get_files "app2" skip_common_chunks=True as app2_files %}'
+            '{% for f in app2_files %}<link rel="prefetch" href="{{ f.url }}" />{% endfor %}'
+        ))
+        request = self.factory.get(path='/')
+        output = template.render(context=Context({'request': request}))
+
+        self.assertEqual(output.count(asset_vendor), 1)
+        self.assertIn(asset_app2, output)
 
     def test_get_as_tags_direct_usage(self):
         self.compile_bundles('webpack.config.skipCommon.js')
