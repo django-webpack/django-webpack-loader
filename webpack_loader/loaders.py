@@ -82,7 +82,7 @@ class WebpackLoader:
             self, request: Optional[HttpRequest], chunk: Dict[str, str],
             integrity: str, attrs_l: str) -> str:
         'Return an added `crossorigin` attribute if necessary.'
-        def_value = f' integrity="{integrity}" '
+        def_value = f'integrity="{integrity}"'
         if not request:
             message = _CROSSORIGIN_NO_REQUEST.format(chunk_name=chunk['name'])
             warn(message=message, category=RuntimeWarning)
@@ -100,15 +100,15 @@ class WebpackLoader:
             return def_value
         cfgval: str = self.config.get('CROSSORIGIN')
         if cfgval == '':
-            return f'{def_value}crossorigin '
-        return f'{def_value}crossorigin="{cfgval}" '
+            return f'{def_value} crossorigin'
+        return f'{def_value} crossorigin="{cfgval}"'
 
     def get_integrity_attr(
             self, chunk: Dict[str, str], request: Optional[HttpRequest],
-            attrs_l: str) -> str:
+            attrs_l: str) -> Optional[str]:
         if not self.config.get('INTEGRITY'):
             # Crossorigin only necessary when integrity is used
-            return ' '
+            return None
 
         integrity = chunk.get('integrity')
         if not integrity:
@@ -125,10 +125,12 @@ class WebpackLoader:
             attrs_l=attrs_l,
         )
 
-    def get_nonce_attr(self, chunk: Dict[str, str], request: Optional[HttpRequest], attrs: str) -> str:
+    def get_nonce_attr(
+            self, chunk: Dict[str, str], request: Optional[HttpRequest],
+            attrs: str) -> Optional[str]:
         'Return an added nonce for CSP when available.'
         if not self.config.get('CSP_NONCE'):
-            return ''
+            return None
         if request is None:
             message = _NONCE_NO_REQUEST.format(chunk_name=chunk['name'])
             warn(message=message, category=RuntimeWarning)
@@ -140,7 +142,7 @@ class WebpackLoader:
             return ''
         if 'nonce=' in attrs.lower():
             return ''
-        return f'nonce="{nonce}" '
+        return f'nonce="{nonce}"'
 
     def filter_chunks(self, chunks):
         filtered_chunks = []

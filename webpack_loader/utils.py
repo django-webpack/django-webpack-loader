@@ -79,34 +79,23 @@ def get_as_url_to_tag_dict(
     attrs_l = attrs.lower()
 
     for chunk in bundle:
+        url = ''.join([chunk['url'], suffix])
+        integrity = loader.get_integrity_attr(chunk, request, attrs_l)
+        nonce = loader.get_nonce_attr(chunk, request, attrs_l)
+        extra = ' '.join(filter(bool, [integrity, nonce, attrs.strip()]))
+        attrs_str = f' {extra}' if extra else ''
+
         if chunk['name'].endswith(('.js', '.js.gz')):
             if is_preload:
                 result[chunk['url']] = (
-                    '<link rel="preload" as="script" href="{0}"{2}{3}{1}/>'
-                ).format(
-                    ''.join([chunk['url'], suffix]),
-                    attrs,
-                    loader.get_integrity_attr(chunk, request, attrs_l),
-                    loader.get_nonce_attr(chunk, request, attrs_l),
+                    f'<link rel="preload" as="script" href="{url}"{attrs_str}/>'
                 )
             else:
-                result[chunk['url']] = (
-                    '<script src="{0}"{2}{3}{1}></script>'
-                ).format(
-                    ''.join([chunk['url'], suffix]),
-                    attrs,
-                    loader.get_integrity_attr(chunk, request, attrs_l),
-                    loader.get_nonce_attr(chunk, request, attrs_l),
-                )
+                result[chunk['url']] = f'<script src="{url}"{attrs_str}></script>'
         elif chunk['name'].endswith(('.css', '.css.gz')):
+            rel = '"stylesheet"' if not is_preload else '"preload" as="style"'
             result[chunk['url']] = (
-                '<link href="{0}" rel={2}{3}{4}{1}/>'
-            ).format(
-                ''.join([chunk['url'], suffix]),
-                attrs,
-                '"stylesheet"' if not is_preload else '"preload" as="style"',
-                loader.get_integrity_attr(chunk, request, attrs_l),
-                loader.get_nonce_attr(chunk, request, attrs_l),
+                f'<link href="{url}" rel={rel}{attrs_str}/>'
             )
     return result
 
