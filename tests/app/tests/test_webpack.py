@@ -1124,6 +1124,22 @@ class LoaderTestCase(TestCase):
             tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request_with_nonce)
             self.assertNotIn('nonce=', tag_dict['/static/django_webpack_loader_bundles/main.js'])
 
+    def test_get_url_to_tag_dict_js_preload_includes_integrity_and_nonce(self):
+        self.compile_bundles('webpack.config.integrity.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CSP_NONCE': True, 'CACHE': False}):
+            request = self.factory.get('/')
+            request.csp_nonce = 'test-nonce'
+
+            tag_dict = get_as_url_to_tag_dict('main', extension='js', attrs='', request=request, is_preload=True)
+            tag = tag_dict['http://custom-static-host.com/main.js']
+
+            self.assertIn('rel="preload"', tag)
+            self.assertIn('as="script"', tag)
+            self.assertIn('integrity=', tag)
+            self.assertIn('nonce="test-nonce"', tag)
+
     def test_get_url_to_tag_dict_with_different_extensions(self):
         """Test the get_as_url_to_tag_dict function with different file extensions."""
 

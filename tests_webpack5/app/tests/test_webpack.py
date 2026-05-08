@@ -155,3 +155,19 @@ class LoaderTestCase(TestCase):
             # Test with CSP_NONCE disabled - should not have nonce
             tag_dict = get_as_url_to_tag_dict('resources', extension='js', attrs='', request=request_with_nonce)
             self.assertNotIn('nonce=', tag_dict['/static/django_webpack_loader_bundles/resources.js'])
+
+    def test_get_url_to_tag_dict_js_preload_includes_integrity_and_nonce(self):
+        self.compile_bundles('webpack.config.integrity.js')
+
+        loader = get_loader(DEFAULT_CONFIG)
+        with patch.dict(loader.config, {'INTEGRITY': True, 'CSP_NONCE': True, 'CACHE': False}):
+            request = self.factory.get('/')
+            request.csp_nonce = 'test-nonce'
+
+            tag_dict = get_as_url_to_tag_dict('resources', extension='js', attrs='', request=request, is_preload=True)
+            tag = tag_dict['http://custom-static-host.com/resources.js']
+
+            self.assertIn('rel="preload"', tag)
+            self.assertIn('as="script"', tag)
+            self.assertIn('integrity=', tag)
+            self.assertIn('nonce="test-nonce"', tag)
