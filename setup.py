@@ -1,7 +1,7 @@
 import os
 import re
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def rel(*parts):
@@ -20,11 +20,7 @@ VERSION = re.findall(r"__version__ = \"([^\"]+)\"", INIT_PY)[0]
 
 setup(
     name="django-webpack-loader",
-    packages=[
-        "webpack_loader",
-        "webpack_loader.templatetags",
-        "webpack_loader.contrib",
-    ],
+    packages=find_packages(),
     version=VERSION,
     license="MIT License",
     description="Transparently use webpack with django",
