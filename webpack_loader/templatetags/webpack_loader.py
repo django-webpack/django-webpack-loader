@@ -82,8 +82,10 @@ def get_files(
         return result
 
     used_urls = getattr(request, '_webpack_loader_used_urls', None)
-    if not used_urls:
+    if used_urls is None:
         used_urls = set()
+        setattr(request, '_webpack_loader_used_urls', used_urls)
     if skip_common_chunks:
         result = [chunk for chunk in result if chunk['url'] not in used_urls]
+    used_urls.update(chunk['url'] for chunk in result)
     return result
