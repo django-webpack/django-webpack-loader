@@ -5,6 +5,15 @@ For more general information, view the [readme](README.md).
 Releases are added to the
 [github release page](https://github.com/ezhome/django-webpack-loader/releases).
 
+## [3.2.4] -- 2026-05-13
+
+- Refactor `get_as_url_to_tag_dict` when dealing with extra arguments in elements
+- Fix `skip_common_chunks` usage at `get_files` to add parity with `render_bundle` (#431)
+- Add integrity and CSP nonce to preload script tags (#432)
+- Fix hanging or broken stats file (#430)
+- Handle issue when webpack stats change mid-request (#429)
+- Fix `AttributeError` in config check for non-dict `WEBPACK_LOADER` (#427)
+
 ## [3.2.3] -- 2025-12-09
 
 - Add warning for default timeout usage
